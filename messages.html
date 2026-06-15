@@ -8,97 +8,113 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            background: #f5f6f7;
+            background: #f0f2f5;
             min-height: 100vh;
         }
         .app-container {
             display: flex;
             height: 100vh;
         }
-        /* 左侧导航栏 */
+        /* 左侧导航栏 - 浅蓝色背景 */
         .sidebar {
-            width: 64px;
-            background: #001529;
+            width: 72px;
+            background: #e8f4ff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 12px 0;
+            padding: 16px 0;
             flex-shrink: 0;
         }
-        .logo {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #0089ff, #00c6ff);
-            border-radius: 8px;
+        .org-avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #4a90e2, #7bb3f0);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 20px;
-            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .org-name {
+            font-size: 12px;
+            color: #333;
+            font-weight: 500;
             margin-bottom: 20px;
+            text-align: center;
+            padding: 0 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
         }
         .nav-menu {
             display: flex;
             flex-direction: column;
             gap: 4px;
             width: 100%;
+            padding: 0 8px;
         }
         .nav-item {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 10px 0;
-            color: rgba(255,255,255,0.65);
+            gap: 10px;
+            padding: 10px 12px;
+            color: #666;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
-            position: relative;
+            border-radius: 8px;
+            font-size: 13px;
         }
         .nav-item:hover {
-            color: white;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.6);
+            color: #333;
+        }
+        .nav-item.disabled {
+            cursor: default;
+            opacity: 0.45;
+        }
+        .nav-item.disabled:hover {
+            background: transparent;
+            color: #666;
         }
         .nav-item.active {
-            color: #0089ff;
-            background: rgba(0,137,255,0.1);
-        }
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 20px;
-            background: #0089ff;
-            border-radius: 0 2px 2px 0;
+            background: white;
+            color: #333;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         .nav-icon {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-        .nav-text {
-            font-size: 11px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
         }
         .nav-badge {
-            position: absolute;
-            top: 6px;
-            right: 8px;
-            min-width: 16px;
-            height: 16px;
+            margin-left: auto;
+            min-width: 18px;
+            height: 18px;
             background: #ff4d4f;
             color: white;
-            font-size: 10px;
-            border-radius: 8px;
+            font-size: 11px;
+            border-radius: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 4px;
+            padding: 0 5px;
+        }
+        .nav-dot {
+            margin-left: auto;
+            width: 8px;
+            height: 8px;
+            background: #ff4d4f;
+            border-radius: 50%;
         }
         .sidebar-bottom {
             margin-top: auto;
             width: 100%;
+            padding: 0 8px;
         }
         /* 主内容区 */
         .main-content {
@@ -123,10 +139,14 @@
             align-items: center;
             gap: 16px;
         }
-        .org-name {
+        .org-selector {
             font-size: 14px;
             color: #262626;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
         }
         .header-tabs {
             display: flex;
@@ -141,7 +161,7 @@
             position: relative;
         }
         .header-tab.active {
-            color: #0089ff;
+            color: #1890ff;
             font-weight: 500;
         }
         .header-tab.active::after {
@@ -151,7 +171,7 @@
             left: 0;
             right: 0;
             height: 2px;
-            background: #0089ff;
+            background: #1890ff;
         }
         .header-right {
             display: flex;
@@ -174,7 +194,7 @@
         .search-box input:focus {
             outline: none;
             background: white;
-            border-color: #0089ff;
+            border-color: #1890ff;
         }
         .search-box::before {
             content: "🔍";
@@ -229,7 +249,7 @@
         }
         /* 消息列表 */
         .message-list {
-            width: 320px;
+            width: 300px;
             background: white;
             border-right: 1px solid #e8e8e8;
             display: flex;
@@ -287,7 +307,7 @@
         .msg-avatar {
             width: 44px;
             height: 44px;
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -296,33 +316,21 @@
             flex-shrink: 0;
             position: relative;
         }
-        .msg-avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        .msg-avatar.system {
+        .msg-avatar.green {
             background: #52c41a;
             color: white;
         }
-        .msg-avatar.group {
-            background: linear-gradient(135deg, #1890ff, #36cfc9);
+        .msg-avatar.orange {
+            background: #fa8c16;
             color: white;
         }
-        .msg-avatar.user {
-            background: linear-gradient(135deg, #722ed1, #eb2f96);
+        .msg-avatar.blue {
+            background: #1890ff;
             color: white;
         }
-        .online-dot {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            width: 12px;
-            height: 12px;
-            background: #52c41a;
-            border: 2px solid white;
-            border-radius: 50%;
+        .msg-avatar.red {
+            background: #ff4d4f;
+            color: white;
         }
         .msg-content {
             flex: 1;
@@ -395,10 +403,6 @@
             padding: 0 5px;
             margin-left: 8px;
         }
-        .msg-status {
-            font-size: 12px;
-            margin-left: 4px;
-        }
         /* 聊天区域 */
         .chat-area {
             flex: 1;
@@ -423,7 +427,7 @@
         .chat-avatar {
             width: 36px;
             height: 36px;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -471,11 +475,6 @@
         .message {
             display: flex;
             margin-bottom: 16px;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         .message.self {
             flex-direction: row-reverse;
@@ -483,7 +482,7 @@
         .message-avatar {
             width: 36px;
             height: 36px;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -596,75 +595,63 @@
         .empty-text {
             font-size: 14px;
         }
-        /* 解谜提示 */
-        .puzzle-toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1a1a1a;
-            color: white;
-            padding: 16px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            max-width: 320px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-        .puzzle-toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .hidden-data { display: none; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- 左侧导航栏 -->
         <aside class="sidebar">
-            <div class="logo">钉</div>
+            <div class="org-avatar">企</div>
+            <div class="org-name">企业名称</div>
             <nav class="nav-menu">
                 <a href="messages.html" class="nav-item active">
                     <span class="nav-icon">💬</span>
-                    <span class="nav-text">消息</span>
+                    <span>消息</span>
                     <span class="nav-badge">99+</span>
                 </a>
                 <a href="documents.html" class="nav-item">
                     <span class="nav-icon">📄</span>
-                    <span class="nav-text">文档</span>
+                    <span>文档</span>
+                    <span class="nav-dot"></span>
                 </a>
-                <a href="ai-tools.html" class="nav-item">
-                    <span class="nav-icon">🤖</span>
-                    <span class="nav-text">AI</span>
+                <a href="#" class="nav-item disabled" aria-disabled="true">
+                    <span class="nav-icon">🔷</span>
+                    <span>AI 表格</span>
+                </a>
+                <a href="#" class="nav-item disabled" aria-disabled="true">
+                    <span class="nav-icon">🎙️</span>
+                    <span>AI 听记</span>
                 </a>
                 <a href="workbench.html" class="nav-item">
-                    <span class="nav-icon">📱</span>
-                    <span class="nav-text">工作台</span>
+                    <span class="nav-icon">▦</span>
+                    <span>工作台</span>
                 </a>
                 <a href="contacts.html" class="nav-item">
-                    <span class="nav-icon">👥</span>
-                    <span class="nav-text">通讯录</span>
+                    <span class="nav-icon">👤</span>
+                    <span>通讯录</span>
+                </a>
+                <a href="#" class="nav-item disabled" aria-disabled="true">
+                    <span class="nav-icon">📹</span>
+                    <span>会议</span>
                 </a>
                 <a href="calendar.html" class="nav-item">
                     <span class="nav-icon">📅</span>
-                    <span class="nav-text">日历</span>
+                    <span>日历</span>
                 </a>
-                <a href="todo.html" class="nav-item">
-                    <span class="nav-icon">✓</span>
-                    <span class="nav-text">待办</span>
+                <a href="#" class="nav-item disabled" aria-disabled="true">
+                    <span class="nav-icon">☐</span>
+                    <span>待办</span>
                     <span class="nav-badge">10</span>
                 </a>
-                <a href="ding.html" class="nav-item">
+                <a href="#" class="nav-item disabled" aria-disabled="true">
                     <span class="nav-icon">⚡</span>
-                    <span class="nav-text">DING</span>
+                    <span>DING</span>
                 </a>
             </nav>
             <div class="sidebar-bottom">
                 <a href="#" class="nav-item">
-                    <span class="nav-icon">➕</span>
-                    <span class="nav-text">添加</span>
+                    <span class="nav-icon">+</span>
+                    <span>添加</span>
                 </a>
             </div>
         </aside>
@@ -674,7 +661,10 @@
             <!-- 顶部栏 -->
             <header class="header">
                 <div class="header-left">
-                    <span class="org-name">科技有限公司</span>
+                    <span class="org-selector">
+                        企业名称
+                        <span>▼</span>
+                    </span>
                     <div class="header-tabs">
                         <div class="header-tab active">消息</div>
                         <div class="header-tab">未读</div>
@@ -686,8 +676,7 @@
                         <input type="text" placeholder="搜索">
                     </div>
                     <div class="header-icon">🔔<span class="badge"></span></div>
-                    <div class="header-icon">⚙️</div>
-                    <div class="user-avatar">张</div>
+                    <div class="user-avatar">用</div>
                 </div>
             </header>
 
@@ -698,30 +687,30 @@
                     <div class="list-header">
                         <span class="list-title">消息</span>
                         <div class="list-actions">
-                            <button class="action-btn" title="发起群聊">👥</button>
-                            <button class="action-btn" title="添加好友">➕</button>
+                            <button class="action-btn">👥</button>
+                            <button class="action-btn">➕</button>
                         </div>
                     </div>
                     <div class="message-items">
-                        <div class="message-item active" onclick="loadChat('security')">
-                            <div class="msg-avatar system">🛡️</div>
+                        <div class="message-item active">
+                            <div class="msg-avatar green">🛡️</div>
                             <div class="msg-content">
                                 <div class="msg-header">
                                     <span class="msg-name">
-                                        钉钉安全助手
+                                        安全助手
                                         <span class="msg-tag internal">内部</span>
                                     </span>
                                     <span class="msg-time">16:33</span>
                                 </div>
                                 <div class="msg-preview unread">
-                                    <span class="msg-status">⚠️</span>
+                                    <span>⚠️</span>
                                     账号安全提醒
                                 </div>
                             </div>
                         </div>
 
-                        <div class="message-item" onclick="loadChat('newbie')">
-                            <div class="msg-avatar group">新</div>
+                        <div class="message-item">
+                            <div class="msg-avatar orange">新</div>
                             <div class="msg-content">
                                 <div class="msg-header">
                                     <span class="msg-name">
@@ -736,8 +725,8 @@
                             <span class="msg-badge">1</span>
                         </div>
 
-                        <div class="message-item" onclick="loadChat('work')">
-                            <div class="msg-avatar" style="background: #1890ff;">工</div>
+                        <div class="message-item">
+                            <div class="msg-avatar blue">工</div>
                             <div class="msg-content">
                                 <div class="msg-header">
                                     <span class="msg-name">工作通知</span>
@@ -748,20 +737,20 @@
                             <span class="msg-badge">2</span>
                         </div>
 
-                        <div class="message-item" onclick="loadChat('sport')">
-                            <div class="msg-avatar" style="background: #52c41a;">运</div>
+                        <div class="message-item">
+                            <div class="msg-avatar green">运</div>
                             <div class="msg-content">
                                 <div class="msg-header">
-                                    <span class="msg-name">钉钉运动</span>
+                                    <span class="msg-name">运动助手</span>
                                     <span class="msg-time">昨天</span>
                                 </div>
-                                <div class="msg-preview">王青松，步数0？那...</div>
+                                <div class="msg-preview">今日步数统计</div>
                             </div>
                             <span class="msg-badge">99+</span>
                         </div>
 
-                        <div class="message-item" onclick="loadChat('mail')">
-                            <div class="msg-avatar" style="background: #fa8c16;">邮</div>
+                        <div class="message-item">
+                            <div class="msg-avatar orange">邮</div>
                             <div class="msg-content">
                                 <div class="msg-header">
                                     <span class="msg-name">邮箱助手</span>
@@ -772,41 +761,30 @@
                             <span class="msg-badge">3</span>
                         </div>
 
-                        <div class="message-item" onclick="loadChat('group')">
-                            <div class="msg-avatar group">迪</div>
+                        <div class="message-item">
+                            <div class="msg-avatar blue">群</div>
                             <div class="msg-content">
                                 <div class="msg-header">
                                     <span class="msg-name">
-                                        迪麦思
+                                        部门群
                                         <span class="msg-tag internal">内部群</span>
                                         <span class="msg-tag all">全员</span>
                                     </span>
                                     <span class="msg-time">06-01</span>
                                 </div>
-                                <div class="msg-preview">AI小钉：欢迎新人加入...</div>
+                                <div class="msg-preview">欢迎新人加入...</div>
                             </div>
                             <span class="msg-badge">1</span>
                         </div>
 
-                        <div class="message-item" onclick="loadChat('assistant')">
-                            <div class="msg-avatar user" style="background: #eb2f96;">秘</div>
+                        <div class="message-item">
+                            <div class="msg-avatar red">秘</div>
                             <div class="msg-content">
                                 <div class="msg-header">
-                                    <span class="msg-name">钉钉小秘书</span>
+                                    <span class="msg-name">小秘书</span>
                                     <span class="msg-time">06-01</span>
                                 </div>
                                 <div class="msg-preview">邀请实人认证</div>
-                            </div>
-                        </div>
-
-                        <div class="message-item" onclick="showPuzzle('王粉丽：已同意你的好友申请')">
-                            <div class="msg-avatar user" style="background: #722ed1;">王</div>
-                            <div class="msg-content">
-                                <div class="msg-header">
-                                    <span class="msg-name">王粉丽</span>
-                                    <span class="msg-time">04-28</span>
-                                </div>
-                                <div class="msg-preview">已同意</div>
                             </div>
                         </div>
                     </div>
@@ -816,9 +794,9 @@
                 <div class="chat-area">
                     <div class="chat-header">
                         <div class="chat-title-section">
-                            <div class="chat-avatar system">🛡️</div>
+                            <div class="chat-avatar green">🛡️</div>
                             <div class="chat-title-info">
-                                <h3>钉钉安全助手</h3>
+                                <h3>安全助手</h3>
                                 <p>账号安全提醒</p>
                             </div>
                         </div>
@@ -829,22 +807,18 @@
                         </div>
                     </div>
 
-                    <div class="chat-messages" id="chatMessages">
+                    <div class="chat-messages">
                         <div class="system-message">
                             <span class="system-message-text">今天 16:33</span>
                         </div>
 
                         <div class="message">
-                            <div class="message-avatar system">🛡️</div>
+                            <div class="message-avatar green">🛡️</div>
                             <div class="message-content">
-                                <div class="message-sender">钉钉安全助手</div>
+                                <div class="message-sender">安全助手</div>
                                 <div class="message-bubble">
-                                    ⚠️ <strong>安全警报</strong><br><br>
-                                    检测到您的账号存在异常登录行为：<br>
-                                    • 时间：昨晚 23:45<br>
-                                    • IP：192.168.1.XXX<br>
-                                    • 位置：公司内部服务器机房<br><br>
-                                    如非本人操作，请立即修改密码并联系安全部门。
+                                    ⚠️ <strong>安全提醒</strong><br><br>
+                                    检测到您的账号存在异常登录行为，请及时检查账号安全。
                                 </div>
                                 <div class="message-time">16:33</div>
                             </div>
@@ -855,12 +829,12 @@
                         </div>
 
                         <div class="message">
-                            <div class="message-avatar system">🛡️</div>
+                            <div class="message-avatar green">🛡️</div>
                             <div class="message-content">
-                                <div class="message-sender">钉钉安全助手</div>
-                                <div class="message-bubble" onclick="showPuzzle('查看邮件 security@company.com')">
-                                    📧 您有一封来自 security@company.com 的邮件<br>
-                                    主题：关于Project X的安全审计通知<br>
+                                <div class="message-sender">安全助手</div>
+                                <div class="message-bubble">
+                                    📧 您有一封新的邮件通知<br>
+                                    主题：关于安全审计的通知<br>
                                     <span style="color: #1890ff; cursor: pointer;">点击查看详情 ›</span>
                                 </div>
                                 <div class="message-time">18:30</div>
@@ -884,45 +858,5 @@
             </div>
         </main>
     </div>
-
-    <div class="puzzle-toast" id="puzzleToast"></div>
-
-    <div class="hidden-data">
-        <!-- 线索：异常登录时间 23:45 -->
-        <!-- 线索：IP 192.168.1.XXX -->
-        <!-- 线索：服务器机房位置 -->
-        <!-- 线索：安全邮箱 security@company.com -->
-        <!-- 线索：Project X 安全审计 -->
-    </div>
-
-    <script>
-        function showPuzzle(hint) {
-            const toast = document.getElementById('puzzleToast');
-            toast.textContent = '💡 ' + hint;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-
-        function loadChat(chatId) {
-            document.querySelectorAll('.message-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-        }
-
-        // 输入框自动调整高度
-        document.querySelector('.input-field').addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-        });
-
-        // 标签切换
-        document.querySelectorAll('.header-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.header-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
 </body>
 </html>
