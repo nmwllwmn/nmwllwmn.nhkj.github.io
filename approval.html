@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审批 - 钉钉</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 32px; }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .logo-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, #0089ff, #00c6ff);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .nav-menu { display: flex; gap: 24px; }
+        .nav-item {
+            padding: 8px 16px;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .nav-item:hover { background: #f5f5f5; color: #0089ff; }
+        .nav-item.active { color: #0089ff; font-weight: 500; }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .search-box { position: relative; }
+        .search-box input {
+            width: 240px;
+            padding: 8px 16px 8px 36px;
+            border: 1px solid #d9d9d9;
+            border-radius: 20px;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #0089ff;
+            width: 300px;
+        }
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+        }
+        .nav-icon {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .nav-icon:hover { background: #f5f5f5; }
+        .nav-icon .badge {
+            position: absolute;
+            top: 2px; right: 2px;
+            width: 8px; height: 8px;
+            background: #ff4d4f;
+            border-radius: 50%;
+        }
+        .user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .main-container {
+            padding-top: 60px;
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+        .approval-sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #e8e8e8;
+            padding: 20px 0;
+        }
+        .sidebar-section { margin-bottom: 8px; }
+        .sidebar-title {
+            padding: 8px 24px;
+            font-size: 12px;
+            color: #999;
+            font-weight: 500;
+        }
+        .sidebar-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #333;
+            text-decoration: none;
+        }
+        .sidebar-item:hover { background: #f5f5f5; }
+        .sidebar-item.active {
+            background: #e6f7ff;
+            color: #0089ff;
+            border-right: 3px solid #0089ff;
+        }
+        .sidebar-icon {
+            width: 24px; height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .badge-count {
+            margin-left: auto;
+            padding: 2px 8px;
+            background: #ff4d4f;
+            color: white;
+            font-size: 11px;
+            border-radius: 10px;
+        }
+        .approval-content {
+            flex: 1;
+            padding: 24px;
+        }
+        .approval-header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            font-size: 20px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .action-btn {
+            padding: 10px 20px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .action-btn:hover {
+            border-color: #0089ff;
+            color: #0089ff;
+        }
+        .action-btn.primary {
+            background: linear-gradient(135deg, #0089ff, #00c6ff);
+            color: white;
+            border: none;
+        }
+        .action-btn.primary:hover { opacity: 0.9; }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .stat-card {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            background: #f0f0f0;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #999;
+        }
+        .stat-card.urgent .stat-value { color: #ff4d4f; }
+        .approval-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e8e8e8;
+            padding-bottom: 12px;
+        }
+        .tab-item {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .tab-item:hover { background: #f5f5f5; }
+        .tab-item.active {
+            color: #0089ff;
+            font-weight: 500;
+        }
+        .approval-list {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .approval-item {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .approval-item:hover {
+            background: #fafafa;
+        }
+        .approval-item:last-child { border-bottom: none; }
+        .approval-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 24px;
+        }
+        .approval-icon.blue { background: #e6f7ff; }
+        .approval-icon.green { background: #f6ffed; }
+        .approval-icon.orange { background: #fff7e6; }
+        .approval-icon.red { background: #fff1f0; }
+        .approval-info {
+            flex: 1;
+        }
+        .approval-title {
+            font-size: 15px;
+            color: #1a1a1a;
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .approval-meta {
+            font-size: 13px;
+            color: #999;
+        }
+        .approval-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status-badge.pending {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+        .status-badge.approved {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        .status-badge.rejected {
+            background: #fff1f0;
+            color: #ff4d4f;
+        }
+        .status-time {
+            font-size: 12px;
+            color: #999;
+        }
+        .tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .tag.urgent {
+            background: #fff1f0;
+            color: #ff4d4f;
+        }
+        .tag.encrypted {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+        .puzzle-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1a1a1a;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            max-width: 320px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .puzzle-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .hidden-data { display: none; }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <div class="logo-icon">钉</div>
+                <span>钉钉</span>
+            </div>
+            <div class="nav-menu">
+                <a href="messages.html" class="nav-item">消息</a>
+                <a href="workbench.html" class="nav-item">工作台</a>
+                <a href="contacts.html" class="nav-item">通讯录</a>
+                <a href="calendar.html" class="nav-item">日历</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="search-box">
+                <input type="text" placeholder="搜索">
+            </div>
+            <div class="nav-icon">🔔<span class="badge"></span></div>
+            <div class="nav-icon">⚙️</div>
+            <div class="user-avatar">张</div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="approval-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">审批中心</div>
+                <a href="#" class="sidebar-item active">
+                    <span class="sidebar-icon">📋</span>
+                    <span>待我审批</span>
+                    <span class="badge-count">2</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-icon">📝</span>
+                    <span>我已审批</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-icon">📤</span>
+                    <span>我发起的</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-icon">📋</span>
+                    <span>抄送我的</span>
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">审批类型</div>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-icon">💰</span>
+                    <span>报销</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-icon">📅</span>
+                    <span>请假</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-icon">🛫</span>
+                    <span>出差</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="sidebar-icon">🔐</span>
+                    <span>权限申请</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="approval-content">
+            <div class="approval-header">
+                <div class="header-top">
+                    <h1 class="header-title">待我审批</h1>
+                    <div class="header-actions">
+                        <button class="action-btn">批量处理</button>
+                        <button class="action-btn primary">+ 发起审批</button>
+                    </div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-card urgent" onclick="showPuzzle('2个紧急审批需要立即处理')">
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">紧急</div>
+                    </div>
+                    <div class="stat-card" onclick="showPuzzle('待审批总数')">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">待审批</div>
+                    </div>
+                    <div class="stat-card" onclick="showPuzzle('今日已处理')">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">今日已处理</div>
+                    </div>
+                    <div class="stat-card" onclick="showPuzzle('平均处理时长')">
+                        <div class="stat-value">2.5h</div>
+                        <div class="stat-label">平均时长</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="approval-tabs">
+                <div class="tab-item active">全部</div>
+                <div class="tab-item">紧急</div>
+                <div class="tab-item">报销</div>
+                <div class="tab-item">请假</div>
+                <div class="tab-item">权限</div>
+            </div>
+
+            <div class="approval-list">
+                <div class="approval-item" onclick="showPuzzle('审批单 APP-2024-0615-001：服务器访问权限申请')">
+                    <div class="approval-icon red">🔐</div>
+                    <div class="approval-info">
+                        <div class="approval-title">
+                            服务器访问权限申请
+                            <span class="tag urgent">紧急</span>
+                            <span class="tag encrypted">机密</span>
+                        </div>
+                        <div class="approval-meta">
+                            申请人：李工 | 申请时间：昨天 18:30 | 单号：APP-2024-0615-001
+                        </div>
+                    </div>
+                    <div class="approval-status">
+                        <span class="status-badge pending">待审批</span>
+                        <span class="status-time">2小时前</span>
+                    </div>
+                </div>
+
+                <div class="approval-item" onclick="showPuzzle('审批单 APP-2024-0615-002：Project X数据访问申请')">
+                    <div class="approval-icon orange">📁</div>
+                    <div class="approval-info">
+                        <div class="approval-title">
+                            Project X数据访问申请
+                            <span class="tag encrypted">机密</span>
+                        </div>
+                        <div class="approval-meta">
+                            申请人：王经理 | 申请时间：昨天 16:45 | 单号：APP-2024-0615-002
+                        </div>
+                    </div>
+                    <div class="approval-status">
+                        <span class="status-badge pending">待审批</span>
+                        <span class="status-time">4小时前</span>
+                    </div>
+                </div>
+
+                <div class="approval-item" onclick="showPuzzle('报销单：差旅费用报销')">
+                    <div class="approval-icon green">💰</div>
+                    <div class="approval-info">
+                        <div class="approval-title">差旅费用报销</div>
+                        <div class="approval-meta">
+                            申请人：赵工 | 申请时间：昨天 14:20 | 金额：¥2,580
+                        </div>
+                    </div>
+                    <div class="approval-status">
+                        <span class="status-badge pending">待审批</span>
+                        <span class="status-time">6小时前</span>
+                    </div>
+                </div>
+
+                <div class="approval-item" onclick="showPuzzle('请假申请：年假')">
+                    <div class="approval-icon blue">📅</div>
+                    <div class="approval-info">
+                        <div class="approval-title">年假申请</div>
+                        <div class="approval-meta">
+                            申请人：刘工 | 申请时间：前天 09:15 | 天数：3天
+                        </div>
+                    </div>
+                    <div class="approval-status">
+                        <span class="status-badge pending">待审批</span>
+                        <span class="status-time">1天前</span>
+                    </div>
+                </div>
+
+                <div class="approval-item" onclick="showPuzzle('已审批：办公用品采购')">
+                    <div class="approval-icon blue">📦</div>
+                    <div class="approval-info">
+                        <div class="approval-title">办公用品采购</div>
+                        <div class="approval-meta">
+                            申请人：HR小张 | 申请时间：6月12日 | 金额：¥1,200
+                        </div>
+                    </div>
+                    <div class="approval-status">
+                        <span class="status-badge approved">已通过</span>
+                        <span class="status-time">2天前</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="puzzle-toast" id="puzzleToast"></div>
+
+    <div class="hidden-data">
+        <!-- 线索1: 审批单号 APP-2024-0615-001 -->
+        <!-- 线索2: 李工申请服务器权限 -->
+        <!-- 线索3: Project X数据访问申请 -->
+        <!-- 线索4: 王经理也申请了Project X权限 -->
+    </div>
+
+    <script>
+        if (!localStorage.getItem('dingtalk_logged_in')) {
+            window.location.href = 'login.html';
+        }
+
+        const user = localStorage.getItem('dingtalk_user') || '用户';
+        document.querySelector('.user-avatar').textContent = user.charAt(0);
+
+        function showPuzzle(hint) {
+            const toast = document.getElementById('puzzleToast');
+            toast.textContent = '💡 ' + hint;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        // 标签切换
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息 - 钉钉</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f6f7;
+            min-height: 100vh;
+        }
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 64px;
+            background: #001529;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            flex-shrink: 0;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0089ff, #00c6ff);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            color: rgba(255,255,255,0.65);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            position: relative;
+        }
+        .nav-item:hover {
+            color: white;
+            background: rgba(255,255,255,0.05);
+        }
+        .nav-item.active {
+            color: #0089ff;
+            background: rgba(0,137,255,0.1);
+        }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: #0089ff;
+            border-radius: 0 2px 2px 0;
+        }
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .nav-text {
+            font-size: 11px;
+        }
+        .nav-badge {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            min-width: 16px;
+            height: 16px;
+            background: #ff4d4f;
+            color: white;
+            font-size: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+        .sidebar-bottom {
+            margin-top: auto;
+            width: 100%;
+        }
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        /* 顶部栏 */
+        .header {
+            height: 48px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .org-name {
+            font-size: 14px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .header-tabs {
+            display: flex;
+            gap: 24px;
+            margin-left: 32px;
+        }
+        .header-tab {
+            font-size: 14px;
+            color: #595959;
+            cursor: pointer;
+            padding: 4px 0;
+            position: relative;
+        }
+        .header-tab.active {
+            color: #0089ff;
+            font-weight: 500;
+        }
+        .header-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #0089ff;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            width: 200px;
+            height: 32px;
+            padding: 0 12px 0 32px;
+            border: 1px solid #d9d9d9;
+            border-radius: 16px;
+            font-size: 13px;
+            background: #f5f5f5;
+            transition: all 0.3s;
+        }
+        .search-box input:focus {
+            outline: none;
+            background: white;
+            border-color: #0089ff;
+        }
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0.5;
+        }
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 18px;
+            position: relative;
+        }
+        .header-icon:hover {
+            background: #f5f5f5;
+        }
+        .header-icon .badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background: #ff4d4f;
+            border-radius: 50%;
+        }
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        /* 内容区 */
+        .content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        /* 消息列表 */
+        .message-list {
+            width: 320px;
+            background: white;
+            border-right: 1px solid #e8e8e8;
+            display: flex;
+            flex-direction: column;
+        }
+        .list-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .list-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+        }
+        .list-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+        }
+        .action-btn:hover {
+            background: #f5f5f5;
+        }
+        .message-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .message-item {
+            display: flex;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .message-item:hover {
+            background: #f5f5f5;
+        }
+        .message-item.active {
+            background: #e6f7ff;
+        }
+        .msg-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .msg-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .msg-avatar.system {
+            background: #52c41a;
+            color: white;
+        }
+        .msg-avatar.group {
+            background: linear-gradient(135deg, #1890ff, #36cfc9);
+            color: white;
+        }
+        .msg-avatar.user {
+            background: linear-gradient(135deg, #722ed1, #eb2f96);
+            color: white;
+        }
+        .online-dot {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            background: #52c41a;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+        .msg-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .msg-name {
+            font-size: 14px;
+            color: #262626;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .msg-tag {
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: normal;
+        }
+        .msg-tag.internal {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        .msg-tag.all {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        .msg-tag.task {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+        .msg-time {
+            font-size: 12px;
+            color: #bfbfbf;
+            flex-shrink: 0;
+        }
+        .msg-preview {
+            font-size: 13px;
+            color: #8c8c8c;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .msg-preview.unread {
+            color: #262626;
+            font-weight: 500;
+        }
+        .msg-badge {
+            min-width: 18px;
+            height: 18px;
+            background: #ff4d4f;
+            color: white;
+            font-size: 11px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            margin-left: 8px;
+        }
+        .msg-status {
+            font-size: 12px;
+            margin-left: 4px;
+        }
+        /* 聊天区域 */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f5f6f7;
+        }
+        .chat-header {
+            height: 56px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        .chat-title-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .chat-title-info h3 {
+            font-size: 15px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .chat-title-info p {
+            font-size: 12px;
+            color: #8c8c8c;
+        }
+        .chat-actions {
+            display: flex;
+            gap: 16px;
+        }
+        .chat-action {
+            cursor: pointer;
+            color: #595959;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+        .chat-action:hover {
+            color: #1890ff;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .system-message {
+            text-align: center;
+            margin: 16px 0;
+        }
+        .system-message-text {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #f0f0f0;
+            color: #8c8c8c;
+            font-size: 12px;
+            border-radius: 12px;
+        }
+        .message {
+            display: flex;
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.self {
+            flex-direction: row-reverse;
+        }
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 12px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .message-content {
+            max-width: 60%;
+        }
+        .message-sender {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-bottom: 4px;
+        }
+        .message.self .message-sender {
+            text-align: right;
+        }
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .message:not(.self) .message-bubble {
+            background: white;
+            color: #262626;
+            border-top-left-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .message.self .message-bubble {
+            background: #95ec69;
+            color: #262626;
+            border-top-right-radius: 2px;
+        }
+        .message-time {
+            font-size: 11px;
+            color: #bfbfbf;
+            margin-top: 4px;
+        }
+        .message.self .message-time {
+            text-align: right;
+        }
+        .chat-input-area {
+            background: white;
+            border-top: 1px solid #e8e8e8;
+            padding: 12px 20px;
+        }
+        .input-toolbar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .toolbar-btn {
+            cursor: pointer;
+            color: #595959;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+        .toolbar-btn:hover {
+            color: #1890ff;
+        }
+        .input-box {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .input-field {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: none;
+            min-height: 40px;
+            max-height: 100px;
+            font-family: inherit;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #1890ff;
+        }
+        .send-btn {
+            padding: 10px 20px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .send-btn:hover {
+            background: #40a9ff;
+        }
+        /* 空状态 */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #bfbfbf;
+        }
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        .empty-text {
+            font-size: 14px;
+        }
+        /* 解谜提示 */
+        .puzzle-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1a1a1a;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            max-width: 320px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .puzzle-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .hidden-data { display: none; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="logo">钉</div>
+            <nav class="nav-menu">
+                <a href="messages.html" class="nav-item active">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">消息</span>
+                    <span class="nav-badge">99+</span>
+                </a>
+                <a href="documents.html" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span class="nav-text">文档</span>
+                </a>
+                <a href="ai-tools.html" class="nav-item">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">AI</span>
+                </a>
+                <a href="workbench.html" class="nav-item">
+                    <span class="nav-icon">📱</span>
+                    <span class="nav-text">工作台</span>
+                </a>
+                <a href="contacts.html" class="nav-item">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-text">通讯录</span>
+                </a>
+                <a href="calendar.html" class="nav-item">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-text">日历</span>
+                </a>
+                <a href="todo.html" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-text">待办</span>
+                    <span class="nav-badge">10</span>
+                </a>
+                <a href="ding.html" class="nav-item">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-text">DING</span>
+                </a>
+            </nav>
+            <div class="sidebar-bottom">
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">➕</span>
+                    <span class="nav-text">添加</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="header">
+                <div class="header-left">
+                    <span class="org-name">科技有限公司</span>
+                    <div class="header-tabs">
+                        <div class="header-tab active">消息</div>
+                        <div class="header-tab">未读</div>
+                        <div class="header-tab">@我</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" placeholder="搜索">
+                    </div>
+                    <div class="header-icon">🔔<span class="badge"></span></div>
+                    <div class="header-icon">⚙️</div>
+                    <div class="user-avatar">张</div>
+                </div>
+            </header>
+
+            <!-- 内容区 -->
+            <div class="content">
+                <!-- 消息列表 -->
+                <div class="message-list">
+                    <div class="list-header">
+                        <span class="list-title">消息</span>
+                        <div class="list-actions">
+                            <button class="action-btn" title="发起群聊">👥</button>
+                            <button class="action-btn" title="添加好友">➕</button>
+                        </div>
+                    </div>
+                    <div class="message-items">
+                        <div class="message-item active" onclick="loadChat('security')">
+                            <div class="msg-avatar system">🛡️</div>
+                            <div class="msg-content">
+                                <div class="msg-header">
+                                    <span class="msg-name">
+                                        钉钉安全助手
+                                        <span class="msg-tag internal">内部</span>
+                                    </span>
+                                    <span class="msg-time">16:33</span>
+                                </div>
+                                <div class="msg-preview unread">
+                                    <span class="msg-status">⚠️</span>
+                                    账号安全提醒
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="message-item" onclick="loadChat('newbie')">
+                            <div class="msg-avatar group">新</div>
+                            <div class="msg-content">
+                                <div class="msg-header">
+                                    <span class="msg-name">
+                                        新手体验群
+                                        <span class="msg-tag all">全员</span>
+                                        <span class="msg-tag task">任务</span>
+                                    </span>
+                                    <span class="msg-time">04-11</span>
+                                </div>
+                                <div class="msg-preview">欢迎新人加入...</div>
+                            </div>
+                            <span class="msg-badge">1</span>
+                        </div>
+
+                        <div class="message-item" onclick="loadChat('work')">
+                            <div class="msg-avatar" style="background: #1890ff;">工</div>
+                            <div class="msg-content">
+                                <div class="msg-header">
+                                    <span class="msg-name">工作通知</span>
+                                    <span class="msg-time">13:29</span>
+                                </div>
+                                <div class="msg-preview unread">个人考勤周报</div>
+                            </div>
+                            <span class="msg-badge">2</span>
+                        </div>
+
+                        <div class="message-item" onclick="loadChat('sport')">
+                            <div class="msg-avatar" style="background: #52c41a;">运</div>
+                            <div class="msg-content">
+                                <div class="msg-header">
+                                    <span class="msg-name">钉钉运动</span>
+                                    <span class="msg-time">昨天</span>
+                                </div>
+                                <div class="msg-preview">王青松，步数0？那...</div>
+                            </div>
+                            <span class="msg-badge">99+</span>
+                        </div>
+
+                        <div class="message-item" onclick="loadChat('mail')">
+                            <div class="msg-avatar" style="background: #fa8c16;">邮</div>
+                            <div class="msg-content">
+                                <div class="msg-header">
+                                    <span class="msg-name">邮箱助手</span>
+                                    <span class="msg-time">06-08</span>
+                                </div>
+                                <div class="msg-preview">考勤小助手：请查收...</div>
+                            </div>
+                            <span class="msg-badge">3</span>
+                        </div>
+
+                        <div class="message-item" onclick="loadChat('group')">
+                            <div class="msg-avatar group">迪</div>
+                            <div class="msg-content">
+                                <div class="msg-header">
+                                    <span class="msg-name">
+                                        迪麦思
+                                        <span class="msg-tag internal">内部群</span>
+                                        <span class="msg-tag all">全员</span>
+                                    </span>
+                                    <span class="msg-time">06-01</span>
+                                </div>
+                                <div class="msg-preview">AI小钉：欢迎新人加入...</div>
+                            </div>
+                            <span class="msg-badge">1</span>
+                        </div>
+
+                        <div class="message-item" onclick="loadChat('assistant')">
+                            <div class="msg-avatar user" style="background: #eb2f96;">秘</div>
+                            <div class="msg-content">
+                                <div class="msg-header">
+                                    <span class="msg-name">钉钉小秘书</span>
+                                    <span class="msg-time">06-01</span>
+                                </div>
+                                <div class="msg-preview">邀请实人认证</div>
+                            </div>
+                        </div>
+
+                        <div class="message-item" onclick="showPuzzle('王粉丽：已同意你的好友申请')">
+                            <div class="msg-avatar user" style="background: #722ed1;">王</div>
+                            <div class="msg-content">
+                                <div class="msg-header">
+                                    <span class="msg-name">王粉丽</span>
+                                    <span class="msg-time">04-28</span>
+                                </div>
+                                <div class="msg-preview">已同意</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 聊天区域 -->
+                <div class="chat-area">
+                    <div class="chat-header">
+                        <div class="chat-title-section">
+                            <div class="chat-avatar system">🛡️</div>
+                            <div class="chat-title-info">
+                                <h3>钉钉安全助手</h3>
+                                <p>账号安全提醒</p>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <span class="chat-action">📞</span>
+                            <span class="chat-action">📹</span>
+                            <span class="chat-action">⚙️</span>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="system-message">
+                            <span class="system-message-text">今天 16:33</span>
+                        </div>
+
+                        <div class="message">
+                            <div class="message-avatar system">🛡️</div>
+                            <div class="message-content">
+                                <div class="message-sender">钉钉安全助手</div>
+                                <div class="message-bubble">
+                                    ⚠️ <strong>安全警报</strong><br><br>
+                                    检测到您的账号存在异常登录行为：<br>
+                                    • 时间：昨晚 23:45<br>
+                                    • IP：192.168.1.XXX<br>
+                                    • 位置：公司内部服务器机房<br><br>
+                                    如非本人操作，请立即修改密码并联系安全部门。
+                                </div>
+                                <div class="message-time">16:33</div>
+                            </div>
+                        </div>
+
+                        <div class="system-message">
+                            <span class="system-message-text">昨天 18:30</span>
+                        </div>
+
+                        <div class="message">
+                            <div class="message-avatar system">🛡️</div>
+                            <div class="message-content">
+                                <div class="message-sender">钉钉安全助手</div>
+                                <div class="message-bubble" onclick="showPuzzle('查看邮件 security@company.com')">
+                                    📧 您有一封来自 security@company.com 的邮件<br>
+                                    主题：关于Project X的安全审计通知<br>
+                                    <span style="color: #1890ff; cursor: pointer;">点击查看详情 ›</span>
+                                </div>
+                                <div class="message-time">18:30</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-toolbar">
+                            <span class="toolbar-btn">😊</span>
+                            <span class="toolbar-btn">📎</span>
+                            <span class="toolbar-btn">🖼️</span>
+                            <span class="toolbar-btn">📹</span>
+                        </div>
+                        <div class="input-box">
+                            <textarea class="input-field" placeholder="输入消息..." rows="1"></textarea>
+                            <button class="send-btn">发送</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="puzzle-toast" id="puzzleToast"></div>
+
+    <div class="hidden-data">
+        <!-- 线索：异常登录时间 23:45 -->
+        <!-- 线索：IP 192.168.1.XXX -->
+        <!-- 线索：服务器机房位置 -->
+        <!-- 线索：安全邮箱 security@company.com -->
+        <!-- 线索：Project X 安全审计 -->
+    </div>
+
+    <script>
+        function showPuzzle(hint) {
+            const toast = document.getElementById('puzzleToast');
+            toast.textContent = '💡 ' + hint;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        function loadChat(chatId) {
+            document.querySelectorAll('.message-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        // 输入框自动调整高度
+        document.querySelector('.input-field').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+
+        // 标签切换
+        document.querySelectorAll('.header-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.header-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
