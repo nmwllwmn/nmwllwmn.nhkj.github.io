@@ -381,12 +381,12 @@
         </div>
     </div>
 
-    <div class="hidden-clue" title="提示：默认密码与日期有关">?</div>
+    <div class="hidden-clue" title="旧系统仍保留四位数字口令">?</div>
 
     <!-- 隐藏的解谜线索 -->
     <!-- 
-        线索1: 员工编号 E-2024-0615
-        线索2: 默认密码是今天的日期 20240615
+        线索1: 首页报道的家属口述提到生日数
+        线索2: 旧系统口令仍为四位数字
         线索3: 登录后查看消息列表第一条
     -->
 
@@ -421,14 +421,14 @@
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
 
-            // 解谜答案：密码是今天的日期 20240615
-            if (password === '20240615') {
+            // 解谜答案：顾某生日数字
+            if (password === '0606') {
                 // 登录成功
                 localStorage.setItem('dingtalk_logged_in', 'true');
                 localStorage.setItem('dingtalk_user', username);
                 window.location.href = 'workbench.html';
             } else {
-                errorMsg.textContent = '密码错误！提示：今天的日期（8位数字）';
+                errorMsg.textContent = '认证失败：旧口令为四位数字';
                 errorMsg.classList.add('show');
                 setTimeout(() => errorMsg.classList.remove('show'), 3000);
             }
@@ -436,7 +436,7 @@
 
         // 忘记密码提示
         document.querySelector('.forgot-password').addEventListener('click', () => {
-            alert('密码提示：今天的日期，格式 YYYYMMDD');
+            alert('系统提示：旧口令只有四位，来源记录已归档');
         });
 
         // 检查是否已登录
