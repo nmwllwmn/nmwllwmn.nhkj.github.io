@@ -602,7 +602,7 @@
                         深入调查这起离奇死亡事件<br>
                         真相，等待你去揭开
                     </p>
-                    <a href="login.html" class="enter-game" target="_blank" rel="noopener noreferrer">开始调查</a>
+                    <a href="login.html" class="enter-game" id="startInvestigation">开始调查</a>
                     <br>
                     <a href="badge-drop-test.html" class="test-link" target="_blank" rel="noopener noreferrer">工牌投递测试</a>
                 </div>
@@ -624,6 +624,23 @@
     </div>
 
     <script>
+        function downloadGuBadge() {
+            const link = document.createElement('a');
+            link.href = 'badge-template.html';
+            link.download = '01_顾某工牌.html';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        document.getElementById('startInvestigation').addEventListener('click', (event) => {
+            event.preventDefault();
+            downloadGuBadge();
+            window.setTimeout(() => {
+                window.open('login.html', '_blank', 'noopener,noreferrer');
+            }, 800);
+        });
+
         // 鼠标视差效果
         document.addEventListener('mousemove', (e) => {
             const x = (e.clientX / window.innerWidth - 0.5) * 20;
