@@ -282,12 +282,13 @@
             <div class="eyebrow"><span class="pulse"></span> Credential Intake Test</div>
             <h1>工牌投递校验</h1>
             <p class="lead">
-                这是一个保留功能的测试界面。把导出的「顾路工牌」HTML 文件拖进右侧窗口，系统会读取本地文件内容；如果识别到南洄科技工牌标记，就写入彩蛋进度并展开隐藏剧情。
+                这是一个保留功能的测试界面。把导出的「顾路工牌」HTML 文件或 Base64 加密文本拖进右侧窗口，系统会先尝试解密，再核对工牌里的 ID、姓名和公司字段。
             </p>
 
             <div class="terminal" id="terminal">[待机] 等待工牌文件...
 [规则] 仅在浏览器本地读取文件，不上传。
-[校验] 文件内需要出现 GL-0606、顾□□□、Recovered Staff Credential。</div>
+[解密] 支持 Python b64encode(html.encode("utf-8")) 输出。
+[校验] 解密后需要匹配 ID、姓名、公司和工牌类型。</div>
 
             <div class="reveal" id="reveal">
                 <strong>彩蛋剧情已触发。</strong><br>
@@ -299,6 +300,7 @@
             <div class="actions">
                 <a href="badge-template.html">打开工牌样本</a>
                 <a href="index.html">返回首页</a>
+                <button type="button" id="downloadEncoded">下载加密样本</button>
                 <button type="button" id="resetFlag">清除测试进度</button>
             </div>
         </section>
@@ -307,11 +309,11 @@
             <label class="drop-zone" id="dropZone" for="fileInput">
                 <span>
                     <span class="drop-icon" aria-hidden="true"></span>
-                    <span class="drop-title">投递 HTML 工牌</span>
-                    <span class="drop-copy">拖入 `01_顾路工牌.html`，或点击这里选择本地 HTML 文件。</span>
+                    <span class="drop-title">投递工牌文件</span>
+                    <span class="drop-copy">拖入 `01_顾路工牌.html`，或 Python Base64 加密后的文本文件。</span>
                     <span class="file-button">选择文件</span>
                 </span>
-                <input id="fileInput" type="file" accept=".html,.htm,text/html">
+                <input id="fileInput" type="file" accept=".html,.htm,.txt,text/html,text/plain">
             </label>
         </aside>
     </main>
@@ -323,42 +325,115 @@
             const fileInput = document.getElementById("fileInput");
             const terminal = document.getElementById("terminal");
             const reveal = document.getElementById("reveal");
+            const downloadEncoded = document.getElementById("downloadEncoded");
             const resetFlag = document.getElementById("resetFlag");
 
-            const requiredMarkers = [
-                "GL-0606",
-                "顾□□□",
-                "Recovered Staff Credential"
+            const requiredFields = [
+                { label: "ID", value: "GL-0606" },
+                { label: "姓名", value: "顾□□□" },
+                { label: "公司", value: "南洄科技有限公司" },
+                { label: "工牌类型", value: "Recovered Staff Credential" }
             ];
 
             function log(lines) {
                 terminal.innerHTML = lines.join("\n");
             }
 
-            function showUnlocked(sourceName) {
+            function normalizeBase64(rawText) {
+                return rawText
+                    .trim()
+                    .replace(/^data:[^,]+,/i, "")
+                    .replace(/```[\s\S]*?\n?/g, "")
+                    .replace(/\s+/g, "");
+            }
+
+            function decodeBase64Utf8(rawText) {
+                const normalized = normalizeBase64(rawText);
+                if (!normalized || normalized.length % 4 === 1) {
+                    throw new Error("Base64 length mismatch");
+                }
+                if (!/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)) {
+                    throw new Error("Base64 alphabet mismatch");
+                }
+
+                const binary = atob(normalized);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i += 1) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+            }
+
+            function looksLikeHtml(text) {
+                return /<!doctype html|<html[\s>]/i.test(text);
+            }
+
+            function parseCredential(rawText) {
+                const attempts = [];
+                const directText = rawText.replace(/^\uFEFF/, "");
+                attempts.push({ mode: "明文 HTML", text: directText });
+
+                try {
+                    attempts.push({ mode: "Base64 UTF-8 解密", text: decodeBase64Utf8(directText) });
+                } catch (error) {
+                    attempts.push({ mode: "Base64 UTF-8 解密失败", error });
+                }
+
+                for (const attempt of attempts) {
+                    if (!attempt.text) continue;
+                    const missing = requiredFields
+                        .filter((field) => !attempt.text.includes(field.value))
+                        .map((field) => field.label);
+                    if (missing.length === 0) {
+                        return {
+                            ok: true,
+                            mode: attempt.mode,
+                            missing: [],
+                            isHtml: looksLikeHtml(attempt.text)
+                        };
+                    }
+                }
+
+                const bestText = attempts.find((attempt) => attempt.text && looksLikeHtml(attempt.text)) || attempts[0];
+                return {
+                    ok: false,
+                    mode: bestText.mode,
+                    missing: requiredFields
+                        .filter((field) => !bestText.text.includes(field.value))
+                        .map((field) => field.label),
+                    isHtml: looksLikeHtml(bestText.text)
+                };
+            }
+
+            function showUnlocked(sourceName, result) {
                 localStorage.setItem(flagKey, "unlocked");
                 localStorage.setItem("nh_badge_drop_source", sourceName || "unknown");
+                localStorage.setItem("nh_badge_drop_mode", result && result.mode ? result.mode : "unknown");
                 dropZone.classList.add("is-unlocked");
                 reveal.classList.add("is-visible");
                 log([
                     "<span class=\"ok\">[通过] 工牌文件已识别。</span>",
                     `[文件] ${sourceName || "未命名文件"}`,
+                    `[模式] ${result && result.mode ? result.mode : "未知"}`,
+                    `[HTML] ${result && result.isHtml ? "是" : "未确认"}`,
                     "<span class=\"ok\">[写入] nh_badge_drop_easter_egg = unlocked</span>",
-                    "[回收记录] GL-0606 / 顾□□□ / 南洄科技有限公司",
+                    "[回收记录] ID=GL-0606 / 姓名=顾□□□ / 公司=南洄科技有限公司",
                     "",
                     "隐藏记录已展开。"
                 ]);
             }
 
-            function showRejected(fileName, missing) {
+            function showRejected(fileName, result) {
                 dropZone.classList.remove("is-unlocked");
                 reveal.classList.remove("is-visible");
                 log([
                     "<span class=\"bad\">[拒绝] 文件无法匹配工牌标记。</span>",
                     `[文件] ${fileName || "未命名文件"}`,
-                    `<span class=\"warn\">[缺失] ${missing.join(", ")}</span>`,
+                    `[模式] ${result && result.mode ? result.mode : "未知"}`,
+                    `[HTML] ${result && result.isHtml ? "是" : "未确认"}`,
+                    `<span class=\"warn\">[缺失字段] ${(result && result.missing.length ? result.missing.join(", ") : "未知")}</span>`,
                     "",
-                    "只接收顾路工牌导出的 HTML 文件。"
+                    "只接收顾路工牌 HTML，或同内容的 UTF-8 Base64 文本。"
                 ]);
             }
 
@@ -372,12 +447,12 @@
 
                 try {
                     const text = await file.text();
-                    const missing = requiredMarkers.filter((marker) => !text.includes(marker));
+                    const result = parseCredential(text);
                     window.setTimeout(() => {
-                        if (missing.length === 0) {
-                            showUnlocked(file.name);
+                        if (result.ok) {
+                            showUnlocked(file.name, result);
                         } else {
-                            showRejected(file.name, missing);
+                            showRejected(file.name, result);
                         }
                     }, 520);
                 } catch (error) {
@@ -412,20 +487,60 @@
                 fileInput.value = "";
             });
 
+            downloadEncoded.addEventListener("click", async () => {
+                try {
+                    const response = await fetch("badge-template.html", { cache: "no-store" });
+                    const html = await response.text();
+                    const bytes = new TextEncoder().encode(html);
+                    let binary = "";
+                    bytes.forEach((byte) => {
+                        binary += String.fromCharCode(byte);
+                    });
+                    const encoded = btoa(binary);
+                    const blob = new Blob([encoded], { type: "text/plain;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "01_顾路工牌.base64.txt";
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    URL.revokeObjectURL(url);
+                    log([
+                        "<span class=\"ok\">[导出] Base64 加密样本已生成。</span>",
+                        "[流程] UTF-8 编码 -> Base64",
+                        "可将下载的 txt 文件拖回投递窗口测试。"
+                    ]);
+                } catch (error) {
+                    log([
+                        "<span class=\"bad\">[错误] 加密样本生成失败。</span>",
+                        String(error && error.message ? error.message : error)
+                    ]);
+                }
+            });
+
             resetFlag.addEventListener("click", () => {
                 localStorage.removeItem(flagKey);
                 localStorage.removeItem("nh_badge_drop_source");
+                localStorage.removeItem("nh_badge_drop_mode");
                 dropZone.classList.remove("is-unlocked");
                 reveal.classList.remove("is-visible");
                 log([
                     "[待机] 等待工牌文件...",
                     "[规则] 仅在浏览器本地读取文件，不上传。",
-                    "[校验] 文件内需要出现 GL-0606、顾□□□、Recovered Staff Credential。"
+                    "[解密] 支持 Python b64encode(html.encode(\"utf-8\")) 输出。",
+                    "[校验] 解密后需要匹配 ID、姓名、公司和工牌类型。"
                 ]);
             });
 
             if (localStorage.getItem(flagKey) === "unlocked") {
-                showUnlocked(localStorage.getItem("nh_badge_drop_source") || "历史记录");
+                showUnlocked(
+                    localStorage.getItem("nh_badge_drop_source") || "历史记录",
+                    {
+                        mode: localStorage.getItem("nh_badge_drop_mode") || "历史记录",
+                        isHtml: true
+                    }
+                );
             }
         })();
     </script>
