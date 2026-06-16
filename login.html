@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>钉钉 - 登录</title>
+    <title>南洄 - 登录</title>
     <style>
         * {
             margin: 0;
@@ -11,87 +11,357 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --blue: #18b8ff;
+            --blue-deep: #2449e8;
+            --violet: #7c3aed;
+            --violet-hot: #c048ff;
+            --ink: #111827;
+            --muted: #7b8194;
+            --line: #e7e9f2;
+        }
+
+        html {
+            min-height: 100%;
+            background: #151b5f;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
+            overflow-x: hidden;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background:
+                radial-gradient(circle at 80% 18%, rgba(212, 72, 255, 0.34), transparent 28%),
+                radial-gradient(circle at 16% 26%, rgba(24, 184, 255, 0.38), transparent 30%),
+                linear-gradient(135deg, #1e5bf2 0%, #253bd3 42%, #6f2bd8 100%);
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            opacity: 0.22;
+            background:
+                linear-gradient(rgba(255,255,255,0.11) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+            background-size: 54px 54px;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.12));
+        }
+
+        body::after {
+            background: linear-gradient(115deg, transparent 0 58%, rgba(255,255,255,0.14) 59%, transparent 68%);
+            filter: blur(22px);
+            opacity: 0.65;
+        }
+
+        .page {
+            position: relative;
+            min-height: 100vh;
+            width: min(1180px, calc(100% - 40px));
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1.04fr) minmax(360px, 0.82fr);
+            gap: 44px;
             align-items: center;
+            padding: 54px 0 44px;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 2;
+            min-height: 640px;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
         }
 
-        .login-container {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 400px;
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
+        .ghost-word {
+            position: absolute;
+            top: 58px;
+            left: 16px;
+            color: rgba(255,255,255,0.08);
+            font-size: clamp(42px, 8vw, 92px);
+            font-style: italic;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
         }
 
-        .login-container::before {
-            content: "";
+        .brand h1 {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            font-size: clamp(56px, 8vw, 104px);
+            line-height: 1.06;
+            letter-spacing: 0;
+            font-weight: 900;
+            text-shadow: 0 8px 24px rgba(25, 28, 84, 0.38);
+        }
+
+        .tagline {
+            margin-top: 36px;
+            color: #ffd7ff;
+            font-size: clamp(24px, 3vw, 38px);
+            font-weight: 800;
+            letter-spacing: 0.12em;
+        }
+
+        .subline {
+            margin-top: 16px;
+            color: rgba(255,255,255,0.84);
+            font-size: 22px;
+            letter-spacing: 0.12em;
+        }
+
+        .features {
+            display: flex;
+            gap: 28px;
+            margin-top: 54px;
+        }
+
+        .feature {
+            min-width: 112px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 12px;
+            display: grid;
+            place-items: center;
+            border: 2px solid rgba(255,255,255,0.34);
+            border-radius: 50%;
+            background: rgba(126, 58, 237, 0.38);
+            box-shadow: 0 10px 32px rgba(28, 30, 95, 0.28), inset 0 0 18px rgba(255,255,255,0.12);
+            font-size: 30px;
+        }
+
+        .feature span {
+            display: block;
+            color: rgba(255,255,255,0.92);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .scene {
             position: absolute;
-            top: 0;
+            left: 0;
+            bottom: 40px;
+            width: 440px;
+            height: 180px;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .desk {
+            position: absolute;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #0089ff, #00c6ff);
+            bottom: 0;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(8, 18, 92, 0.34);
+            filter: blur(18px);
+        }
+
+        .plant-pot {
+            position: absolute;
+            left: 235px;
+            bottom: 18px;
+            width: 86px;
+            height: 72px;
+            border-radius: 12px 12px 24px 24px;
+            background: linear-gradient(135deg, #ececff, #8178ff);
+            box-shadow: 0 16px 36px rgba(12, 18, 78, 0.35);
+        }
+
+        .leaf {
+            position: absolute;
+            left: 262px;
+            bottom: 82px;
+            width: 32px;
+            height: 92px;
+            border-radius: 100% 0 100% 0;
+            background: linear-gradient(160deg, #6ce0c0, #216d8c);
+            transform-origin: bottom center;
+        }
+
+        .leaf.l1 { transform: rotate(-36deg); }
+        .leaf.l2 { transform: rotate(-8deg); height: 112px; }
+        .leaf.l3 { transform: rotate(28deg); }
+
+        .cup {
+            position: absolute;
+            left: 8px;
+            bottom: 24px;
+            width: 86px;
+            height: 72px;
+            border-radius: 10px 10px 28px 28px;
+            background: linear-gradient(135deg, #2265d9, #15359d);
+            box-shadow: inset 10px 0 18px rgba(255,255,255,0.08), 0 16px 36px rgba(12, 18, 78, 0.34);
+        }
+
+        .cup::after {
+            content: "";
+            position: absolute;
+            right: -22px;
+            top: 18px;
+            width: 28px;
+            height: 30px;
+            border: 8px solid #1d52c4;
+            border-left: 0;
+            border-radius: 0 18px 18px 0;
+        }
+
+        .float {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            border: 2px solid rgba(255,255,255,0.22);
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255,112,245,0.52), rgba(105,58,237,0.62));
+            box-shadow: 0 0 26px rgba(255,112,245,0.28);
+            color: white;
+            font-weight: 900;
+            transform: rotate(var(--r));
+        }
+
+        .float.f1 {
+            right: 430px;
+            top: 130px;
+            width: 76px;
+            height: 76px;
+            --r: -13deg;
+            font-size: 36px;
+        }
+
+        .float.f2 {
+            right: 20px;
+            top: 190px;
+            width: 72px;
+            height: 72px;
+            --r: 12deg;
+            font-size: 38px;
+        }
+
+        .float.f3 {
+            right: 0;
+            bottom: 130px;
+            width: 72px;
+            height: 72px;
+            --r: 10deg;
+            font-size: 38px;
+        }
+
+        .code-mark {
+            position: absolute;
+            color: rgba(255, 202, 255, 0.38);
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: -0.1em;
+        }
+
+        .code-mark.c1 {
+            right: 392px;
+            top: 282px;
+        }
+
+        .code-mark.c2 {
+            left: 372px;
+            bottom: 270px;
+            font-size: 58px;
+        }
+
+        .login-panel {
+            position: relative;
+            z-index: 3;
+            width: min(100%, 440px);
+            margin-left: auto;
+            padding: 40px 42px 34px;
+            border-radius: 28px;
+            background: rgba(255,255,255,0.96);
+            color: var(--ink);
+            box-shadow: 0 36px 90px rgba(12, 18, 82, 0.42), 0 0 0 1px rgba(255,255,255,0.36);
+            transform: rotate(-4deg);
+        }
+
+        .login-panel::after {
+            content: "";
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e14b6d;
+            box-shadow: inset 0 0 0 4px rgba(255,255,255,0.45);
+        }
+
+        .panel-inner {
+            transform: rotate(4deg);
         }
 
         .logo {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
 
         .logo-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #0089ff, #00c6ff);
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 12px;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
             color: white;
-            font-weight: bold;
-            margin-bottom: 16px;
-            box-shadow: 0 8px 24px rgba(0, 137, 255, 0.3);
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8b2cff, #5b21b6);
+            box-shadow: 0 14px 32px rgba(124, 58, 237, 0.36);
         }
 
         .logo h1 {
-            font-size: 24px;
-            color: #1a1a1a;
-            font-weight: 600;
+            font-size: 26px;
+            color: #111827;
+            font-weight: 800;
         }
 
         .logo p {
-            font-size: 14px;
-            color: #999;
             margin-top: 4px;
+            color: #8b8fa3;
+            font-size: 13px;
+            letter-spacing: 0.08em;
         }
 
         .login-tabs {
             display: flex;
-            border-bottom: 1px solid #e8e8e8;
+            gap: 16px;
+            border-bottom: 1px solid var(--line);
             margin-bottom: 24px;
         }
 
         .login-tab {
             flex: 1;
-            padding: 12px;
+            padding: 12px 0;
             text-align: center;
             cursor: pointer;
-            color: #666;
+            color: #7a7f91;
             font-size: 14px;
             position: relative;
-            transition: all 0.3s;
+            transition: color 0.2s;
+            white-space: nowrap;
         }
 
         .login-tab.active {
-            color: #0089ff;
-            font-weight: 500;
+            color: #0ca6d8;
+            font-weight: 700;
         }
 
         .login-tab.active::after {
@@ -99,10 +369,26 @@
             position: absolute;
             bottom: -1px;
             left: 50%;
+            width: 38px;
+            height: 3px;
             transform: translateX(-50%);
-            width: 40px;
-            height: 2px;
-            background: #0089ff;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #18b8ff, #7c3aed);
+        }
+
+        .error-message {
+            display: none;
+            margin-bottom: 16px;
+            padding: 10px 14px;
+            border: 1px solid #ffc9d2;
+            border-radius: 8px;
+            background: #fff1f4;
+            color: #d22d4d;
+            font-size: 13px;
+        }
+
+        .error-message.show {
+            display: block;
         }
 
         .form-group {
@@ -111,29 +397,32 @@
 
         .form-label {
             display: block;
-            font-size: 14px;
-            color: #333;
             margin-bottom: 8px;
-            font-weight: 500;
+            color: #555c70;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .form-input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d9d9d9;
+            min-height: 50px;
+            padding: 0 16px;
+            border: 1px solid #dfe2ec;
             border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
+            color: #222839;
+            background: white;
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #0089ff;
-            box-shadow: 0 0 0 3px rgba(0, 137, 255, 0.1);
+            border-color: #18b8ff;
+            box-shadow: 0 0 0 4px rgba(24, 184, 255, 0.12);
         }
 
         .form-input::placeholder {
-            color: #bfbfbf;
+            color: #b7bdca;
         }
 
         .password-wrapper {
@@ -142,35 +431,33 @@
 
         .toggle-password {
             position: absolute;
-            right: 12px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
+            color: #8b8fa3;
+            font-size: 13px;
             cursor: pointer;
-            color: #999;
-            font-size: 12px;
         }
 
         .login-btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #0089ff, #00c6ff);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
+            min-height: 54px;
             margin-top: 8px;
+            border: 0;
+            border-radius: 10px;
+            color: white;
+            background: linear-gradient(135deg, #17b9ff, #10aee8);
+            box-shadow: 0 16px 34px rgba(16, 174, 232, 0.32);
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 137, 255, 0.4);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
+            box-shadow: 0 20px 38px rgba(16, 174, 232, 0.42);
         }
 
         .login-options {
@@ -184,32 +471,35 @@
         .remember-me {
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: #666;
+            gap: 7px;
+            color: #777d90;
             cursor: pointer;
         }
 
         .remember-me input {
             width: 16px;
             height: 16px;
-            accent-color: #0089ff;
+            accent-color: #18b8ff;
         }
 
-        .forgot-password {
-            color: #0089ff;
+        .forgot-password,
+        .qr-hint a {
+            color: #0ca6d8;
             text-decoration: none;
             cursor: pointer;
         }
 
-        .forgot-password:hover {
+        .forgot-password:hover,
+        .qr-hint a:hover {
             text-decoration: underline;
         }
 
         .divider {
             display: flex;
             align-items: center;
-            margin: 24px 0;
-            color: #999;
+            gap: 14px;
+            margin: 26px 0 16px;
+            color: #9aa0ae;
             font-size: 13px;
         }
 
@@ -218,11 +508,14 @@
             content: "";
             flex: 1;
             height: 1px;
-            background: #e8e8e8;
+            background: var(--line);
         }
 
-        .divider span {
-            padding: 0 16px;
+        .third-party {
+            text-align: center;
+            color: #9aa0ae;
+            font-size: 13px;
+            letter-spacing: 0.12em;
         }
 
         .qr-login {
@@ -230,180 +523,266 @@
         }
 
         .qr-code {
-            width: 160px;
-            height: 160px;
-            background: #f5f5f5;
-            border-radius: 8px;
+            width: 156px;
+            height: 156px;
             margin: 0 auto 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 80px;
-            color: #999;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            color: #7c3aed;
+            background:
+                linear-gradient(90deg, #222 12%, transparent 12% 20%, #222 20% 28%, transparent 28% 36%, #222 36% 44%, transparent 44%),
+                linear-gradient(#222 12%, transparent 12% 20%, #222 20% 28%, transparent 28% 36%, #222 36% 44%, transparent 44%),
+                #f4f6fb;
+            background-size: 42px 42px;
+            font-size: 46px;
+            font-weight: 900;
         }
 
         .qr-hint {
+            color: #667085;
             font-size: 13px;
-            color: #666;
-        }
-
-        .qr-hint a {
-            color: #0089ff;
-            text-decoration: none;
+            line-height: 1.8;
         }
 
         .hidden-clue {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.3);
+            right: 22px;
+            bottom: 18px;
+            color: rgba(255,255,255,0.34);
             cursor: help;
-            transition: color 0.3s;
+            font-size: 12px;
+            z-index: 5;
         }
 
         .hidden-clue:hover {
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255,255,255,0.9);
         }
 
-        .error-message {
-            background: #fff2f0;
-            border: 1px solid #ffccc7;
-            color: #ff4d4f;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin-bottom: 16px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        /* 解谜提示 */
         .puzzle-hint {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 20px;
-            height: 20px;
-            background: #ff4d4f;
+            right: 18px;
+            top: 18px;
+            width: 18px;
+            height: 18px;
+            display: grid;
+            place-items: center;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: white;
-            font-size: 12px;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
+            background: #e14b6d;
+            font-size: 11px;
+            opacity: 0.85;
+            cursor: help;
+            z-index: 2;
         }
 
-        .login-container:hover .puzzle-hint {
-            opacity: 1;
+        .footer-mark {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.82);
+            font-size: 16px;
+            letter-spacing: 0.58em;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 920px) {
+            .page {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 34px 0 72px;
+            }
+
+            .brand {
+                min-height: auto;
+                text-align: center;
+            }
+
+            .brand h1 {
+                margin: 0 auto;
+                font-size: clamp(44px, 13vw, 76px);
+            }
+
+            .features {
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 34px;
+            }
+
+            .scene {
+                display: none;
+            }
+
+            .login-panel {
+                margin: 0 auto;
+                transform: none;
+            }
+
+            .panel-inner {
+                transform: none;
+            }
+
+            .float,
+            .code-mark {
+                display: none;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .page {
+                width: min(100% - 24px, 420px);
+            }
+
+            .login-panel {
+                padding: 30px 24px 28px;
+                border-radius: 22px;
+            }
+
+            .features {
+                gap: 14px;
+            }
+
+            .feature {
+                min-width: 92px;
+            }
+
+            .feature-icon {
+                width: 58px;
+                height: 58px;
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="puzzle-hint" title="检查页面源代码">?</div>
-        
-        <div class="logo">
-            <div class="logo-icon">钉</div>
-            <h1>钉钉</h1>
-            <p>数字化办公平台</p>
-        </div>
+    <div class="float f1">洄</div>
+    <div class="float f2">?</div>
+    <div class="float f3">?</div>
+    <div class="code-mark c1">&lt;/&gt;</div>
+    <div class="code-mark c2">&lt;/&gt;</div>
 
-        <div class="login-tabs">
-            <div class="login-tab active" data-tab="password">密码登录</div>
-            <div class="login-tab" data-tab="sms">短信登录</div>
-            <div class="login-tab" data-tab="qr">扫码登录</div>
-        </div>
+    <main class="page">
+        <section class="brand">
+            <div class="ghost-word">NAN HUI TECH</div>
+            <h1>南洄科技<br>有限公司</h1>
+            <div class="tagline">解锁谜题　探索真相</div>
+            <div class="subline">一场关于逻辑与智慧的挑战</div>
 
-        <div class="error-message" id="errorMsg">
-            账号或密码错误，请重试
-        </div>
-
-        <!-- 密码登录 -->
-        <div class="login-form" id="passwordForm">
-            <div class="form-group">
-                <label class="form-label">手机号/邮箱</label>
-                <input type="text" class="form-input" placeholder="请输入手机号或邮箱" id="username" value="138****8888">
-            </div>
-            <div class="form-group">
-                <label class="form-label">密码</label>
-                <div class="password-wrapper">
-                    <input type="password" class="form-input" placeholder="请输入密码" id="password" value="">
-                    <span class="toggle-password">显示</span>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">◌</div>
+                    <span>逻辑推理</span>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⌕</div>
+                    <span>线索搜集</span>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">▣</div>
+                    <span>谜题解锁</span>
                 </div>
             </div>
-            <button class="login-btn" id="loginBtn">登 录</button>
-            <div class="login-options">
-                <label class="remember-me">
-                    <input type="checkbox" checked>
-                    <span>记住密码</span>
-                </label>
-                <a class="forgot-password">忘记密码？</a>
-            </div>
-        </div>
 
-        <!-- 短信登录 -->
-        <div class="login-form hidden" id="smsForm" style="display: none;">
-            <div class="form-group">
-                <label class="form-label">手机号</label>
-                <input type="text" class="form-input" placeholder="请输入手机号">
+            <div class="scene" aria-hidden="true">
+                <div class="leaf l1"></div>
+                <div class="leaf l2"></div>
+                <div class="leaf l3"></div>
+                <div class="plant-pot"></div>
+                <div class="cup"></div>
+                <div class="desk"></div>
             </div>
-            <div class="form-group">
-                <label class="form-label">验证码</label>
-                <div style="display: flex; gap: 12px;">
-                    <input type="text" class="form-input" placeholder="请输入验证码" style="flex: 1;">
-                    <button style="padding: 12px 20px; background: #f5f5f5; border: 1px solid #d9d9d9; border-radius: 8px; cursor: pointer; white-space: nowrap;">获取验证码</button>
+        </section>
+
+        <section class="login-panel">
+            <div class="puzzle-hint" title="检查页面源代码">?</div>
+            <div class="panel-inner">
+                <div class="logo">
+                    <div class="logo-icon">洄</div>
+                    <h1>南洄</h1>
+                    <p>数字化办公平台</p>
                 </div>
+
+                <div class="login-tabs">
+                    <div class="login-tab active" data-tab="password">密码登录</div>
+                    <div class="login-tab" data-tab="sms">短信登录</div>
+                    <div class="login-tab" data-tab="qr">扫码登录</div>
+                </div>
+
+                <div class="error-message" id="errorMsg">账号或密码错误，请重试</div>
+
+                <div class="login-form" id="passwordForm">
+                    <div class="form-group">
+                        <label class="form-label">账号标识</label>
+                        <input type="text" class="form-input" placeholder="请输入账号" id="username" value="138****8899">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <div class="password-wrapper">
+                            <input type="password" class="form-input" placeholder="请输入密码" id="password" value="">
+                            <span class="toggle-password">显示</span>
+                        </div>
+                    </div>
+                    <button class="login-btn" id="loginBtn">登录</button>
+                    <div class="login-options">
+                        <label class="remember-me">
+                            <input type="checkbox" checked>
+                            <span>记住密码</span>
+                        </label>
+                        <a class="forgot-password">忘记密码？</a>
+                    </div>
+                </div>
+
+                <div class="login-form hidden" id="smsForm" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">手机号</label>
+                        <input type="text" class="form-input" placeholder="请输入手机号">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">验证码</label>
+                        <div style="display: flex; gap: 12px;">
+                            <input type="text" class="form-input" placeholder="请输入验证码" style="flex: 1;">
+                            <button style="padding: 0 16px; background: #f4f6fb; border: 1px solid #dfe2ec; border-radius: 8px; cursor: pointer; white-space: nowrap;">获取</button>
+                        </div>
+                    </div>
+                    <button class="login-btn">登录</button>
+                </div>
+
+                <div class="login-form hidden" id="qrForm" style="display: none;">
+                    <div class="qr-login">
+                        <div class="qr-code">洄</div>
+                        <p class="qr-hint">请使用南洄移动端扫一扫登录<br>或 <a href="#">下载南洄客户端</a></p>
+                    </div>
+                </div>
+
+                <div class="divider"><span>其他登录方式</span></div>
+                <div class="third-party">支付宝　淘宝　微博　微信</div>
             </div>
-            <button class="login-btn">登 录</button>
-        </div>
+        </section>
+    </main>
 
-        <!-- 扫码登录 -->
-        <div class="login-form hidden" id="qrForm" style="display: none;">
-            <div class="qr-login">
-                <div class="qr-code">▣</div>
-                <p class="qr-hint">请使用钉钉手机版扫一扫登录<br>或 <a href="#">下载钉钉客户端</a></p>
-            </div>
-        </div>
-
-        <div class="divider">
-            <span>其他登录方式</span>
-        </div>
-
-        <div style="text-align: center; color: #999; font-size: 13px;">
-            支付宝 · 淘宝 · 微博 · 微信
-        </div>
-    </div>
-
+    <div class="footer-mark">南 洄 科 技 有 限 公 司 出 品</div>
     <div class="hidden-clue" title="旧系统仍保留四位数字口令">?</div>
 
     <!-- 隐藏的解谜线索 -->
-    <!-- 
+    <!--
         线索1: 首页报道的家属口述提到生日数
         线索2: 旧系统口令仍为四位数字
         线索3: 登录后查看消息列表第一条
     -->
 
     <script>
-        // 标签切换
         document.querySelectorAll('.login-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
+
                 const tabName = tab.dataset.tab;
                 document.querySelectorAll('.login-form').forEach(form => form.style.display = 'none');
                 document.getElementById(tabName + 'Form').style.display = 'block';
             });
         });
 
-        // 显示/隐藏密码
         document.querySelector('.toggle-password').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
             if (passwordInput.type === 'password') {
@@ -415,18 +794,15 @@
             }
         });
 
-        // 登录验证
         document.getElementById('loginBtn').addEventListener('click', () => {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
 
-            // 解谜答案：顾某生日数字
             if (password === '0606') {
-                // 登录成功
                 localStorage.setItem('dingtalk_logged_in', 'true');
                 localStorage.setItem('dingtalk_user', username);
-                window.location.href = 'workbench.html';
+                window.open('workbench.html', '_blank', 'noopener,noreferrer');
             } else {
                 errorMsg.textContent = '认证失败：旧口令为四位数字';
                 errorMsg.classList.add('show');
@@ -434,15 +810,10 @@
             }
         });
 
-        // 忘记密码提示
         document.querySelector('.forgot-password').addEventListener('click', () => {
             alert('系统提示：旧口令只有四位，来源记录已归档');
         });
 
-        // 检查是否已登录
-        if (localStorage.getItem('dingtalk_logged_in')) {
-            window.location.href = 'workbench.html';
-        }
     </script>
 </body>
 </html>
