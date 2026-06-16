@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南洄晚报 - 特别报道</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'SimSun', '宋体', serif;
+            background: linear-gradient(135deg, #0f0a1a 0%, #1a0f2e 50%, #0d0815 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 背景特效 */
+        .bg-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .scanlines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(139, 92, 246, 0.03) 2px,
+                rgba(139, 92, 246, 0.03) 4px
+            );
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: pulse 6s ease-in-out infinite;
+        }
+
+        .glow-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.6), transparent);
+            top: -100px;
+            right: -100px;
+        }
+
+        .glow-2 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.5), transparent);
+            bottom: 20%;
+            left: -100px;
+            animation-delay: 3s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.2); opacity: 0.6; }
+        }
+
+        /* 报纸容器 */
+        .newspaper {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #faf8f5 0%, #f5f0e8 100%);
+            box-shadow: 
+                0 0 60px rgba(139, 92, 246, 0.3),
+                0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* 报纸纹理 */
+        .newspaper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        /* 报头 */
+        .masthead {
+            background: linear-gradient(180deg, #1a0a2e 0%, #0f0518 100%);
+            color: #e9d5ff;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #7c3aed;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .masthead::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #a855f7, transparent);
+        }
+
+        .newspaper-title {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: 20px;
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.8);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .newspaper-subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 8px;
+            color: rgba(233, 213, 255, 0.7);
+            text-transform: uppercase;
+        }
+
+        .masthead-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(168, 85, 247, 0.3);
+            font-size: 0.8rem;
+            color: rgba(233, 213, 255, 0.6);
+        }
+
+        /* 头条新闻 */
+        .headline-section {
+            padding: 40px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .breaking-news {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            animation: blink 2s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .main-headline {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1.3;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .sub-headline {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .byline {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .byline span {
+            margin-right: 20px;
+        }
+
+        .byline .highlight {
+            color: #7c3aed;
+            font-weight: bold;
+        }
+
+        /* 新闻内容布局 */
+        .article-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        .main-content {
+            font-size: 1.1rem;
+            line-height: 2;
+            color: #333;
+            text-align: justify;
+        }
+
+        .main-content p {
+            margin-bottom: 20px;
+            text-indent: 2em;
+        }
+
+        .main-content .lead {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            border-left: 4px solid #7c3aed;
+            padding-left: 20px;
+            text-indent: 0;
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), transparent);
+            padding: 15px 20px;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            border-left: 2px solid #ddd;
+            padding-left: 30px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            border-bottom: 2px solid #7c3aed;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .brief-news {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .brief-news:last-child {
+            border-bottom: none;
+        }
+
+        .brief-news .time {
+            color: #7c3aed;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* 警告框 */
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            padding: 20px;
+            margin: 30px 40px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .warning-box::before {
+            content: '⚠️';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            font-size: 1.5rem;
+            background: #fef3c7;
+            padding: 0 10px;
+        }
+
+        .warning-box p {
+            color: #92400e;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* 底部区域 */
+        .footer-section {
+            background: linear-gradient(180deg, #f0ebe3 0%, #e8e0d5 100%);
+            padding: 40px;
+            border-top: 3px solid #7c3aed;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-block {
+            text-align: center;
+        }
+
+        .footer-block h3 {
+            font-size: 1rem;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #7c3aed;
+            display: inline-block;
+        }
+
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d5 100%);
+            border: 2px dashed #7c3aed;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7c3aed;
+            font-size: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 10px,
+                rgba(139, 92, 246, 0.1) 10px,
+                rgba(139, 92, 246, 0.1) 20px
+            );
+        }
+
+        .qr-code-img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+        }
+
+        .enter-game {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 50px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+        }
+
+        .enter-game:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* 装饰元素 */
+        .corner-tech {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(139, 92, 246, 0.5);
+        }
+
+        .corner-tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .corner-br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .article-content {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                border-left: none;
+                border-top: 2px solid #ddd;
+                padding-left: 0;
+                padding-top: 30px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .newspaper-title {
+                font-size: 2.5rem;
+                letter-spacing: 10px;
+            }
+            .main-headline {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景特效 -->
+    <div class="bg-effects">
+        <div class="grid-overlay"></div>
+        <div class="scanlines"></div>
+        <div class="glow-orb glow-1"></div>
+        <div class="glow-orb glow-2"></div>
+    </div>
+
+    <!-- 报纸主体 -->
+    <div class="newspaper">
+        <!-- 角落装饰 -->
+        <div class="corner-tech corner-tl"></div>
+        <div class="corner-tech corner-tr"></div>
+        <div class="corner-tech corner-bl"></div>
+        <div class="corner-tech corner-br"></div>
+
+        <!-- 报头 -->
+        <header class="masthead">
+            <h1 class="newspaper-title">南洄晚报</h1>
+            <p class="newspaper-subtitle">NANHUI EVENING NEWS</p>
+            <div class="masthead-info">
+                <span>2026年6月6日 星期六</span>
+                <span>第20260606期</span>
+                <span>电子版</span>
+            </div>
+        </header>
+
+        <!-- 头条新闻 -->
+        <section class="headline-section">
+            <div class="breaking-news">突发新闻</div>
+            <h2 class="main-headline">一名24岁男子从南洄科技C座坠落<br>警方排除刑事案件</h2>
+            <p class="sub-headline">死者系南洄智云科技有限公司前员工，家属对离职交接存在异议</p>
+            <div class="byline">
+                <span>记者：<span class="highlight">韩沛</span></span>
+                <span>编辑：晚报值班台</span>
+                <span>来源：南洄市公安局海湾分局通报</span>
+            </div>
+
+            <div class="article-content">
+                <div class="main-content">
+                    <p class="lead">
+                        6月6日15时许，南洄科技园C座发生一起人员坠楼事件。坠楼男子姓顾，24岁，系南洄智云科技有限公司前员工。现场医护人员到场后确认其已无生命体征。
+                    </p>
+                    <p>
+                        园区物业人员称，顾某曾在该公司工作两年左右，于本周办理离职交接。事发前，他曾返回办公楼取个人物品，并在前台登记为"补交设备"。公司相关负责人表示，双方劳动关系已按流程解除，具体情况以警方调查为准。
+                    </p>
+                    <p>
+                        海湾分局通报称，警方已调取现场监控、门禁记录和公司交接材料，初步排除刑事案件。顾某家属对离职沟通、绩效申诉和工单交接仍有异议，相关部门已介入协调。
+                    </p>
+                    <p style="color: #666; font-style: italic; margin-top: 30px; text-indent: 0;">
+                        本页面为移动端缓存。评论区因家属申请暂时关闭，原始链接已从首页滚动栏目撤下。
+                    </p>
+                </div>
+
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">同日简讯</h3>
+                        <div class="brief-news">
+                            <span class="time">18:30</span>
+                            <p>南洄大学北桥片区夜间临时管制，校方称与雨水设施巡检有关。</p>
+                        </div>
+                        <div class="brief-news">
+                            <span class="time">16:45</span>
+                            <p>南洄科技园部分企业网络认证服务短时异常，园区信息办称已恢复。</p>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">案件时间线</h3>
+                        <div class="brief-news">
+                            <span class="time">15:00</span>
+                            <p>顾某进入C座大楼，前台登记"补交设备"</p>
+                        </div>
+                        <div class="brief-news">
+                            <span class="time">15:23</span>
+                            <p>物业人员发现异常并报警</p>
+                        </div>
+                        <div class="brief-news">
+                            <span class="time">15:35</span>
+                            <p>急救人员到场确认无生命体征</p>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- 警告框 -->
+        <div class="warning-box">
+            <p>
+                <strong>【内部调查启动】</strong><br>
+                作为南洄科技新任信息安全专员，你受命调查此事件。在整理顾某遗留的办公设备时，发现其电脑中存在大量加密文件和异常通讯记录。这些碎片化的信息似乎指向公司内部某个不可告人的秘密...
+            </p>
+        </div>
+
+        <!-- 底部区域 -->
+        <section class="footer-section">
+            <div class="footer-grid">
+                <div class="footer-block">
+                    <h3>关注微信公众号</h3>
+                    <div class="qr-placeholder">
+                        <img src="assets/qrcode-wechat.png" alt="微信公众号" class="qr-code-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#7c3aed;text-align:center;font-size:0.75rem;\'>请放置<br>微信二维码<br>图片于此</div>'">
+                    </div>
+                    <p style="font-size: 0.85rem; color: #666;">扫码关注获取最新调查进展</p>
+                </div>
+
+                <div class="footer-block">
+                    <h3>进入调查系统</h3>
+                    <p style="font-size: 0.9rem; color: #555; margin-bottom: 20px; line-height: 1.8;">
+                        你将以信息安全专员的身份<br>
+                        深入调查这起离奇死亡事件<br>
+                        真相，等待你去揭开
+                    </p>
+                    <a href="login.html" class="enter-game">开始调查</a>
+                </div>
+
+                <div class="footer-block">
+                    <h3>关注小红书</h3>
+                    <div class="qr-placeholder">
+                        <img src="assets/qrcode-xiaohongshu.png" alt="小红书" class="qr-code-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#7c3aed;text-align:center;font-size:0.75rem;\'>请放置<br>小红书二维码<br>图片于此</div>'">
+                    </div>
+                    <p style="font-size: 0.85rem; color: #666;">扫码关注获取更多线索</p>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                <p>南洄晚报电子版 · 仅供内部调查使用 · 南洄科技信息安全部 © 2026</p>
+                <p style="margin-top: 10px; color: #999;">本页面包含敏感信息，请勿外传</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 鼠标视差效果
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            
+            document.querySelectorAll('.glow-orb').forEach((orb, index) => {
+                const factor = index === 0 ? 1 : -1;
+                orb.style.transform = `translate(${x * factor}px, ${y * factor}px) scale(${1 + Math.sin(Date.now() / 1000) * 0.1})`;
+            });
+        });
+
+        // 报纸轻微浮动效果
+        const newspaper = document.querySelector('.newspaper');
+        let floatY = 0;
+        let floatDirection = 1;
+        
+        function animateFloat() {
+            floatY += 0.02 * floatDirection;
+            if (Math.abs(floatY) > 3) floatDirection *= -1;
+            newspaper.style.transform = `translateY(${floatY}px)`;
+            requestAnimationFrame(animateFloat);
+        }
+        animateFloat();
+    </script>
+</body>
+</html>
