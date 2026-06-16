@@ -35,7 +35,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
             background-size: 30px 30px;
@@ -89,7 +89,7 @@
             max-width: 1000px;
             margin: 0 auto;
             background: linear-gradient(180deg, #faf8f5 0%, #f5f0e8 100%);
-            box-shadow: 
+            box-shadow:
                 0 0 60px rgba(139, 92, 246, 0.3),
                 0 20px 60px rgba(0, 0, 0, 0.5);
             position: relative;
@@ -537,7 +537,7 @@
                 <div class="footer-block">
                     <h3>关注微信公众号</h3>
                     <div class="qr-placeholder">
-                        <img src="assets/qrcode-wechat.png" alt="微信公众号" class="qr-code-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#7c3aed;text-align:center;font-size:0.75rem;\'>请放置<br>微信二维码<br>图片于此</div>'">
+                        <img src="wechat-official.jpg" alt="微信公众号" class="qr-code-img">
                     </div>
                     <p style="font-size: 0.85rem; color: #666;">扫码关注获取最新调查进展</p>
                 </div>
@@ -555,7 +555,7 @@
                 <div class="footer-block">
                     <h3>关注小红书</h3>
                     <div class="qr-placeholder">
-                        <img src="assets/qrcode-xiaohongshu.png" alt="小红书" class="qr-code-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#7c3aed;text-align:center;font-size:0.75rem;\'>请放置<br>小红书二维码<br>图片于此</div>'">
+                        <img src="xiaohongshu.jpg" alt="小红书" class="qr-code-img">
                     </div>
                     <p style="font-size: 0.85rem; color: #666;">扫码关注获取更多线索</p>
                 </div>
@@ -573,7 +573,7 @@
         document.addEventListener('mousemove', (e) => {
             const x = (e.clientX / window.innerWidth - 0.5) * 20;
             const y = (e.clientY / window.innerHeight - 0.5) * 20;
-            
+
             document.querySelectorAll('.glow-orb').forEach((orb, index) => {
                 const factor = index === 0 ? 1 : -1;
                 orb.style.transform = `translate(${x * factor}px, ${y * factor}px) scale(${1 + Math.sin(Date.now() / 1000) * 0.1})`;
@@ -584,7 +584,7 @@
         const newspaper = document.querySelector('.newspaper');
         let floatY = 0;
         let floatDirection = 1;
-        
+
         function animateFloat() {
             floatY += 0.02 * floatDirection;
             if (Math.abs(floatY) > 3) floatDirection *= -1;

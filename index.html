@@ -3,956 +3,595 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>最后一次签到 | 南洄大学网页解密游戏</title>
-    <meta name="description" content="最后一次签到是一款微恐向网页解密游戏。进入南洄大学异常协作系统，追查一场夜行定向赛背后的失踪记录。">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2307090a'/%3E%3Cpath d='M14 14h36v36H14z' fill='none' stroke='%239fd8b7' stroke-width='3'/%3E%3Cpath d='M22 42V22l20 20V22' fill='none' stroke='%23c63136' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <title>南洄晚报 - 特别报道</title>
     <style>
-        :root {
-            --bg: #07090a;
-            --panel: rgba(15, 19, 20, 0.84);
-            --panel-strong: rgba(20, 26, 27, 0.94);
-            --line: rgba(181, 206, 196, 0.18);
-            --line-hot: rgba(198, 49, 54, 0.58);
-            --text: #e8eee9;
-            --muted: #99aaa2;
-            --weak: #66736e;
-            --green: #9fd8b7;
-            --red: #c63136;
-            --amber: #d7b46a;
-            --cyan: #75c8c1;
-            --shadow: 0 28px 90px rgba(0, 0, 0, 0.55);
-        }
-
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
-        html {
-            min-height: 100%;
-            background: var(--bg);
-        }
-
         body {
-            margin: 0;
+            font-family: 'Noto Serif SC', 'SimSun', '宋体', serif;
+            background: linear-gradient(135deg, #0f0a1a 0%, #1a0f2e 50%, #0d0815 100%);
             min-height: 100vh;
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            background:
-                radial-gradient(circle at 18% 16%, rgba(117, 200, 193, 0.12), transparent 30%),
-                radial-gradient(circle at 82% 72%, rgba(198, 49, 54, 0.16), transparent 32%),
-                linear-gradient(135deg, #080b0c 0%, #111514 47%, #07090a 100%);
+            padding: 20px;
+            position: relative;
             overflow-x: hidden;
         }
 
-        body::before,
-        body::after {
-            content: "";
+        /* 背景特效 */
+        .bg-effects {
             position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::before {
-            opacity: 0.36;
-            background:
-                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-            background-size: 44px 44px;
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.18));
-        }
-
-        body::after {
-            opacity: 0.14;
-            background: repeating-linear-gradient(
-                to bottom,
-                rgba(255,255,255,0.16) 0,
-                rgba(255,255,255,0.16) 1px,
-                transparent 1px,
-                transparent 5px
-            );
-            mix-blend-mode: screen;
-            animation: scan 8s linear infinite;
-        }
-
-        a {
-            color: inherit;
-        }
-
-        .page {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-        }
-
-        .topbar {
-            width: min(1180px, calc(100% - 32px));
-            height: 68px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 18px;
-            color: var(--muted);
-            font-size: 13px;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 0;
-        }
-
-        .brand-mark {
-            width: 30px;
-            height: 30px;
-            border: 1px solid rgba(159, 216, 183, 0.42);
-            display: grid;
-            place-items: center;
-            color: var(--green);
-            background: rgba(159, 216, 183, 0.08);
-            box-shadow: 0 0 24px rgba(159, 216, 183, 0.12);
-        }
-
-        .status-line {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            white-space: nowrap;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--red);
-            box-shadow: 0 0 18px rgba(198, 49, 54, 0.9);
-            animation: pulse 1.8s ease-in-out infinite;
-        }
-
-        .hero {
-            width: min(1180px, calc(100% - 32px));
-            min-height: calc(100vh - 68px);
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-            gap: 34px;
-            align-items: center;
-            padding: 28px 0 54px;
-        }
-
-        .hero-copy {
-            position: relative;
-            padding: 28px 0;
-        }
-
-        .case-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--amber);
-            font-size: 13px;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-
-        .case-label::before {
-            content: "";
-            width: 36px;
-            height: 1px;
-            background: var(--amber);
-        }
-
-        h1 {
-            margin: 0;
-            max-width: 760px;
-            font-size: clamp(46px, 7vw, 94px);
-            line-height: 0.98;
-            letter-spacing: 0;
-            font-weight: 800;
-        }
-
-        .title-glitch {
-            position: relative;
-            display: inline-block;
-            text-shadow: 2px 0 rgba(198, 49, 54, 0.45), -2px 0 rgba(117, 200, 193, 0.25);
-        }
-
-        .title-glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            left: 2px;
             top: 0;
-            color: rgba(198, 49, 54, 0.72);
-            clip-path: inset(64% 0 18% 0);
-            transform: translateX(-3px);
-            animation: glitch 4.8s steps(1) infinite;
-        }
-
-        .subtitle {
-            max-width: 630px;
-            margin: 24px 0 0;
-            color: var(--muted);
-            font-size: clamp(16px, 2vw, 19px);
-            line-height: 1.8;
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 34px;
-        }
-
-        .button {
-            min-height: 46px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 0 18px;
-            border: 1px solid rgba(159, 216, 183, 0.38);
-            background: rgba(159, 216, 183, 0.1);
-            color: var(--text);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 650;
-            transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-            border-color: rgba(159, 216, 183, 0.75);
-            background: rgba(159, 216, 183, 0.16);
-        }
-
-        .button.primary {
-            background: var(--red);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 14px 34px rgba(198, 49, 54, 0.26);
-        }
-
-        .button.primary:hover {
-            background: #d23a3f;
-        }
-
-        .button.is-busy {
-            pointer-events: none;
-            opacity: 0.72;
-        }
-
-        .meta-strip {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-            max-width: 720px;
-            margin-top: 36px;
-        }
-
-        .meta-item {
-            border: 1px solid var(--line);
-            background: rgba(9, 13, 14, 0.62);
-            padding: 14px;
-            min-height: 92px;
-        }
-
-        .meta-item strong {
-            display: block;
-            color: var(--green);
-            font-size: 20px;
-            margin-bottom: 6px;
-            font-family: Consolas, "SFMono-Regular", monospace;
-        }
-
-        .meta-item span {
-            color: var(--weak);
-            font-size: 13px;
-            line-height: 1.55;
-        }
-
-        .terminal {
-            position: relative;
-            border: 1px solid var(--line);
-            background: var(--panel);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(18px);
-            overflow: hidden;
-        }
-
-        .terminal::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-top: 2px solid rgba(198, 49, 54, 0.52);
-            pointer-events: none;
-        }
-
-        .terminal-header {
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 0 16px;
-            border-bottom: 1px solid var(--line);
-            background: rgba(255, 255, 255, 0.03);
-            color: var(--muted);
-            font-family: Consolas, "SFMono-Regular", monospace;
-            font-size: 12px;
-        }
-
-        .terminal-lights {
-            display: flex;
-            gap: 7px;
-        }
-
-        .terminal-lights i {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--weak);
-        }
-
-        .terminal-lights i:nth-child(1) { background: var(--red); }
-        .terminal-lights i:nth-child(2) { background: var(--amber); }
-        .terminal-lights i:nth-child(3) { background: var(--green); }
-
-        .terminal-body {
-            padding: 22px;
-        }
-
-        .phone-card {
-            border: 1px solid rgba(117, 200, 193, 0.2);
-            background:
-                linear-gradient(180deg, rgba(255,255,255,0.045), transparent),
-                rgba(3, 7, 8, 0.68);
-            padding: 18px;
-            min-height: 430px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .phone-card::after {
-            content: "21:38";
-            position: absolute;
-            right: 18px;
-            bottom: 10px;
-            color: rgba(198, 49, 54, 0.1);
-            font-size: 82px;
-            line-height: 1;
-            font-weight: 800;
-            font-family: Consolas, "SFMono-Regular", monospace;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: 0;
         }
 
-        .phone-card > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .log-lines {
-            display: grid;
-            gap: 11px;
-            margin-bottom: 20px;
-            font-family: Consolas, "SFMono-Regular", monospace;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .log-line {
-            color: var(--muted);
-            display: flex;
-            gap: 10px;
-        }
-
-        .log-line b {
-            color: var(--cyan);
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .log-line.warning b,
-        .log-line.warning {
-            color: #d98989;
-        }
-
-        .signal {
-            border: 1px solid var(--line-hot);
-            background: rgba(198, 49, 54, 0.08);
-            padding: 15px;
-            margin: 18px 0;
-        }
-
-        .signal-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            color: var(--red);
-            font-size: 13px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .signal p {
-            margin: 0;
-            color: var(--text);
-            line-height: 1.75;
-            font-size: 16px;
-        }
-
-        .evidence-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 18px;
-        }
-
-        .evidence {
-            min-height: 74px;
-            border: 1px solid var(--line);
-            background: rgba(255, 255, 255, 0.035);
-            padding: 12px;
-        }
-
-        .evidence span {
-            display: block;
-            color: var(--weak);
-            font-size: 12px;
-            margin-bottom: 8px;
-            font-family: Consolas, "SFMono-Regular", monospace;
-        }
-
-        .evidence strong {
-            display: block;
-            color: var(--text);
-            font-size: 14px;
-            line-height: 1.45;
-        }
-
-        .below {
-            width: min(1180px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 0 0 64px;
-        }
-
-        .section-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .section-panel {
-            border: 1px solid var(--line);
-            background: var(--panel-strong);
-            padding: 24px;
-        }
-
-        .section-panel h2 {
-            margin: 0 0 14px;
-            font-size: 22px;
-            letter-spacing: 0;
-        }
-
-        .section-panel p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.8;
-        }
-
-        .feature-list {
-            display: grid;
-            gap: 12px;
-            margin-top: 18px;
-        }
-
-        .feature {
-            display: grid;
-            grid-template-columns: 34px 1fr;
-            gap: 12px;
-            align-items: start;
-        }
-
-        .feature i {
-            width: 34px;
-            height: 34px;
-            display: grid;
-            place-items: center;
-            border: 1px solid rgba(159, 216, 183, 0.32);
-            color: var(--green);
-            font-style: normal;
-            background: rgba(159, 216, 183, 0.07);
-        }
-
-        .feature strong {
-            display: block;
-            font-size: 15px;
-            margin-bottom: 3px;
-        }
-
-        .feature span {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .qr-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
-            margin-top: 20px;
-        }
-
-        .qr-card {
-            border: 1px solid var(--line);
-            background: rgba(255, 255, 255, 0.035);
-            padding: 14px;
-        }
-
-        .qr-card img {
-            display: block;
+        .grid-overlay {
+            position: absolute;
             width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: contain;
-            padding: 8px;
-            background: #fff;
-            filter: saturate(0.88) contrast(1.05);
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
-        .qr-card strong {
-            display: block;
-            margin-top: 12px;
-            font-size: 15px;
+        .scanlines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(139, 92, 246, 0.03) 2px,
+                rgba(139, 92, 246, 0.03) 4px
+            );
         }
 
-        .qr-card span {
-            display: block;
-            margin-top: 4px;
-            color: var(--weak);
-            font-size: 12px;
-            line-height: 1.5;
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: pulse 6s ease-in-out infinite;
         }
 
-        .footer-note {
-            width: min(1180px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 20px 0 32px;
-            color: var(--weak);
-            font-size: 12px;
-            line-height: 1.7;
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            border-top: 1px solid var(--line);
+        .glow-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.6), transparent);
+            top: -100px;
+            right: -100px;
         }
 
-        @keyframes scan {
-            from { transform: translateY(-12px); }
-            to { transform: translateY(12px); }
+        .glow-2 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.5), transparent);
+            bottom: 20%;
+            left: -100px;
+            animation-delay: 3s;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.42; transform: scale(0.92); }
-            50% { opacity: 1; transform: scale(1.12); }
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.2); opacity: 0.6; }
         }
 
-        @keyframes glitch {
-            0%, 8%, 100% { transform: translateX(-3px); opacity: 0; }
-            9% { transform: translateX(4px); opacity: 0.72; }
-            10% { transform: translateX(-6px); opacity: 0.4; }
-            11% { transform: translateX(0); opacity: 0; }
-            56% { transform: translateX(3px); opacity: 0.55; }
-            57% { transform: translateX(-2px); opacity: 0; }
+        /* 报纸容器 */
+        .newspaper {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #faf8f5 0%, #f5f0e8 100%);
+            box-shadow:
+                0 0 60px rgba(139, 92, 246, 0.3),
+                0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
         }
 
-        @media (max-width: 900px) {
-            .topbar {
-                height: auto;
-                padding: 18px 0 4px;
-                align-items: flex-start;
-            }
+        /* 报纸纹理 */
+        .newspaper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
 
-            .status-line {
-                white-space: normal;
-                justify-content: flex-end;
-                text-align: right;
-            }
+        /* 报头 */
+        .masthead {
+            background: linear-gradient(180deg, #1a0a2e 0%, #0f0518 100%);
+            color: #e9d5ff;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #7c3aed;
+            position: relative;
+            overflow: hidden;
+        }
 
-            .hero,
-            .section-grid {
+        .masthead::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #a855f7, transparent);
+        }
+
+        .newspaper-title {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: 20px;
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.8);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .newspaper-subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 8px;
+            color: rgba(233, 213, 255, 0.7);
+            text-transform: uppercase;
+        }
+
+        .masthead-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(168, 85, 247, 0.3);
+            font-size: 0.8rem;
+            color: rgba(233, 213, 255, 0.6);
+        }
+
+        /* 头条新闻 */
+        .headline-section {
+            padding: 40px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .breaking-news {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            animation: blink 2s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .main-headline {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1.3;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .sub-headline {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .byline {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .byline span {
+            margin-right: 20px;
+        }
+
+        .byline .highlight {
+            color: #7c3aed;
+            font-weight: bold;
+        }
+
+        /* 新闻内容布局 */
+        .article-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        .main-content {
+            font-size: 1.1rem;
+            line-height: 2;
+            color: #333;
+            text-align: justify;
+        }
+
+        .main-content p {
+            margin-bottom: 20px;
+            text-indent: 2em;
+        }
+
+        .main-content .lead {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            border-left: 4px solid #7c3aed;
+            padding-left: 20px;
+            text-indent: 0;
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), transparent);
+            padding: 15px 20px;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            border-left: 2px solid #ddd;
+            padding-left: 30px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            border-bottom: 2px solid #7c3aed;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .brief-news {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .brief-news:last-child {
+            border-bottom: none;
+        }
+
+        .brief-news .time {
+            color: #7c3aed;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* 警告框 */
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            padding: 20px;
+            margin: 30px 40px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .warning-box::before {
+            content: '⚠️';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            font-size: 1.5rem;
+            background: #fef3c7;
+            padding: 0 10px;
+        }
+
+        .warning-box p {
+            color: #92400e;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* 底部区域 */
+        .footer-section {
+            background: linear-gradient(180deg, #f0ebe3 0%, #e8e0d5 100%);
+            padding: 40px;
+            border-top: 3px solid #7c3aed;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-block {
+            text-align: center;
+        }
+
+        .footer-block h3 {
+            font-size: 1rem;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #7c3aed;
+            display: inline-block;
+        }
+
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d5 100%);
+            border: 2px dashed #7c3aed;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7c3aed;
+            font-size: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 10px,
+                rgba(139, 92, 246, 0.1) 10px,
+                rgba(139, 92, 246, 0.1) 20px
+            );
+        }
+
+        .qr-code-img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+        }
+
+        .enter-game {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 50px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+        }
+
+        .enter-game:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* 装饰元素 */
+        .corner-tech {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(139, 92, 246, 0.5);
+        }
+
+        .corner-tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .corner-br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .article-content {
                 grid-template-columns: 1fr;
             }
-
-            .hero {
-                min-height: auto;
-                padding-top: 18px;
+            .sidebar {
+                border-left: none;
+                border-top: 2px solid #ddd;
+                padding-left: 0;
+                padding-top: 30px;
             }
-
-            .terminal {
-                order: -1;
-            }
-        }
-
-        @media (max-width: 620px) {
-            .topbar,
-            .hero,
-            .below,
-            .footer-note {
-                width: min(100% - 24px, 1180px);
-            }
-
-            .topbar {
-                display: grid;
-                gap: 10px;
-            }
-
-            .status-line {
-                justify-content: flex-start;
-                text-align: left;
-            }
-
-            h1 {
-                font-size: clamp(40px, 14vw, 60px);
-            }
-
-            .meta-strip,
-            .qr-grid,
-            .evidence-grid {
+            .footer-grid {
                 grid-template-columns: 1fr;
             }
-
-            .terminal-body,
-            .section-panel {
-                padding: 16px;
+            .newspaper-title {
+                font-size: 2.5rem;
+                letter-spacing: 10px;
             }
-
-            .phone-card {
-                min-height: 0;
-            }
-
-            .phone-card::after {
-                font-size: 54px;
-            }
-
-            .footer-note {
-                display: block;
-            }
-
-            .footer-note span {
-                display: block;
-                margin-top: 8px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                scroll-behavior: auto !important;
+            .main-headline {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="page">
-        <header class="topbar" aria-label="站点状态">
-            <div class="brand">
-                <div class="brand-mark" aria-hidden="true">南</div>
-                <div>NHU / 异常协作系统镜像</div>
-            </div>
-            <div class="status-line">
-                <span class="status-dot" aria-hidden="true"></span>
-                <span>北桥节点未响应 / 最近签到 21:38</span>
+    <!-- 背景特效 -->
+    <div class="bg-effects">
+        <div class="grid-overlay"></div>
+        <div class="scanlines"></div>
+        <div class="glow-orb glow-1"></div>
+        <div class="glow-orb glow-2"></div>
+    </div>
+
+    <!-- 报纸主体 -->
+    <div class="newspaper">
+        <!-- 角落装饰 -->
+        <div class="corner-tech corner-tl"></div>
+        <div class="corner-tech corner-tr"></div>
+        <div class="corner-tech corner-bl"></div>
+        <div class="corner-tech corner-br"></div>
+
+        <!-- 报头 -->
+        <header class="masthead">
+            <h1 class="newspaper-title">南洄晚报</h1>
+            <p class="newspaper-subtitle">NANHUI EVENING NEWS</p>
+            <div class="masthead-info">
+                <span>2026年6月6日 星期六</span>
+                <span>第20260606期</span>
+                <span>电子版</span>
             </div>
         </header>
 
-        <main class="hero">
-            <section class="hero-copy" aria-labelledby="page-title">
-                <div class="case-label">CASE FILE: ORIENTEERING-0606</div>
-                <h1 id="page-title" aria-label="最后一次签到"><span class="title-glitch" data-text="最后一次签到" aria-hidden="true">最后一次签到</span></h1>
-                <p class="subtitle">
-                    微恐向网页解密游戏。你接入一份被封存的南洄大学协作系统镜像，沿着聊天、审批、日程、通讯录和异常文档，复原一场夜行定向赛失踪事件。
-                </p>
+        <!-- 头条新闻 -->
+        <section class="headline-section">
+            <div class="breaking-news">突发新闻</div>
+            <h2 class="main-headline">一名24岁男子从南洄科技C座坠落<br>警方排除刑事案件</h2>
+            <p class="sub-headline">死者系南洄智云科技有限公司前员工，家属对离职交接存在异议</p>
+            <div class="byline">
+                <span>记者：<span class="highlight">韩沛</span></span>
+                <span>编辑：晚报值班台</span>
+                <span>来源：南洄市公安局海湾分局通报</span>
+            </div>
 
-                <div class="actions" aria-label="主要操作">
-                    <a class="button primary" href="badge-template.html" id="startGame">开始游戏</a>
-                    <a class="button" href="login.html">直接进入异常登录</a>
-                    <a class="button" href="#follow">查看线索同步</a>
-                </div>
-
-                <div class="meta-strip" aria-label="游戏属性">
-                    <div class="meta-item">
-                        <strong>Web ARG</strong>
-                        <span>站内页面、账号痕迹、时间戳与编号共同构成线索链。</span>
-                    </div>
-                    <div class="meta-item">
-                        <strong>微恐</strong>
-                        <span>不依赖跳脸，用系统异常、缺失记录和重复通知制造压迫感。</span>
-                    </div>
-                    <div class="meta-item">
-                        <strong>调查</strong>
-                        <span>观察页面细节，拼合看似普通的校园办公信息。</span>
-                    </div>
-                </div>
-            </section>
-
-            <aside class="terminal" aria-label="异常记录预览">
-                <div class="terminal-header">
-                    <div class="terminal-lights" aria-hidden="true"><i></i><i></i><i></i></div>
-                    <span>archive://nhu/signin/recovered</span>
-                </div>
-                <div class="terminal-body">
-                    <div class="phone-card">
-                        <div class="log-lines">
-                            <div class="log-line"><b>06/06 20:17</b><span>夜行定向赛签到表同步完成。</span></div>
-                            <div class="log-line"><b>06/06 21:06</b><span>审批流出现重复撤回记录。</span></div>
-                            <div class="log-line warning"><b>06/06 21:38</b><span>北桥监控片段缺失 42 秒。</span></div>
-                            <div class="log-line"><b>06/07 00:12</b><span>林舟账号从未知设备尝试登录。</span></div>
-                        </div>
-
-                        <div class="signal">
-                            <div class="signal-title">
-                                <span>Intercepted Message</span>
-                                <span>未读</span>
-                            </div>
-                            <p>“不要只看最后一次签到。有人把路线改成了旧版本。”</p>
-                        </div>
-
-                        <div class="evidence-grid">
-                            <div class="evidence">
-                                <span>APP_01</span>
-                                <strong>消息记录中有人反复提到“北桥不是终点”。</strong>
-                            </div>
-                            <div class="evidence">
-                                <span>APP_02</span>
-                                <strong>日程表里多出一段不存在的试跑时间。</strong>
-                            </div>
-                            <div class="evidence">
-                                <span>APP_03</span>
-                                <strong>文档审批的执行人和系统日志不一致。</strong>
-                            </div>
-                            <div class="evidence">
-                                <span>APP_04</span>
-                                <strong>通讯录里有一个没有头像的临时账号。</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </main>
-
-        <section class="below" id="follow">
-            <div class="section-grid">
-                <div class="section-panel">
-                    <h2>调查方式</h2>
-                    <p>
-                        游戏不会把答案直接写在说明里。你需要像翻查一台真实办公系统一样，阅读对话、比对日期、留意被撤回的内容和异常的系统提示。
+            <div class="article-content">
+                <div class="main-content">
+                    <p class="lead">
+                        6月6日15时许，南洄科技园C座发生一起人员坠楼事件。坠楼男子姓顾，24岁，系南洄智云科技有限公司前员工。现场医护人员到场后确认其已无生命体征。
                     </p>
-                    <div class="feature-list">
-                        <div class="feature">
-                            <i aria-hidden="true">01</i>
-                            <div>
-                                <strong>进入协作系统</strong>
-                                <span>从登录页开始，寻找能打开更多页面的账号线索。</span>
-                            </div>
-                        </div>
-                        <div class="feature">
-                            <i aria-hidden="true">02</i>
-                            <div>
-                                <strong>交叉验证记录</strong>
-                                <span>同一事件在消息、日程、审批与文档里的描述并不完全一致。</span>
-                            </div>
-                        </div>
-                        <div class="feature">
-                            <i aria-hidden="true">03</i>
-                            <div>
-                                <strong>复原失踪路径</strong>
-                                <span>当路线、时间和执行人对上时，真正的签到点才会出现。</span>
-                            </div>
-                        </div>
-                    </div>
+                    <p>
+                        园区物业人员称，顾某曾在该公司工作两年左右，于本周办理离职交接。事发前，他曾返回办公楼取个人物品，并在前台登记为"补交设备"。公司相关负责人表示，双方劳动关系已按流程解除，具体情况以警方调查为准。
+                    </p>
+                    <p>
+                        海湾分局通报称，警方已调取现场监控、门禁记录和公司交接材料，初步排除刑事案件。顾某家属对离职沟通、绩效申诉和工单交接仍有异议，相关部门已介入协调。
+                    </p>
+                    <p style="color: #666; font-style: italic; margin-top: 30px; text-indent: 0;">
+                        本页面为移动端缓存。评论区因家属申请暂时关闭，原始链接已从首页滚动栏目撤下。
+                    </p>
                 </div>
 
-                <div class="section-panel">
-                    <h2>线索同步</h2>
-                    <p>
-                        扫码关注项目动态、更新提示与后续补充内容。二维码来自项目根目录，可随部署一起发布。
-                    </p>
-                    <div class="qr-grid">
-                        <div class="qr-card">
-                            <img src="wechat-official.jpg" alt="微信公众号二维码">
-                            <strong>微信公众号</strong>
-                            <span>公告、更新记录和补充说明。</span>
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">同日简讯</h3>
+                        <div class="brief-news">
+                            <span class="time">18:30</span>
+                            <p>南洄大学北桥片区夜间临时管制，校方称与雨水设施巡检有关。</p>
                         </div>
-                        <div class="qr-card">
-                            <img src="xiaohongshu.jpg" alt="小红书二维码">
-                            <strong>小红书</strong>
-                            <span>开发记录、提示碎片和玩家反馈。</span>
+                        <div class="brief-news">
+                            <span class="time">16:45</span>
+                            <p>南洄科技园部分企业网络认证服务短时异常，园区信息办称已恢复。</p>
                         </div>
                     </div>
-                </div>
+
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">案件时间线</h3>
+                        <div class="brief-news">
+                            <span class="time">15:00</span>
+                            <p>顾某进入C座大楼，前台登记"补交设备"</p>
+                        </div>
+                        <div class="brief-news">
+                            <span class="time">15:23</span>
+                            <p>物业人员发现异常并报警</p>
+                        </div>
+                        <div class="brief-news">
+                            <span class="time">15:35</span>
+                            <p>急救人员到场确认无生命体征</p>
+                        </div>
+                    </div>
+                </aside>
             </div>
         </section>
 
-        <footer class="footer-note">
-            <div>建议在安静环境中游玩。页面包含闪烁、异常日志和悬疑氛围元素。</div>
-            <span>NHU MIRROR BUILD / ACCESS IS BEING RECORDED</span>
-        </footer>
+        <!-- 警告框 -->
+        <div class="warning-box">
+            <p>
+                <strong>【内部调查启动】</strong><br>
+                作为南洄科技新任信息安全专员，你受命调查此事件。在整理顾某遗留的办公设备时，发现其电脑中存在大量加密文件和异常通讯记录。这些碎片化的信息似乎指向公司内部某个不可告人的秘密...
+            </p>
+        </div>
+
+        <!-- 底部区域 -->
+        <section class="footer-section">
+            <div class="footer-grid">
+                <div class="footer-block">
+                    <h3>关注微信公众号</h3>
+                    <div class="qr-placeholder">
+                        <img src="wechat-official.jpg" alt="微信公众号" class="qr-code-img">
+                    </div>
+                    <p style="font-size: 0.85rem; color: #666;">扫码关注获取最新调查进展</p>
+                </div>
+
+                <div class="footer-block">
+                    <h3>进入调查系统</h3>
+                    <p style="font-size: 0.9rem; color: #555; margin-bottom: 20px; line-height: 1.8;">
+                        你将以信息安全专员的身份<br>
+                        深入调查这起离奇死亡事件<br>
+                        真相，等待你去揭开
+                    </p>
+                    <a href="login.html" class="enter-game">开始调查</a>
+                </div>
+
+                <div class="footer-block">
+                    <h3>关注小红书</h3>
+                    <div class="qr-placeholder">
+                        <img src="xiaohongshu.jpg" alt="小红书" class="qr-code-img">
+                    </div>
+                    <p style="font-size: 0.85rem; color: #666;">扫码关注获取更多线索</p>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                <p>南洄晚报电子版 · 仅供内部调查使用 · 南洄科技信息安全部 © 2026</p>
+                <p style="margin-top: 10px; color: #999;">本页面包含敏感信息，请勿外传</p>
+            </div>
+        </section>
     </div>
 
     <script>
-        const title = document.querySelector(".title-glitch");
-        const lines = [
-            "最后一次签到",
-            "最后一次签_",
-            "最后一次签到",
-            "最后一次签?"
-        ];
+        // 鼠标视差效果
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
 
-        let index = 0;
-        window.setInterval(() => {
-            index = (index + 1) % lines.length;
-            title.dataset.text = lines[index];
-        }, 2600);
-
-        const startGame = document.getElementById("startGame");
-        const archiveFolderName = "南洄科技-顾路档案";
-
-        function xorEncode(text, key) {
-            const keyPoints = Array.from(key).map((char) => char.codePointAt(0));
-            return Array.from(text).map((char, index) => {
-                return char.codePointAt(0) ^ keyPoints[index % keyPoints.length];
+            document.querySelectorAll('.glow-orb').forEach((orb, index) => {
+                const factor = index === 0 ? 1 : -1;
+                orb.style.transform = `translate(${x * factor}px, ${y * factor}px) scale(${1 + Math.sin(Date.now() / 1000) * 0.1})`;
             });
-        }
-
-        function lockedLayerHtml(title, label, hint, key, payload) {
-            const encrypted = JSON.stringify(xorEncode(`NHK-LAYER-OK\n${payload}`, key));
-            return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${title}</title>
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 24% 18%,rgba(168,85,247,.24),transparent 34%),linear-gradient(135deg,#0a0612,#211038 58%,#06030c);color:#efe9ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;display:grid;place-items:center;padding:24px}.panel{width:min(720px,100%);border:1px solid rgba(192,132,252,.28);background:rgba(15,9,28,.86);box-shadow:0 28px 80px rgba(0,0,0,.45);padding:28px}.kicker{color:#c084fc;font:12px Consolas,monospace;letter-spacing:.14em;text-transform:uppercase}h1{margin:12px 0 10px;font-size:28px}p{color:#b7a9d6;line-height:1.8}.row{display:flex;gap:10px;margin-top:22px}input{flex:1;min-width:0;background:#090512;border:1px solid rgba(192,132,252,.35);color:#fff;padding:13px 14px;font-size:16px}button{border:0;background:#7c3aed;color:#fff;padding:0 18px;font-weight:700;cursor:pointer}.out{white-space:pre-wrap;margin-top:22px;padding:18px;border:1px solid rgba(192,132,252,.2);background:rgba(255,255,255,.04);line-height:1.8;color:#f7f0ff;display:none}.bad{color:#ff9aa8;margin-top:12px;display:none}@media(max-width:560px){.row{display:grid}button{min-height:44px}}
-</style>
-</head>
-<body>
-<main class="panel">
-<div class="kicker">${label}</div>
-<h1>${title}</h1>
-<p>${hint}</p>
-<div class="row">
-<input id="key" autocomplete="off" spellcheck="false" placeholder="输入本层密钥">
-<button id="open">解密</button>
-</div>
-<div class="bad" id="bad">密钥不匹配。记录仍保持加密状态。</div>
-<div class="out" id="out"></div>
-</main>
-<script>
-const encrypted=${encrypted};
-function decode(key){const ks=Array.from(key).map(c=>c.codePointAt(0));if(!ks.length)return "";return String.fromCodePoint(...encrypted.map((n,i)=>n^ks[i%ks.length]));}
-function unlock(){const value=document.getElementById("key").value.trim();const text=decode(value);const out=document.getElementById("out");const bad=document.getElementById("bad");if(text.startsWith("NHK-LAYER-OK\\n")){bad.style.display="none";out.style.display="block";out.textContent=text.replace("NHK-LAYER-OK\\n","");}else{out.style.display="none";bad.style.display="block";}}
-document.getElementById("open").addEventListener("click",unlock);
-document.getElementById("key").addEventListener("keydown",(event)=>{if(event.key==="Enter")unlock();});
-<\/script>
-</body>
-</html>`;
-        }
-
-        async function writeTextFile(directoryHandle, name, content) {
-            const fileHandle = await directoryHandle.getFileHandle(name, { create: true });
-            const writable = await fileHandle.createWritable();
-            await writable.write(new Blob([content], { type: "text/html;charset=utf-8" }));
-            await writable.close();
-        }
-
-        async function createDesktopArchive() {
-            if (!("showDirectoryPicker" in window)) {
-                throw new Error("当前浏览器不支持选择桌面文件夹。请使用 Chrome 或 Edge。");
-            }
-
-            const rootHandle = await window.showDirectoryPicker({
-                mode: "readwrite",
-                startIn: "desktop"
-            });
-            const archiveHandle = await rootHandle.getDirectoryHandle(archiveFolderName, { create: true });
-            const badgeHtml = await fetch("badge-template.html").then((response) => response.text());
-
-            const readme = `南洄科技有限公司 / 顾路档案
-
-生成时间：本地浏览器写入
-档案说明：
-1. 先打开「01_顾路工牌.html」。
-2. 工牌上的入职日期可以打开第一层。
-3. 每一层文件都保存了加密内容，输入正确密钥才会显示下一步。
-
-提示：不要只看姓名。编号、日期和被遮住的职位都在说同一件事。
-`;
-
-            const layer1 = lockedLayerHtml(
-                "第一层：入职记录备份",
-                "NHK ARCHIVE / LAYER 01",
-                "本层密钥是顾路工牌上的入职日期，格式为四位数字。",
-                "0606",
-                "解密成功。\n\n员工编号：GL-0606\n下一层文件：03_员工编号校验.html\n下一层密钥：GL-0606\n\n备注：顾路不是正式员工，工牌记录来自临时外包批次。"
-            );
-
-            const layer2 = lockedLayerHtml(
-                "第二层：员工编号校验",
-                "NHK ARCHIVE / LAYER 02",
-                "本层密钥来自上一层给出的员工编号。",
-                "GL-0606",
-                "解密成功。\n\n异常字段：POSITION 被墨水覆盖。\n下一层文件：04_职位字段恢复.html\n下一层密钥：北桥不是终点\n\n备注：这句话在站点入口和消息截获记录里都出现过。"
-            );
-
-            const layer3 = lockedLayerHtml(
-                "第三层：职位字段恢复",
-                "NHK ARCHIVE / LAYER 03",
-                "本层密钥来自入口页截获消息。注意中文标点不用输入。",
-                "北桥不是终点",
-                "解密成功。\n\n被覆盖职位：路线校验员\n关联批次：2025-0606\n关联路线：旧版夜行定向赛\n\n最后记录：顾路负责确认被替换后的路线是否仍能通过系统审核。"
-            );
-
-            await writeTextFile(archiveHandle, "00_先读我.txt", readme);
-            await writeTextFile(archiveHandle, "01_顾路工牌.html", badgeHtml);
-            await writeTextFile(archiveHandle, "02_入职日期解密.html", layer1);
-            await writeTextFile(archiveHandle, "03_员工编号校验.html", layer2);
-            await writeTextFile(archiveHandle, "04_职位字段恢复.html", layer3);
-        }
-
-        startGame.addEventListener("click", async (event) => {
-            event.preventDefault();
-            startGame.classList.add("is-busy");
-            try {
-                await createDesktopArchive();
-            } catch (error) {
-                console.warn("createDesktopArchive failed", error);
-                alert(error.message || "档案文件夹生成失败。请确认浏览器允许选择文件夹。");
-                const fallback = document.createElement("a");
-                fallback.href = "badge-template.html";
-                fallback.download = "01_顾路工牌.html";
-                document.body.appendChild(fallback);
-                fallback.click();
-                fallback.remove();
-            } finally {
-                window.setTimeout(() => {
-                    window.location.href = "login.html";
-                }, 900);
-            }
         });
 
-        console.info("NHU archive mirror: recovered credential -> badge-template.html");
-        console.info("NHU archive mirror: recovered login node -> login.html");
-        console.info("Hint: ordinary office records can still leave abnormal shadows.");
+        // 报纸轻微浮动效果
+        const newspaper = document.querySelector('.newspaper');
+        let floatY = 0;
+        let floatDirection = 1;
+
+        function animateFloat() {
+            floatY += 0.02 * floatDirection;
+            if (Math.abs(floatY) > 3) floatDirection *= -1;
+            newspaper.style.transform = `translateY(${floatY}px)`;
+            requestAnimationFrame(animateFloat);
+        }
+        animateFloat();
     </script>
 </body>
 </html>
