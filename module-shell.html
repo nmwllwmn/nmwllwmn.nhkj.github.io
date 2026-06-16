@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南洄工作台模块</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: #f4f6fb;
+            color: #293241;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .shell {
+            width: min(760px, 100%);
+            border: 1px solid #dfe6f3;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 18px 46px rgba(30, 42, 70, 0.12);
+            overflow: hidden;
+        }
+
+        .top {
+            height: 56px;
+            padding: 0 18px;
+            border-bottom: 1px solid #e4e9f3;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #5b55cf, #8352d6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .top h1 {
+            font-size: 18px;
+            font-weight: 650;
+        }
+
+        .body {
+            padding: 34px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .module-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            background: #eef4ff;
+            color: #2f63cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .module-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        p {
+            color: #687386;
+            line-height: 1.75;
+            font-size: 14px;
+        }
+
+        .meta {
+            display: grid;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .row {
+            min-height: 46px;
+            padding: 11px 13px;
+            border: 1px solid #e3e8f4;
+            border-radius: 8px;
+            background: #fbfcff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            color: #5f6b7d;
+            font-size: 13px;
+        }
+
+        .row b {
+            color: #283241;
+            font-weight: 650;
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="shell">
+            <header class="top">
+                <div class="mark">洄</div>
+                <h1>南洄工作台</h1>
+            </header>
+            <div class="body">
+                <div class="module-icon"><i id="moduleIcon" data-lucide="folder-clock"></i></div>
+                <div>
+                    <h2 id="moduleTitle">模块待接入</h2>
+                    <p id="moduleDesc">该模块入口已建立，证据内容尚未写入。后续可在这里接入记录列表、旧版本、回执、权限状态和解锁后的异常视图。</p>
+                </div>
+                <div class="meta">
+                    <div class="row"><span>接入状态</span><b>入口已建立</b></div>
+                    <div class="row"><span>复核档案</span><b>GL-0606</b></div>
+                    <div class="row"><span>内容版本</span><b>待补充</b></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const modules = {
+            aiTable: ['AI 表格', 'table-properties', '预留路线复核表、门禁回执对照表、异常样本排除清单。'],
+            aiNote: ['AI 听记', 'mic-vocal', '预留会议摘要、逐字稿、缺失尾段和低置信度标记。'],
+            meeting: ['会议', 'video', '预留 0605 C座路径复核会、舆情响应短会和尾段恢复入口。'],
+            todo: ['待办', 'square-check-big', '预留补交设备、门禁联动回执和自动完成状态。'],
+            ding: ['DING', 'zap', '预留强提醒、签名残留、trace id 和发送来源记录。'],
+            add: ['添加', 'plus', '预留工牌核验、归档提交、TMP 独立彩蛋入口。'],
+            visitor: ['旧版访客记录', 'door-open', '预留补交设备和补交证据封包的旧字段对照。'],
+            equipment: ['设备归还', 'package-check', '预留设备编号、回执时间和门禁联动状态。'],
+            archive: ['归档提交', 'archive', '预留证据提交路径和结局分流。']
+        };
+
+        const key = new URLSearchParams(location.search).get('module') || '';
+        const data = modules[key] || ['模块待接入', 'folder-clock', '该模块入口已建立，证据内容尚未写入。'];
+        document.title = `${data[0]} - 南洄工作台`;
+        document.getElementById('moduleTitle').textContent = data[0];
+        document.getElementById('moduleDesc').textContent = data[2];
+        document.getElementById('moduleIcon').setAttribute('data-lucide', data[1]);
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -3,636 +3,827 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工作台 - 钉钉</title>
+    <title>南洄工作台</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            background: #f0f2f5;
-            min-height: 100vh;
+
+        :root {
+            --sidebar: #e6ebfb;
+            --sidebar-active: #f5f8ff;
+            --text: #2c3442;
+            --muted: #7a8494;
+            --line: #dbe2f2;
+            --blue: #2f75ff;
+            --red: #ff4d2e;
+            --surface: #ffffff;
+            --bg: #f4f6fb;
+            --shadow: 0 12px 34px rgba(32, 47, 84, 0.12);
         }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 72% 16%, rgba(47, 117, 255, 0.12), transparent 28%),
+                linear-gradient(180deg, #f7f8fc 0%, #eef2f8 100%);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
         .app-container {
             display: flex;
-            height: 100vh;
+            min-height: 100vh;
         }
-        /* 左侧导航栏 - 浅蓝色背景 */
+
         .sidebar {
-            width: 72px;
-            background: #e8f4ff;
+            width: 292px;
+            min-height: calc(100vh - 18px);
+            margin: 8px 0 8px 14px;
+            padding: 20px 0 24px;
+            border-radius: 12px;
+            background: var(--sidebar);
+            box-shadow: 0 18px 46px rgba(30, 42, 70, 0.14);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 16px 0;
             flex-shrink: 0;
         }
-        .org-avatar {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #4a90e2, #7bb3f0);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-        .org-name {
-            font-size: 12px;
-            color: #333;
-            font-weight: 500;
-            margin-bottom: 20px;
-            text-align: center;
-            padding: 0 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 100%;
-        }
+
         .nav-menu {
             display: flex;
             flex-direction: column;
             gap: 4px;
-            width: 100%;
-            padding: 0 8px;
+            padding: 0 10px;
         }
+
         .nav-item {
-            display: flex;
+            position: relative;
+            display: grid;
+            grid-template-columns: 42px 1fr auto;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
+            min-height: 72px;
+            padding: 0 8px 0 22px;
+            border-radius: 14px;
+            color: #4d5562;
             text-decoration: none;
-            border-radius: 8px;
-            font-size: 13px;
+            font-size: 28px;
+            letter-spacing: 0;
+            transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
         }
+
         .nav-item:hover {
-            background: rgba(255,255,255,0.6);
-            color: #333;
+            background: rgba(255, 255, 255, 0.55);
+            color: #1f2733;
         }
-        .nav-item.disabled {
-            cursor: default;
-            opacity: 0.45;
-        }
-        .nav-item.disabled:hover {
-            background: transparent;
-            color: #666;
-        }
+
         .nav-item.active {
-            background: white;
-            color: #333;
+            background: var(--sidebar-active);
+            color: #252c38;
             font-weight: 500;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        .nav-icon {
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
+
+        .nav-item.muted {
+            color: #9aa3b3;
         }
-        .nav-badge {
-            margin-left: auto;
-            min-width: 18px;
-            height: 18px;
-            background: #ff4d4f;
-            color: white;
-            font-size: 11px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 5px;
-        }
-        .nav-dot {
-            margin-left: auto;
-            width: 8px;
-            height: 8px;
-            background: #ff4d4f;
-            border-radius: 50%;
-        }
-        .sidebar-bottom {
-            margin-top: auto;
-            width: 100%;
-            padding: 0 8px;
-        }
-        /* 主内容区 */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        /* 顶部栏 */
-        .header {
-            height: 48px;
-            background: white;
-            border-bottom: 1px solid #e8e8e8;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            flex-shrink: 0;
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .org-selector {
-            font-size: 14px;
-            color: #262626;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .search-box {
-            position: relative;
-        }
-        .search-box input {
-            width: 200px;
-            height: 32px;
-            padding: 0 12px 0 32px;
-            border: 1px solid #d9d9d9;
-            border-radius: 16px;
-            font-size: 13px;
-            background: #f5f5f5;
-            transition: all 0.3s;
-        }
-        .search-box input:focus {
-            outline: none;
-            background: white;
-            border-color: #1890ff;
-        }
-        .search-box::before {
-            content: "🔍";
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            opacity: 0.5;
-        }
-        .header-icon {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s;
-            font-size: 18px;
-            position: relative;
-        }
-        .header-icon:hover {
-            background: #f5f5f5;
-        }
-        .header-icon .badge {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 8px;
-            height: 8px;
-            background: #ff4d4f;
-            border-radius: 50%;
-        }
-        .user-avatar {
+
+        .nav-item svg {
             width: 28px;
             height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
+            stroke-width: 2.1;
+        }
+
+        .nav-badge {
+            min-width: 44px;
+            height: 32px;
+            padding: 0 9px;
+            border-radius: 18px;
+            background: var(--red);
+            color: #fff;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
+            font-size: 19px;
+            line-height: 1;
+            box-shadow: 0 3px 10px rgba(255, 77, 46, 0.24);
         }
-        /* 内容滚动区 */
-        .content {
+
+        .nav-dot {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: var(--red);
+            margin-right: 8px;
+        }
+
+        .nav-add {
+            margin-top: auto;
+            padding: 0 10px;
+        }
+
+        .main {
             flex: 1;
-            overflow-y: auto;
-            padding: 20px;
+            min-width: 0;
+            padding: 22px 26px 26px;
         }
-        /* 公告横幅 */
-        .banner {
-            background: linear-gradient(135deg, #4a90e2 0%, #7bb3f0 100%);
-            border-radius: 8px;
-            padding: 20px 24px;
-            margin-bottom: 20px;
+
+        .topbar {
+            height: 58px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            color: white;
+            gap: 18px;
+            margin-bottom: 18px;
         }
-        .banner-content h2 {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-        .banner-content p {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-        .banner-icon {
-            font-size: 48px;
-            opacity: 0.3;
-        }
-        /* 公告区 */
-        .notice-section {
-            background: white;
-            border-radius: 8px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
+
+        .brand {
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
         }
-        .notice-icon {
-            width: 32px;
-            height: 32px;
-            background: #fff7e6;
-            border-radius: 6px;
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #5b55cf, #8352d6);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 23px;
+            font-weight: 700;
+            box-shadow: 0 8px 18px rgba(91, 85, 207, 0.28);
         }
-        .notice-content {
-            flex: 1;
+
+        .brand h1 {
+            font-size: 22px;
+            font-weight: 650;
+            margin-bottom: 3px;
         }
-        .notice-title {
-            font-size: 14px;
-            color: #262626;
-            font-weight: 500;
-        }
-        .notice-desc {
-            font-size: 12px;
-            color: #8c8c8c;
-            margin-top: 2px;
-        }
-        .notice-arrow {
-            color: #bfbfbf;
-            font-size: 14px;
-        }
-        /* 常用应用 */
-        .section {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .section-title {
-            font-size: 16px;
-            color: #262626;
-            font-weight: 500;
-        }
-        .section-more {
+
+        .brand p {
+            color: var(--muted);
             font-size: 13px;
-            color: #8c8c8c;
-            cursor: pointer;
         }
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-        }
-        .app-item {
+
+        .search {
+            width: min(360px, 34vw);
+            height: 40px;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.78);
             display: flex;
-            flex-direction: column;
             align-items: center;
             gap: 8px;
-            padding: 16px;
+            padding: 0 14px;
+            color: var(--muted);
+        }
+
+        .search svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .search input {
+            width: 100%;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 340px;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(219, 226, 242, 0.9);
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
+            box-shadow: var(--shadow);
         }
-        .app-item:hover {
-            background: #f5f5f5;
+
+        .hero {
+            padding: 22px;
+            margin-bottom: 18px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 18px;
+            align-items: center;
+            overflow: hidden;
         }
-        .app-icon-wrapper {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+
+        .hero-kicker {
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 650;
+            margin-bottom: 8px;
+        }
+
+        .hero h2 {
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            color: #647084;
+            font-size: 14px;
+            line-height: 1.75;
+            max-width: 780px;
+        }
+
+        .case-chip {
+            width: 148px;
+            min-height: 98px;
+            border: 1px solid #cfd9f0;
+            border-radius: 8px;
+            background: #f8faff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 14px;
+            color: #44506a;
+        }
+
+        .case-chip strong {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .case-chip span {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .section {
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        .section-head {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            transition: transform 0.3s;
-        }
-        .app-item:hover .app-icon-wrapper {
-            transform: scale(1.1);
-        }
-        .app-icon-wrapper.blue { background: #e6f7ff; }
-        .app-icon-wrapper.green { background: #f6ffed; }
-        .app-icon-wrapper.orange { background: #fff7e6; }
-        .app-icon-wrapper.red { background: #fff1f0; }
-        .app-icon-wrapper.purple { background: #f9f0ff; }
-        .app-icon-wrapper.cyan { background: #e6fffb; }
-        .app-name {
-            font-size: 13px;
-            color: #595959;
-        }
-        /* 应用分类 */
-        .app-tabs {
-            display: flex;
-            gap: 24px;
+            justify-content: space-between;
+            gap: 12px;
             margin-bottom: 16px;
-            border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 12px;
         }
-        .app-tab {
-            font-size: 14px;
-            color: #595959;
-            cursor: pointer;
-            padding: 4px 0;
-            position: relative;
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 650;
         }
-        .app-tab.active {
-            color: #1890ff;
-            font-weight: 500;
+
+        .section-meta {
+            font-size: 12px;
+            color: var(--muted);
         }
-        .app-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -13px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #1890ff;
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
         }
-        /* 推荐应用 */
-        .recommend-list {
+
+        .feature {
+            min-height: 124px;
+            padding: 15px;
+            border: 1px solid #e1e7f4;
+            border-radius: 8px;
+            background: #fff;
+            text-decoration: none;
+            color: var(--text);
             display: flex;
             flex-direction: column;
             gap: 12px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
         }
-        .recommend-item {
+
+        .feature:hover {
+            transform: translateY(-2px);
+            border-color: #b8c9f1;
+            box-shadow: 0 12px 28px rgba(40, 65, 118, 0.12);
+        }
+
+        .feature.disabled {
+            cursor: default;
+        }
+
+        .feature-top {
             display: flex;
             align-items: center;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
+            justify-content: space-between;
+            gap: 10px;
         }
-        .recommend-item:hover {
-            background: #f5f5f5;
-        }
-        .recommend-icon {
-            width: 40px;
-            height: 40px;
+
+        .feature-icon {
+            width: 38px;
+            height: 38px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
-            font-size: 20px;
+            color: #255dcc;
+            background: #eef4ff;
         }
-        .recommend-info {
-            flex: 1;
+
+        .feature-icon svg {
+            width: 21px;
+            height: 21px;
         }
-        .recommend-name {
-            font-size: 14px;
-            color: #262626;
-            font-weight: 500;
-        }
-        .recommend-desc {
+
+        .state {
+            height: 22px;
+            padding: 0 8px;
+            border-radius: 11px;
+            background: #f0f3fa;
+            color: #6f7a8d;
+            display: inline-flex;
+            align-items: center;
             font-size: 12px;
-            color: #8c8c8c;
-            margin-top: 2px;
+            white-space: nowrap;
         }
-        .recommend-btn {
-            padding: 6px 16px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-            background: white;
-            color: #595959;
-            font-size: 13px;
-            cursor: pointer;
+
+        .state.hot {
+            background: #fff0ea;
+            color: #d94722;
         }
-        .recommend-btn:hover {
-            border-color: #1890ff;
-            color: #1890ff;
+
+        .feature h3 {
+            font-size: 15px;
+            font-weight: 650;
         }
-        /* 解谜提示 */
-        .puzzle-toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1a1a1a;
-            color: white;
-            padding: 16px 24px;
+
+        .feature p {
+            color: #7c8798;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .list-row {
+            min-height: 56px;
+            display: grid;
+            grid-template-columns: 84px 1fr auto;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border: 1px solid #e3e8f4;
             border-radius: 8px;
+            background: #fff;
+        }
+
+        .time {
+            font-size: 13px;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .row-title {
             font-size: 14px;
-            max-width: 320px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 1000;
+            font-weight: 600;
+            margin-bottom: 3px;
         }
-        .puzzle-toast.show {
-            transform: translateY(0);
-            opacity: 1;
+
+        .row-sub {
+            font-size: 12px;
+            color: var(--muted);
         }
-        .hidden-data { display: none; }
+
+        .tag {
+            font-size: 12px;
+            color: #6b7484;
+            background: #f4f6fa;
+            border-radius: 10px;
+            padding: 4px 8px;
+            white-space: nowrap;
+        }
+
+        .side-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .drop-shell {
+            padding: 18px;
+        }
+
+        .drop-zone {
+            min-height: 178px;
+            border: 1.5px dashed #b9c7e4;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #f9fbff, #f0f5ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 10px;
+            color: #556175;
+        }
+
+        .drop-zone svg {
+            width: 38px;
+            height: 38px;
+            color: #4e6fd4;
+        }
+
+        .drop-zone strong {
+            font-size: 15px;
+        }
+
+        .drop-zone span {
+            font-size: 12px;
+            color: var(--muted);
+            max-width: 230px;
+            line-height: 1.55;
+        }
+
+        .status-panel {
+            padding: 18px;
+        }
+
+        .status-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            color: #5f697a;
+            font-size: 13px;
+        }
+
+        .status-item b {
+            color: #2d3544;
+            font-weight: 650;
+        }
+
+        @media (max-width: 1080px) {
+            .sidebar {
+                width: 226px;
+            }
+
+            .nav-item {
+                min-height: 60px;
+                font-size: 22px;
+                grid-template-columns: 34px 1fr auto;
+            }
+
+            .nav-item svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .app-container {
+                display: block;
+            }
+
+            .sidebar {
+                width: auto;
+                min-height: auto;
+                margin: 8px;
+                padding: 10px;
+                overflow-x: auto;
+            }
+
+            .nav-menu,
+            .nav-add {
+                flex-direction: row;
+                display: flex;
+                width: max-content;
+                padding: 0;
+            }
+
+            .nav-add {
+                margin-top: 4px;
+            }
+
+            .nav-item {
+                min-width: 118px;
+                min-height: 52px;
+                padding: 0 12px;
+                grid-template-columns: 24px 1fr auto;
+                font-size: 16px;
+            }
+
+            .nav-badge {
+                min-width: 34px;
+                height: 24px;
+                font-size: 14px;
+            }
+
+            .main {
+                padding: 14px;
+            }
+
+            .topbar,
+            .hero,
+            .list-row {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                height: auto;
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .search {
+                width: 100%;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- 左侧导航栏 -->
-        <aside class="sidebar">
-            <div class="org-avatar">企</div>
-            <div class="org-name">企业名称</div>
+        <aside class="sidebar" aria-label="南洄工作台导航">
             <nav class="nav-menu">
                 <a href="messages.html" class="nav-item" target="_blank" rel="noopener noreferrer">
-                    <span class="nav-icon">💬</span>
+                    <i data-lucide="message-circle"></i>
                     <span>消息</span>
                     <span class="nav-badge">99+</span>
                 </a>
                 <a href="documents.html" class="nav-item" target="_blank" rel="noopener noreferrer">
-                    <span class="nav-icon">📄</span>
+                    <i data-lucide="file-clock"></i>
                     <span>文档</span>
                     <span class="nav-dot"></span>
                 </a>
-                <a href="#" class="nav-item disabled" aria-disabled="true">
-                    <span class="nav-icon">🔷</span>
+                <a href="module-shell.html?module=aiTable" class="nav-item" target="_blank" rel="noopener noreferrer">
+                    <i data-lucide="boxes"></i>
                     <span>AI 表格</span>
                 </a>
-                <a href="#" class="nav-item disabled" aria-disabled="true">
-                    <span class="nav-icon">🎙️</span>
+                <a href="module-shell.html?module=aiNote" class="nav-item" target="_blank" rel="noopener noreferrer">
+                    <i data-lucide="audio-lines"></i>
                     <span>AI 听记</span>
                 </a>
                 <a href="workbench.html" class="nav-item active" target="_blank" rel="noopener noreferrer">
-                    <span class="nav-icon">▦</span>
+                    <i data-lucide="layout-grid"></i>
                     <span>工作台</span>
                 </a>
                 <a href="contacts.html" class="nav-item" target="_blank" rel="noopener noreferrer">
-                    <span class="nav-icon">👤</span>
+                    <i data-lucide="contact"></i>
                     <span>通讯录</span>
                 </a>
-                <a href="#" class="nav-item disabled" aria-disabled="true">
-                    <span class="nav-icon">📹</span>
+                <a href="module-shell.html?module=meeting" class="nav-item" target="_blank" rel="noopener noreferrer">
+                    <i data-lucide="phone-call"></i>
                     <span>会议</span>
                 </a>
                 <a href="calendar.html" class="nav-item" target="_blank" rel="noopener noreferrer">
-                    <span class="nav-icon">📅</span>
+                    <i data-lucide="calendar-days"></i>
                     <span>日历</span>
                 </a>
-                <a href="#" class="nav-item disabled" aria-disabled="true">
-                    <span class="nav-icon">☐</span>
+                <a href="module-shell.html?module=todo" class="nav-item" target="_blank" rel="noopener noreferrer">
+                    <i data-lucide="square-check-big"></i>
                     <span>待办</span>
                     <span class="nav-badge">10</span>
                 </a>
-                <a href="#" class="nav-item disabled" aria-disabled="true">
-                    <span class="nav-icon">⚡</span>
+                <a href="module-shell.html?module=ding" class="nav-item" target="_blank" rel="noopener noreferrer">
+                    <i data-lucide="zap"></i>
                     <span>DING</span>
                 </a>
             </nav>
-            <div class="sidebar-bottom">
-                <a href="#" class="nav-item">
-                    <span class="nav-icon">+</span>
+            <div class="nav-add">
+                <a href="module-shell.html?module=add" class="nav-item muted" target="_blank" rel="noopener noreferrer">
+                    <i data-lucide="plus"></i>
                     <span>添加</span>
                 </a>
             </div>
         </aside>
 
-        <!-- 主内容区 -->
-        <main class="main-content">
-            <!-- 顶部栏 -->
-            <header class="header">
-                <div class="header-left">
-                    <span class="org-selector">
-                        企业名称
-                        <span>▼</span>
-                    </span>
-                </div>
-                <div class="header-right">
-                    <div class="search-box">
-                        <input type="text" placeholder="搜索">
+        <main class="main">
+            <header class="topbar">
+                <div class="brand">
+                    <div class="brand-mark">洄</div>
+                    <div>
+                        <h1>南洄工作台</h1>
+                        <p>南洄市信息安全复核专用视图</p>
                     </div>
-                    <div class="header-icon">🔔<span class="badge"></span></div>
-                    <div class="user-avatar">用</div>
                 </div>
+                <label class="search">
+                    <i data-lucide="search"></i>
+                    <input type="search" placeholder="搜索消息、工单、人员、记录编号">
+                </label>
             </header>
 
-            <!-- 内容区 -->
-            <div class="content">
-                <!-- 公告横幅 -->
-                <div class="banner">
-                    <div class="banner-content">
-                        <h2>欢迎使用钉钉工作台</h2>
-                        <p>高效协作，从这里开始</p>
+            <div class="workspace">
+                <section>
+                    <div class="panel hero">
+                        <div>
+                            <div class="hero-kicker">6月6日 15时许 / C座 / 复核档案</div>
+                            <h2>待复核：顾路离职交接与设备补交记录</h2>
+                            <p>当前工作台只开放入口层。消息、文档、日历、待办、DING、AI 表格、AI 听记将作为后续证据页面接入；顾路工牌与旧版访客记录作为主线解锁入口保留。</p>
+                        </div>
+                        <div class="case-chip">
+                            <strong>GL-0606</strong>
+                            <span>Recovered Staff Credential<br>旧记录访问所需凭证</span>
+                        </div>
                     </div>
-                    <div class="banner-icon">🚀</div>
-                </div>
 
-                <!-- 公告区 -->
-                <div class="notice-section">
-                    <div class="notice-icon">📢</div>
-                    <div class="notice-content">
-                        <div class="notice-title">公告</div>
-                        <div class="notice-desc">查看企业最新动态和通知</div>
+                    <div class="panel section">
+                        <div class="section-head">
+                            <div class="section-title">主线功能入口</div>
+                            <div class="section-meta">先保留功能壳，具体内容后续接入</div>
+                        </div>
+                        <div class="feature-grid">
+                            <a class="feature" href="badge-drop-test.html" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="badge-check"></i></span>
+                                    <span class="state hot">可测试</span>
+                                </div>
+                                <h3>工牌核验</h3>
+                                <p>上传或拖入 HTML 工牌，后续接入顾路工牌和 Base64 解密校验。</p>
+                            </a>
+                            <a class="feature" href="module-shell.html?module=visitor" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="door-open"></i></span>
+                                    <span class="state">待接入</span>
+                                </div>
+                                <h3>旧版访客记录</h3>
+                                <p>预留“补交设备”和旧字段对照入口。</p>
+                            </a>
+                            <a class="feature" href="module-shell.html?module=equipment" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="package-check"></i></span>
+                                    <span class="state">待接入</span>
+                                </div>
+                                <h3>设备归还</h3>
+                                <p>预留补交记录、回执状态和异常时间点。</p>
+                            </a>
+                            <a class="feature" href="module-shell.html?module=archive" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="archive"></i></span>
+                                    <span class="state">待接入</span>
+                                </div>
+                                <h3>归档提交</h3>
+                                <p>预留普通、隐藏、完美和彩蛋结局的分流入口。</p>
+                            </a>
+                        </div>
                     </div>
-                    <div class="notice-arrow">›</div>
-                </div>
 
-                <!-- 全员常用 -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">全员常用</span>
-                        <span class="section-more">更多 ›</span>
+                    <div class="panel section">
+                        <div class="section-head">
+                            <div class="section-title">证据页面入口</div>
+                            <div class="section-meta">对应剧本工作台模块</div>
+                        </div>
+                        <div class="feature-grid">
+                            <a class="feature" href="messages.html" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="message-square-text"></i></span>
+                                    <span class="state hot">99+</span>
+                                </div>
+                                <h3>消息</h3>
+                                <p>郑明催方案、C座交接群、系统机器人消息入口。</p>
+                            </a>
+                            <a class="feature" href="documents.html" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="files"></i></span>
+                                    <span class="state hot">红点</span>
+                                </div>
+                                <h3>文档</h3>
+                                <p>离职清单、复核方案、修订记录入口。</p>
+                            </a>
+                            <a class="feature" href="module-shell.html?module=aiTable" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="table-properties"></i></span>
+                                    <span class="state">待接入</span>
+                                </div>
+                                <h3>AI 表格</h3>
+                                <p>预留路线复核表、门禁回执对照表。</p>
+                            </a>
+                            <a class="feature" href="module-shell.html?module=aiNote" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="mic-vocal"></i></span>
+                                    <span class="state">待接入</span>
+                                </div>
+                                <h3>AI 听记</h3>
+                                <p>预留会议摘要、缺失尾段和原始音频入口。</p>
+                            </a>
+                            <a class="feature" href="contacts.html" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="users"></i></span>
+                                    <span class="state">已接入</span>
+                                </div>
+                                <h3>通讯录</h3>
+                                <p>人物关系、部门归属和权限身份入口。</p>
+                            </a>
+                            <a class="feature" href="module-shell.html?module=meeting" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="video"></i></span>
+                                    <span class="state">待接入</span>
+                                </div>
+                                <h3>会议</h3>
+                                <p>预留 C座路径复核会和尾段恢复入口。</p>
+                            </a>
+                            <a class="feature" href="calendar.html" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="calendar-range"></i></span>
+                                    <span class="state">已接入</span>
+                                </div>
+                                <h3>日历</h3>
+                                <p>14:30 日程、创建者和关联待办入口。</p>
+                            </a>
+                            <a class="feature" href="module-shell.html?module=ding" target="_blank" rel="noopener noreferrer">
+                                <div class="feature-top">
+                                    <span class="feature-icon"><i data-lucide="zap"></i></span>
+                                    <span class="state">待接入</span>
+                                </div>
+                                <h3>DING</h3>
+                                <p>预留强提醒、签名残留和 trace id 入口。</p>
+                            </a>
+                        </div>
                     </div>
-                    <div class="app-grid">
-                        <div class="app-item">
-                            <div class="app-icon-wrapper blue">✓</div>
-                            <span class="app-name">考勤打卡</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper orange">📋</div>
-                            <span class="app-name">OA审批</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper green">📝</div>
-                            <span class="app-name">日志</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper orange">📍</div>
-                            <span class="app-name">签到</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper blue">👤</div>
-                            <span class="app-name">智能人事</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper cyan">📝</div>
-                            <span class="app-name">补卡</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper blue">📅</div>
-                            <span class="app-name">请假</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper purple">✈️</div>
-                            <span class="app-name">出差</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper green">💰</div>
-                            <span class="app-name">报销</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper blue">📹</div>
-                            <span class="app-name">视频会议</span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- 全部应用 -->
-                <div class="section">
-                    <div class="app-tabs">
-                        <div class="app-tab active">效率办公</div>
-                        <div class="app-tab">业务管理</div>
-                        <div class="app-tab">未分组应用</div>
+                    <div class="panel section">
+                        <div class="section-head">
+                            <div class="section-title">今日异常摘要</div>
+                            <div class="section-meta">系统视图 / 内容占位</div>
+                        </div>
+                        <div class="list">
+                            <div class="list-row">
+                                <div class="time">14:30</div>
+                                <div>
+                                    <div class="row-title">补交设备待办</div>
+                                    <div class="row-sub">状态已完成，回执内容暂未接入。</div>
+                                </div>
+                                <span class="tag">TODO-C-0606</span>
+                            </div>
+                            <div class="list-row">
+                                <div class="time">14:52</div>
+                                <div>
+                                    <div class="row-title">DING 强提醒</div>
+                                    <div class="row-sub">发送者显示为系统，技术信息待接入。</div>
+                                </div>
+                                <span class="tag">Trace 待查</span>
+                            </div>
+                            <div class="list-row">
+                                <div class="time">15:02</div>
+                                <div>
+                                    <div class="row-title">设备补交完成</div>
+                                    <div class="row-sub">完成方式显示为门禁联动回执。</div>
+                                </div>
+                                <span class="tag">回执缺失</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="app-grid">
-                        <div class="app-item">
-                            <div class="app-icon-wrapper blue">📅</div>
-                            <span class="app-name">请假</span>
+                </section>
+
+                <aside class="side-stack">
+                    <div class="panel drop-shell">
+                        <div class="section-head">
+                            <div class="section-title">工牌拖入窗口</div>
+                            <div class="section-meta">功能保留</div>
                         </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper cyan">📝</div>
-                            <span class="app-name">补卡</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper purple">✈️</div>
-                            <span class="app-name">出差</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper green">💹</div>
-                            <span class="app-name">智能财务</span>
-                        </div>
-                        <div class="app-item">
-                            <div class="app-icon-wrapper blue">📹</div>
-                            <span class="app-name">视频会议</span>
+                        <a class="drop-zone" href="badge-drop-test.html" target="_blank" rel="noopener noreferrer">
+                            <i data-lucide="upload-cloud"></i>
+                            <strong>打开工牌测试页</strong>
+                            <span>这里后续会接入工作台内嵌拖拽窗口；当前先跳转到测试界面。</span>
+                        </a>
+                    </div>
+
+                    <div class="panel status-panel">
+                        <div class="section-title">复核状态</div>
+                        <div class="status-list">
+                            <div class="status-item"><span>顾路工牌</span><b>未刷入</b></div>
+                            <div class="status-item"><span>旧版访客记录</span><b>待恢复</b></div>
+                            <div class="status-item"><span>消息污染视图</span><b>未触发</b></div>
+                            <div class="status-item"><span>TMP 彩蛋</span><b>独立保留</b></div>
                         </div>
                     </div>
-                </div>
+                </aside>
             </div>
         </main>
     </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
