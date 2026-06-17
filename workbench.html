@@ -399,6 +399,13 @@
             background: var(--red);
         }
 
+        body:not(.recovery-mode) .nav-badge,
+        body:not(.recovery-mode) .nav-dot,
+        body:not(.recovery-mode) .red-dot,
+        body:not(.recovery-mode) .todo-priority {
+            display: none;
+        }
+
         .header-user {
             min-width: 32px;
             height: 32px;
@@ -1391,7 +1398,7 @@
             <a class="nav-item" href="messages.html" target="_blank" rel="noopener noreferrer">
                 <i data-lucide="message-circle"></i>
                 <span>消息</span>
-                <span class="nav-badge">99+</span>
+                <span class="nav-badge" id="navMessageBadge">99+</span>
             </a>
             <a class="nav-item" href="module-shell.html?module=meeting" target="_blank" rel="noopener noreferrer">
                 <i data-lucide="phone"></i>
@@ -1418,12 +1425,12 @@
             <a class="nav-item" href="module-shell.html?module=todo" target="_blank" rel="noopener noreferrer">
                 <i data-lucide="square-check-big"></i>
                 <span>待办</span>
-                <span class="nav-badge">10</span>
+                <span class="nav-badge" id="navTodoBadge">10</span>
             </a>
             <a class="nav-item" href="documents.html" target="_blank" rel="noopener noreferrer">
                 <i data-lucide="file-clock"></i>
                 <span>文档</span>
-                <span class="nav-dot"></span>
+                <span class="nav-dot" id="navDocumentDot"></span>
             </a>
 
             <div class="nav-group-label">智能</div>
@@ -1451,13 +1458,13 @@
             <div class="sidebar-avatar" id="sidebarAvatar">顾</div>
             <div class="sidebar-user-info">
                 <div class="sidebar-user-name" id="sidebarUserName">顾路</div>
-                <div class="sidebar-user-status" id="sidebarUserStatus">离职账号 / 只读恢复</div>
+                <div class="sidebar-user-status" id="sidebarUserStatus">在线</div>
             </div>
             <div class="account-menu" id="sidebarAccountMenu">
                 <div class="account-card">
                     <strong id="sidebarAccountName">顾路</strong>
-                    <span id="sidebarAccountId">GL-0606 / 凭证待回收</span>
-                    <span id="sidebarAccountHint">退出后进入凭证复核</span>
+                    <span id="sidebarAccountId">GL-0606 / 工作台</span>
+                    <span id="sidebarAccountHint">账号状态正常</span>
                 </div>
                 <button class="account-action" type="button" id="sidebarLogoutBtn">
                     <span>退出登录</span>
@@ -1491,8 +1498,8 @@
                 <div class="account-menu header-user-menu" id="headerAccountMenu">
                     <div class="account-card">
                         <strong id="headerAccountName">顾路</strong>
-                        <span id="headerAccountId">GL-0606 / 凭证待回收</span>
-                        <span id="headerAccountHint">退出后进入凭证复核</span>
+                        <span id="headerAccountId">GL-0606 / 工作台</span>
+                        <span id="headerAccountHint">账号状态正常</span>
                     </div>
                     <button class="account-action" type="button" id="headerLogoutBtn">
                         <span>退出登录</span>
@@ -1505,28 +1512,28 @@
         <section class="content">
             <div class="banner">
                 <div class="banner-left">
-                    <div class="banner-greeting" id="bannerGreeting">顾路 / GL-0606 / 离职账号恢复态</div>
-                    <div class="banner-name" id="bannerName">顾路工作台：离职交接记录</div>
-                    <div class="banner-hint" id="bannerHint">当前账号显示流程正常、材料齐备、交接闭环。右上角头像仍保留“凭证待回收”状态。</div>
+                    <div class="banner-greeting" id="bannerGreeting">顾路 / GL-0606 / 南洄科技工作台</div>
+                    <div class="banner-name" id="bannerName">顾路工作台</div>
+                    <div class="banner-hint" id="bannerHint">今日暂无异常提醒。消息、待办、审批与日程均已同步完成。</div>
                 </div>
                 <div class="banner-stats">
                     <div class="banner-stat">
-                        <div class="banner-stat-num">99+</div>
+                        <div class="banner-stat-num" id="statUnread">0</div>
                         <div class="banner-stat-label">未读消息</div>
                     </div>
                     <div class="banner-stat-divider"></div>
                     <div class="banner-stat">
-                        <div class="banner-stat-num">10</div>
+                        <div class="banner-stat-num" id="statTodo">0</div>
                         <div class="banner-stat-label">待办事项</div>
                     </div>
                     <div class="banner-stat-divider"></div>
                     <div class="banner-stat">
-                        <div class="banner-stat-num">3</div>
+                        <div class="banner-stat-num" id="statApproval">0</div>
                         <div class="banner-stat-label">待审批</div>
                     </div>
                     <div class="banner-stat-divider"></div>
                     <div class="banner-stat">
-                        <div class="banner-stat-num">3</div>
+                        <div class="banner-stat-num" id="statSchedule">1</div>
                         <div class="banner-stat-label">今日日程</div>
                     </div>
                 </div>
@@ -1633,31 +1640,31 @@
                             <div class="todo-item">
                                 <div class="todo-check"><i data-lucide="check"></i></div>
                                 <div class="todo-body">
-                                    <div class="todo-title">补交设备记录回执复核</div>
-                                    <div class="todo-sub">系统流程 / 6月6日 15:02</div>
+                                    <div class="todo-title" id="todoTitleA">本周工作资料归档</div>
+                                    <div class="todo-sub" id="todoSubA">文档中心 / 已同步</div>
                                 </div>
                                 <div class="todo-priority high"></div>
                             </div>
                             <div class="todo-item">
                                 <div class="todo-check"><i data-lucide="check"></i></div>
                                 <div class="todo-body">
-                                    <div class="todo-title">C座异常路径复核方案归档</div>
-                                    <div class="todo-sub">文档中心 / 旧版本待恢复</div>
+                                    <div class="todo-title" id="todoTitleB">设备台账确认</div>
+                                    <div class="todo-sub" id="todoSubB">资产管理 / 已完成</div>
                                 </div>
                                 <div class="todo-priority high"></div>
                             </div>
                             <div class="todo-item">
                                 <div class="todo-check"><i data-lucide="check"></i></div>
                                 <div class="todo-body">
-                                    <div class="todo-title">AI 听记摘要一致性检查</div>
-                                    <div class="todo-sub">会议记录 / 尾段未接入</div>
+                                    <div class="todo-title" id="todoTitleC">会议摘要确认</div>
+                                    <div class="todo-sub" id="todoSubC">AI 听记 / 摘要已生成</div>
                                 </div>
                                 <div class="todo-priority mid"></div>
                             </div>
                             <div class="todo-item done">
                                 <div class="todo-check"><i data-lucide="check"></i></div>
                                 <div class="todo-body">
-                                    <div class="todo-title" id="identityTodoTitle">离职账号恢复状态确认</div>
+                                    <div class="todo-title" id="identityTodoTitle">个人资料同步确认</div>
                                     <div class="todo-sub" id="identityTodoSub">顾路 / GL-0606 / 已完成</div>
                                 </div>
                                 <div class="todo-priority low"></div>
@@ -1676,26 +1683,26 @@
                             <div class="approval-item">
                                 <div class="approval-avatar" style="background: linear-gradient(135deg,#f97316,#fbbf24);">访</div>
                                 <div class="approval-body">
-                                    <div class="approval-title">旧版访客记录恢复申请</div>
-                                    <div class="approval-meta">GL-0606 / 需要工牌凭证</div>
+                                    <div class="approval-title" id="approvalTitleA">办公用品领用确认</div>
+                                    <div class="approval-meta" id="approvalMetaA">行政 / 已流转</div>
                                 </div>
-                                <span class="approval-status pending">待接入</span>
+                                <span class="approval-status done" id="approvalStatusA">已完成</span>
                             </div>
                             <div class="approval-item">
                                 <div class="approval-avatar" style="background: linear-gradient(135deg,#8b5cf6,#c084fc);">表</div>
                                 <div class="approval-body">
-                                    <div class="approval-title">路线复核表隐藏列查看</div>
-                                    <div class="approval-meta">AI 表格 / 权限未校验</div>
+                                    <div class="approval-title" id="approvalTitleB">周报模板更新</div>
+                                    <div class="approval-meta" id="approvalMetaB">文档中心 / 已发布</div>
                                 </div>
-                                <span class="approval-status pending">待接入</span>
+                                <span class="approval-status done" id="approvalStatusB">已完成</span>
                             </div>
                             <div class="approval-item">
                                 <div class="approval-avatar" style="background: linear-gradient(135deg,#14b8a6,#5eead4);">档</div>
                                 <div class="approval-body">
-                                    <div class="approval-title">归档提交路径配置</div>
-                                    <div class="approval-meta">复核档案 / 分流入口预留</div>
+                                    <div class="approval-title" id="approvalTitleC">会议室预约确认</div>
+                                    <div class="approval-meta" id="approvalMetaC">日程 / 已确认</div>
                                 </div>
-                                <span class="approval-status done">入口已建</span>
+                                <span class="approval-status done" id="approvalStatusC">已完成</span>
                             </div>
                         </div>
                     </div>
@@ -1725,26 +1732,26 @@
                         </div>
                         <div class="sched-item">
                             <div class="sched-time">10:00</div>
-                            <div class="sched-bar" style="background: var(--green);"></div>
+                            <div class="sched-bar" id="schedBarA" style="background: var(--green);"></div>
                             <div class="sched-info">
-                                <div class="sched-title">离职交接复核</div>
-                                <div class="sched-sub">流程记录 / 内容待接入</div>
+                                <div class="sched-title" id="schedTitleA">部门例会</div>
+                                <div class="sched-sub" id="schedSubA">线上会议 / 例行同步</div>
                             </div>
                         </div>
                         <div class="sched-item">
                             <div class="sched-time">14:30</div>
-                            <div class="sched-bar" style="background: var(--accent);"></div>
+                            <div class="sched-bar" id="schedBarB" style="background: var(--accent);"></div>
                             <div class="sched-info">
-                                <div class="sched-title">补交设备</div>
-                                <div class="sched-sub">TODO-C-0606 / 创建者待查</div>
+                                <div class="sched-title" id="schedTitleB">项目资料整理</div>
+                                <div class="sched-sub" id="schedSubB">文档中心 / 自动提醒</div>
                             </div>
                         </div>
                         <div class="sched-item">
                             <div class="sched-time">15:02</div>
-                            <div class="sched-bar" style="background: var(--red);"></div>
+                            <div class="sched-bar" id="schedBarC" style="background: var(--green);"></div>
                             <div class="sched-info">
-                                <div class="sched-title">设备补交完成</div>
-                                <div class="sched-sub">门禁联动回执 / 回执缺失</div>
+                                <div class="sched-title" id="schedTitleC">设备台账同步</div>
+                                <div class="sched-sub" id="schedSubC">资产系统 / 同步完成</div>
                             </div>
                         </div>
                     </div>
@@ -1757,16 +1764,16 @@
                             </a>
                         </div>
                         <div class="notice-item">
-                            <div class="notice-title">南洄科技园 C座事件复核材料待补齐</div>
-                            <div class="notice-meta"><span>系统</span><span>/</span><span>入口占位</span></div>
+                            <div class="notice-title" id="noticeTitleA">南洄工作台本周更新完成</div>
+                            <div class="notice-meta" id="noticeMetaA"><span>系统</span><span>/</span><span>已发布</span></div>
                         </div>
                         <div class="notice-item orange">
-                            <div class="notice-title">AI 听记模块维护，部分尾段记录不可用</div>
-                            <div class="notice-meta"><span>技术处</span><span>/</span><span>待接入</span></div>
+                            <div class="notice-title" id="noticeTitleB">AI 听记模块服务正常</div>
+                            <div class="notice-meta" id="noticeMetaB"><span>技术处</span><span>/</span><span>运行中</span></div>
                         </div>
                         <div class="notice-item green">
-                            <div class="notice-title">工牌核验测试页已保留</div>
-                            <div class="notice-meta"><span>工作台</span><span>/</span><span>可测试</span></div>
+                            <div class="notice-title" id="noticeTitleC">通讯录数据已同步</div>
+                            <div class="notice-meta" id="noticeMetaC"><span>工作台</span><span>/</span><span>今日 09:12</span></div>
                         </div>
                     </div>
                 </aside>
@@ -1777,7 +1784,7 @@
             <span class="dot"></span>
             <span id="statusMode">南洄工作台 / 顾路账号</span>
             <span style="margin-left:auto;">网络连接正常</span>
-            <span id="statusCredential">GL-0606 凭证待回收</span>
+            <span id="statusCredential">同步完成</span>
         </footer>
     </main>
 
@@ -1792,10 +1799,21 @@
             if (el) el.textContent = text;
         }
 
+        function setStyle(id, prop, value) {
+            const el = document.getElementById(id);
+            if (el) el.style[prop] = value;
+        }
+
         function applyWorkbenchMode() {
             if (isRecoveryMode) {
                 document.body.classList.add('recovery-mode');
                 document.title = '南洄凭证复核视图';
+                setText('navMessageBadge', '99+');
+                setText('navTodoBadge', '10');
+                setText('statUnread', '99+');
+                setText('statTodo', '10');
+                setText('statApproval', '3');
+                setText('statSchedule', '3');
                 setText('sidebarAvatar', '证');
                 setText('sidebarUserName', '凭证复核');
                 setText('sidebarUserStatus', 'GL-0606 / 回收池记录');
@@ -1809,8 +1827,36 @@
                 setText('bannerGreeting', 'Credential Recovery View / GL-0606 / 旧版回收池');
                 setText('bannerName', '工牌复核视图：被折叠的顾路记录');
                 setText('bannerHint', '同一套工作台返回了不同字段。消息、待办、DING、日历和 AI 听记正在显示回收池内的原始残留。');
+                setText('todoTitleA', '补交设备记录回执复核');
+                setText('todoSubA', '系统流程 / 6月6日 15:02');
+                setText('todoTitleB', 'C座异常路径复核方案归档');
+                setText('todoSubB', '文档中心 / 旧版本待恢复');
+                setText('todoTitleC', 'AI 听记摘要一致性检查');
+                setText('todoSubC', '会议记录 / 尾段未接入');
                 setText('identityTodoTitle', '凭证回收视图已接入');
                 setText('identityTodoSub', 'GL-0606 / Recovered Staff Credential');
+                setText('approvalTitleA', '旧版访客记录恢复申请');
+                setText('approvalMetaA', 'GL-0606 / 需要工牌凭证');
+                setText('approvalStatusA', '待接入');
+                setText('approvalTitleB', '路线复核表隐藏列查看');
+                setText('approvalMetaB', 'AI 表格 / 权限未校验');
+                setText('approvalStatusB', '待接入');
+                setText('approvalTitleC', '归档提交路径配置');
+                setText('approvalMetaC', '复核档案 / 分流入口预留');
+                setText('approvalStatusC', '入口已建');
+                setText('schedTitleA', '离职交接复核');
+                setText('schedSubA', '流程记录 / 内容待接入');
+                setText('schedTitleB', '补交设备');
+                setText('schedSubB', 'TODO-C-0606 / 创建者待查');
+                setText('schedTitleC', '设备补交完成');
+                setText('schedSubC', '门禁联动回执 / 回执缺失');
+                setStyle('schedBarC', 'background', 'var(--red)');
+                setText('noticeTitleA', '南洄科技园 C座事件复核材料待补齐');
+                setText('noticeMetaA', '系统 / 入口占位');
+                setText('noticeTitleB', 'AI 听记模块维护，部分尾段记录不可用');
+                setText('noticeMetaB', '技术处 / 待接入');
+                setText('noticeTitleC', '工牌核验测试页已保留');
+                setText('noticeMetaC', '工作台 / 可测试');
                 setText('statusMode', '南洄工作台 / 工牌复核视图');
                 setText('statusCredential', 'GL-0606 已刷入');
                 return;
@@ -1835,7 +1881,7 @@
             const confirmed = window.confirm('确认退出顾路工作台？退出后需要刷入工牌继续。');
             if (!confirmed) return;
             localStorage.setItem('nh_gu_logged_out', 'true');
-            window.location.href = 'credential-login.html';
+            window.open('credential-login.html', '_blank', 'noopener,noreferrer');
         }
 
         function renderCal() {
