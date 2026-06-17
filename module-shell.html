@@ -3,161 +3,796 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>南洄工作台模块</title>
+    <title>南洄工作台</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #f5f6f8;
+            --sidebar: #1d2030;
+            --surface: #fff;
+            --line: #e5e6eb;
+            --soft-line: #f0f1f4;
+            --text: #1d2129;
+            --muted: #4e5969;
+            --subtle: #86909c;
+            --accent: #2f75ff;
+            --accent-soft: #eaf1ff;
+            --purple: #7357d8;
+            --green: #34c759;
+            --orange: #ff9f0a;
+            --red: #ff4d2e;
+            --shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+        }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            min-height: 100vh;
-            background: #f4f6fb;
-            color: #293241;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        }
-
-        .page {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-
-        .shell {
-            width: min(760px, 100%);
-            border: 1px solid #dfe6f3;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 18px 46px rgba(30, 42, 70, 0.12);
+            height: 100vh;
             overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            display: flex;
         }
+        a { color: inherit; text-decoration: none; }
+        button, input, textarea { font: inherit; }
 
-        .top {
+        .sidebar {
+            width: 204px;
+            background: var(--sidebar);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .brand {
             height: 56px;
             padding: 0 18px;
-            border-bottom: 1px solid #e4e9f3;
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .mark {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #5b55cf, #8352d6);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        .top h1 {
-            font-size: 18px;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            color: #fff;
             font-weight: 650;
         }
-
-        .body {
-            padding: 34px;
+        .mark {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--purple), var(--accent));
             display: grid;
-            gap: 18px;
+            place-items: center;
+            font-size: 17px;
         }
-
-        .module-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            background: #eef4ff;
-            color: #2f63cc;
+        .nav {
+            flex: 1;
+            overflow: auto;
+            padding: 8px;
+        }
+        .nav::-webkit-scrollbar { width: 0; }
+        .nav-label {
+            padding: 14px 10px 6px;
+            color: rgba(255,255,255,0.34);
+            font-size: 11px;
+            font-weight: 650;
+        }
+        .nav-item {
+            height: 38px;
+            margin-bottom: 1px;
+            padding: 0 10px;
+            border-radius: 6px;
+            color: rgba(255,255,255,0.62);
             display: flex;
             align-items: center;
-            justify-content: center;
-        }
-
-        .module-icon svg {
-            width: 28px;
-            height: 28px;
-        }
-
-        h2 {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        p {
-            color: #687386;
-            line-height: 1.75;
-            font-size: 14px;
-        }
-
-        .meta {
-            display: grid;
             gap: 10px;
-            margin-top: 8px;
+            font-size: 13px;
         }
+        .nav-item:hover { background: #282c42; color: rgba(255,255,255,0.9); }
+        .nav-item.active { background: var(--accent); color: #fff; font-weight: 650; }
+        .nav-item svg { width: 18px; height: 18px; stroke-width: 1.9; }
+        .user {
+            padding: 12px 14px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple), var(--accent));
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .user strong { display: block; font-size: 12.5px; }
+        .user span { color: var(--green); font-size: 11px; }
 
-        .row {
-            min-height: 46px;
-            padding: 11px 13px;
-            border: 1px solid #e3e8f4;
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            height: 52px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+        .title {
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 650;
+            font-size: 15px;
+        }
+        .title-icon {
+            width: 30px;
+            height: 30px;
             border-radius: 8px;
-            background: #fbfcff;
+            background: var(--accent-soft);
+            color: var(--accent);
+            display: grid;
+            place-items: center;
+        }
+        .title-icon svg { width: 17px; height: 17px; }
+        .tabs { display: flex; height: 100%; }
+        .tab {
+            height: 100%;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            color: var(--muted);
+            font-size: 13px;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 650; }
+        .search {
+            margin-left: auto;
+            width: 260px;
+            position: relative;
+        }
+        .search input {
+            width: 100%;
+            height: 32px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--bg);
+            outline: 0;
+            padding: 0 12px 0 32px;
+            font-size: 12.5px;
+        }
+        .search svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            color: var(--subtle);
+        }
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--subtle);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+        }
+        .icon-btn:hover { background: var(--bg); color: var(--text); }
+        .icon-btn svg { width: 18px; height: 18px; }
+        .content {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        .split {
+            height: 100%;
+            display: grid;
+            grid-template-columns: var(--left, 320px) 1fr var(--right, 0px);
+            min-width: 0;
+        }
+        .pane {
+            min-width: 0;
+            min-height: 0;
+            overflow: auto;
+            background: var(--surface);
+            border-right: 1px solid var(--line);
+        }
+        .pane:last-child { border-right: 0; }
+        .pane.pad { padding: 20px; }
+        .section-head {
+            min-height: 56px;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--soft-line);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 14px;
-            color: #5f6b7d;
+            gap: 12px;
+        }
+        .section-head h2 { font-size: 16px; font-weight: 650; }
+        .muted { color: var(--subtle); font-size: 12px; }
+        .btn {
+            min-height: 32px;
+            padding: 0 12px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 12.5px;
+        }
+        .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn svg { width: 15px; height: 15px; }
+        .list { padding: 8px; }
+        .list-row {
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .list-row:hover, .list-row.active { background: var(--bg); }
+        .row-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .row-main { flex: 1; min-width: 0; }
+        .row-main strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 650;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .row-main span {
+            display: block;
+            margin-top: 3px;
+            color: var(--subtle);
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .row-meta { color: var(--subtle); font-size: 12px; flex-shrink: 0; }
+        .tag {
+            padding: 2px 7px;
+            border-radius: 5px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 13px;
         }
-
-        .row b {
-            color: #283241;
+        .table th, .table td {
+            height: 44px;
+            padding: 0 14px;
+            border-bottom: 1px solid var(--soft-line);
+            text-align: left;
+        }
+        .table th {
+            color: var(--subtle);
+            font-size: 12px;
             font-weight: 650;
+            background: #fafbfc;
+        }
+        .status {
+            padding: 3px 8px;
+            border-radius: 5px;
+            background: #edf8f0;
+            color: #1f9d4b;
+            font-size: 11px;
+            font-weight: 650;
+        }
+        .status.wait { background: #fff5e0; color: #ad6800; }
+        .status.gray { background: #f2f3f5; color: var(--subtle); }
+        .chat-view {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #f7f8fa;
+        }
+        .chat-body {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+        .msg {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .msg.self { flex-direction: row-reverse; }
+        .bubble {
+            max-width: min(620px, 70%);
+            padding: 10px 13px;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.65;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .msg.self .bubble { background: #dff4d6; }
+        .chat-input {
+            min-height: 132px;
+            background: #fff;
+            border-top: 1px solid var(--line);
+            padding: 12px 18px;
+        }
+        .tools { display: flex; gap: 12px; margin-bottom: 10px; color: var(--subtle); }
+        .tools svg { width: 18px; height: 18px; }
+        textarea {
+            width: 100%;
+            height: 52px;
+            resize: none;
+            border: 0;
+            outline: 0;
+            font-size: 13px;
+            color: var(--text);
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 12px;
+        }
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            padding: 14px;
+        }
+        .card h3 { font-size: 14px; margin-bottom: 8px; }
+        .card p { color: var(--subtle); font-size: 12px; line-height: 1.7; }
+        .file-type {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 12px;
+        }
+        .word { background: #2f75ff; }
+        .excel { background: #16a34a; }
+        .ppt { background: #f97316; }
+        .pdf { background: #ef4444; }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 76px repeat(7, minmax(96px, 1fr));
+            min-width: 820px;
+            border-top: 1px solid var(--line);
+            border-left: 1px solid var(--line);
+        }
+        .cal-cell {
+            min-height: 58px;
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            padding: 8px;
+            background: #fff;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .cal-head { background: #fafbfc; color: var(--subtle); text-align: center; font-weight: 650; }
+        .event {
+            margin-top: 4px;
+            padding: 6px;
+            border-radius: 6px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            line-height: 1.35;
+        }
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+            gap: 12px;
+        }
+        .app-tile {
+            min-height: 116px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-align: center;
+        }
+        .app-tile:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+        .app-tile .title-icon { width: 40px; height: 40px; }
+        .app-tile strong { font-size: 13px; }
+        .footbar {
+            height: 28px;
+            padding: 0 12px;
+            border-top: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--subtle);
+            font-size: 11.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 64px; }
+            .brand span, .nav-label, .nav-item span, .user div { display: none; }
+            .split { grid-template-columns: 1fr; }
+            .pane:not(.primary) { display: none; }
+            .search { display: none; }
         }
     </style>
 </head>
 <body>
-    <main class="page">
-        <section class="shell">
-            <header class="top">
-                <div class="mark">洄</div>
-                <h1>南洄工作台</h1>
-            </header>
-            <div class="body">
-                <div class="module-icon"><i id="moduleIcon" data-lucide="folder-clock"></i></div>
-                <div>
-                    <h2 id="moduleTitle">模块待接入</h2>
-                    <p id="moduleDesc">该模块入口已建立，证据内容尚未写入。后续可在这里接入记录列表、旧版本、回执、权限状态和解锁后的异常视图。</p>
-                </div>
-                <div class="meta">
-                    <div class="row"><span>接入状态</span><b>入口已建立</b></div>
-                    <div class="row"><span>复核档案</span><b>GL-0606</b></div>
-                    <div class="row"><span>内容版本</span><b>待补充</b></div>
-                </div>
+    <aside class="sidebar">
+        <a class="brand" href="workbench.html" target="_blank" rel="noopener noreferrer">
+            <div class="mark">洄</div><span>南洄工作台</span>
+        </a>
+        <nav class="nav" id="nav"></nav>
+        <div class="user">
+            <div class="avatar">顾</div>
+            <div><strong>顾路</strong><span>在线</span></div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="title">
+                <div class="title-icon"><i id="pageIcon" data-lucide="layout-grid"></i></div>
+                <span id="pageTitle">工作台应用</span>
             </div>
-        </section>
+            <div class="tabs" id="tabs"></div>
+            <div class="search"><i data-lucide="search"></i><input id="searchInput" placeholder="搜索"></div>
+            <button class="icon-btn" title="刷新"><i data-lucide="refresh-cw"></i></button>
+            <button class="icon-btn" title="更多"><i data-lucide="more-horizontal"></i></button>
+        </header>
+        <section class="content" id="app"></section>
+        <footer class="footbar">
+            <span>南洄科技有限公司</span>
+            <span>/</span>
+            <span id="statusText">同步正常</span>
+            <span style="margin-left:auto;">GL-0606 / 普通工作台视图</span>
+        </footer>
     </main>
 
     <script>
-        const modules = {
-            aiTable: ['AI 表格', 'table-properties', '预留路线复核表、门禁回执对照表、异常样本排除清单。'],
-            aiNote: ['AI 听记', 'mic-vocal', '预留会议摘要、逐字稿、缺失尾段和低置信度标记。'],
-            meeting: ['会议', 'video', '预留 0605 C座路径复核会、舆情响应短会和尾段恢复入口。'],
-            todo: ['待办', 'square-check-big', '预留补交设备、门禁联动回执和自动完成状态。'],
-            ding: ['DING', 'zap', '预留强提醒、签名残留、trace id 和发送来源记录。'],
-            add: ['添加', 'plus', '预留工牌核验、归档提交、TMP 独立彩蛋入口。'],
-            visitor: ['旧版访客记录', 'door-open', '预留补交设备和补交证据封包的旧字段对照。'],
-            equipment: ['设备归还', 'package-check', '预留设备编号、回执时间和门禁联动状态。'],
-            archive: ['归档提交', 'archive', '预留证据提交路径和结局分流。']
+        const APPS = [
+            ['messages', '消息', 'message-circle'],
+            ['documents', '文档', 'file-text'],
+            ['aiTable', 'AI 表格', 'table-properties'],
+            ['aiNote', 'AI 听记', 'mic-vocal'],
+            ['contacts', '通讯录', 'users'],
+            ['meeting', '会议', 'video'],
+            ['calendar', '日历', 'calendar-days'],
+            ['todo', '待办', 'square-check-big'],
+            ['ding', 'DING', 'zap'],
+            ['visitor', '访客记录', 'door-open'],
+            ['equipment', '设备归还', 'package-check'],
+            ['archive', '归档', 'archive'],
+            ['add', '添加应用', 'plus']
+        ];
+
+        const moduleKey = new URLSearchParams(location.search).get('module') || 'messages';
+        const current = APPS.find(([key]) => key === moduleKey) || APPS[0];
+
+        function icon(name) {
+            return `<i data-lucide="${name}"></i>`;
+        }
+
+        function appUrl(key) {
+            return `module-shell.html?module=${key}`;
+        }
+
+        function setShell() {
+            document.title = `${current[1]} - 南洄工作台`;
+            document.getElementById('pageTitle').textContent = current[1];
+            document.getElementById('pageIcon').setAttribute('data-lucide', current[2]);
+            document.getElementById('nav').innerHTML = `
+                <div class="nav-label">常用</div>
+                ${APPS.slice(0, 9).map(([key, name, ic]) => `<a class="nav-item ${key === moduleKey ? 'active' : ''}" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer">${icon(ic)}<span>${name}</span></a>`).join('')}
+                <div class="nav-label">管理</div>
+                ${APPS.slice(9).map(([key, name, ic]) => `<a class="nav-item ${key === moduleKey ? 'active' : ''}" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer">${icon(ic)}<span>${name}</span></a>`).join('')}
+            `;
+        }
+
+        function setTabs(items) {
+            document.getElementById('tabs').innerHTML = items.map((item, index) => `<span class="tab ${index === 0 ? 'active' : ''}">${item}</span>`).join('');
+        }
+
+        function renderMessages() {
+            setTabs(['消息', '组织', '@我']);
+            document.getElementById('statusText').textContent = '消息同步完成，无未读异常';
+            app.innerHTML = `
+                <div class="split" style="--left:320px;--right:0px">
+                    <aside class="pane">
+                        <div class="section-head"><h2>会话</h2><button class="btn">${icon('plus')}新建</button></div>
+                        <div class="list">
+                            ${[
+                                ['行政通知', '本周办公用品领用流程已更新', '09:18', '#2f75ff', '行'],
+                                ['技术一组', '周报模板已同步到文档中心', '昨天', '#16a34a', '技'],
+                                ['人事服务台', '离职交接模板归档完成', '06-05', '#f97316', '人'],
+                                ['郑明', 'C座路线复核方案按普通流程归档即可', '06-05', '#7357d8', '郑'],
+                                ['南洄系统助手', '您的账号安全状态正常', '06-04', '#64748b', '系']
+                            ].map((row, i) => `<div class="list-row ${i === 0 ? 'active' : ''}">
+                                <div class="row-icon" style="background:${row[3]}">${row[4]}</div>
+                                <div class="row-main"><strong>${row[0]}</strong><span>${row[1]}</span></div>
+                                <div class="row-meta">${row[2]}</div>
+                            </div>`).join('')}
+                        </div>
+                    </aside>
+                    <section class="pane primary">
+                        <div class="chat-view">
+                            <div class="section-head"><h2>行政通知</h2><div class="muted">5 名成员</div></div>
+                            <div class="chat-body">
+                                <div class="msg"><div class="row-icon" style="background:#2f75ff">行</div><div class="bubble">各位，本周资料归档、办公用品领用、设备台账同步均已完成。后续请按文档中心模板提交。</div></div>
+                                <div class="msg self"><div class="row-icon" style="background:#7357d8">顾</div><div class="bubble">收到，我这边按普通流程整理。</div></div>
+                                <div class="msg"><div class="row-icon" style="background:#2f75ff">行</div><div class="bubble">好的。归档记录会自动同步，不需要重复提交。</div></div>
+                            </div>
+                            <div class="chat-input">
+                                <div class="tools">${icon('smile')}${icon('paperclip')}${icon('image')}${icon('calendar-plus')}${icon('send')}</div>
+                                <textarea placeholder="输入消息"></textarea>
+                            </div>
+                        </div>
+                    </section>
+                </div>`;
+        }
+
+        function renderDocuments() {
+            setTabs(['最近', '团队文件', '与我共享', '收藏']);
+            document.getElementById('statusText').textContent = '文档中心 16 个文件可用';
+            const rows = [
+                ['DOC', 'word', '南洄科技有限公司离职交接模板.docx', '人事服务台', '06-05 18:20', '已同步'],
+                ['XLS', 'excel', '设备台账-六月复核表.xlsx', '资产管理', '06-05 17:42', '已同步'],
+                ['PPT', 'ppt', '园区网络认证服务月报.pptx', '信息办接口', '06-04 15:12', '已同步'],
+                ['DOC', 'word', 'C座办公区访客登记说明.docx', '行政通知', '06-04 11:36', '已同步'],
+                ['XLS', 'excel', '周报数据汇总表.xlsx', '技术一组', '06-03 19:05', '已同步'],
+                ['PDF', 'pdf', '员工账号安全检查手册.pdf', '系统助手', '06-03 09:24', '只读']
+            ];
+            app.innerHTML = `
+                <div class="split" style="--left:236px;--right:0px">
+                    <aside class="pane">
+                        <div class="section-head"><h2>文档</h2></div>
+                        <div class="list">
+                            ${['最近打开', '我的文档', '团队文件', '共享给我', '归档资料', '回收站'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '6 个文件' : '正常'}</span></div></div>`).join('')}
+                        </div>
+                    </aside>
+                    <section class="pane primary">
+                        <div class="section-head">
+                            <h2>最近打开</h2>
+                            <div><button class="btn">${icon('upload')}上传</button> <button class="btn primary">${icon('plus')}新建</button></div>
+                        </div>
+                        <table class="table">
+                            <thead><tr><th>名称</th><th>创建人</th><th>最近打开</th><th>状态</th><th>操作</th></tr></thead>
+                            <tbody>
+                                ${rows.map((r) => `<tr>
+                                    <td><div class="list-row" style="padding:0"><span class="file-type ${r[1]}">${r[0]}</span><div class="row-main"><strong>${r[2]}</strong><span>企业文档 / 普通权限</span></div></div></td>
+                                    <td>${r[3]}</td><td>${r[4]}</td><td><span class="status">${r[5]}</span></td><td><span class="tag">打开</span></td>
+                                </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </section>
+                </div>`;
+        }
+
+        function renderTable() {
+            setTabs(['数据表', '视图', '自动化', '权限']);
+            document.getElementById('statusText').textContent = 'AI 表格服务正常';
+            const rows = [
+                ['WB-0605-01', '设备归还', '资产管理', '完成', '06-05 15:40'],
+                ['WB-0605-02', '文档归档', '文档中心', '完成', '06-05 17:12'],
+                ['WB-0606-01', '访客登记', '行政前台', '完成', '06-06 09:20'],
+                ['WB-0606-02', '账号复核', '系统助手', '完成', '06-06 10:05'],
+                ['WB-0606-03', '网络认证', '园区接口', '完成', '06-06 11:18']
+            ];
+            app.innerHTML = `
+                <section class="pane primary">
+                    <div class="section-head"><h2>工作流数据表</h2><button class="btn primary">${icon('sparkles')}生成摘要</button></div>
+                    <table class="table">
+                        <thead><tr><th>记录 ID</th><th>事项</th><th>来源</th><th>状态</th><th>更新时间</th></tr></thead>
+                        <tbody>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}</tbody>
+                    </table>
+                </section>`;
+        }
+
+        function renderNote() {
+            setTabs(['会议纪要', '录音', '摘要', '行动项']);
+            document.getElementById('statusText').textContent = 'AI 听记摘要已生成';
+            app.innerHTML = `
+                <div class="split" style="--left:280px;--right:0px">
+                    <aside class="pane"><div class="section-head"><h2>听记列表</h2></div><div class="list">
+                        ${['部门例会 10:00', '资料归档同步会', '设备台账复核', '行政流程说明'].map((n, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-icon" style="background:#7357d8">${icon('mic')}</div><div class="row-main"><strong>${n}</strong><span>摘要已生成</span></div></div>`).join('')}
+                    </div></aside>
+                    <section class="pane primary pad">
+                        <div class="cards">
+                            <div class="card"><h3>会议摘要</h3><p>本次例会确认本周资料归档、设备台账同步与普通权限复核流程均按计划完成。</p></div>
+                            <div class="card"><h3>行动项</h3><p>行政更新领用模板；资产组核对设备编号；技术组同步周报表格。</p></div>
+                            <div class="card"><h3>参会人员</h3><p>郑明、人事服务台、资产管理、技术一组、顾路。</p></div>
+                        </div>
+                        <table class="table" style="margin-top:16px"><thead><tr><th>时间</th><th>发言人</th><th>内容</th></tr></thead><tbody>
+                            <tr><td>10:04</td><td>郑明</td><td>本周所有流程都按普通版本处理，文档中心留存即可。</td></tr>
+                            <tr><td>10:18</td><td>资产管理</td><td>设备台账已经同步，后续补充回执由系统生成。</td></tr>
+                            <tr><td>10:31</td><td>顾路</td><td>收到，我按模板整理并归档。</td></tr>
+                        </tbody></table>
+                    </section>
+                </div>`;
+        }
+
+        function renderContacts() {
+            setTabs(['组织架构', '常用联系人', '外部联系人']);
+            document.getElementById('statusText').textContent = '通讯录同步正常';
+            const people = [
+                ['郑明', '技术部 / 直属上级', '在线', '#7357d8'],
+                ['林乔', '人事服务台', '在线', '#2f75ff'],
+                ['周闻', '资产管理', '离线', '#64748b'],
+                ['顾路', '技术部 / 前员工账号', '在线', '#16a34a'],
+                ['韩沛', '外部媒体联系人', '未添加', '#f97316']
+            ];
+            app.innerHTML = `
+                <div class="split" style="--left:260px;--right:0px">
+                    <aside class="pane"><div class="section-head"><h2>组织</h2></div><div class="list">
+                        ${['南洄科技有限公司', '总经办', '技术部', '人事行政部', '资产管理组', '园区接口组'].map((name, i) => `<div class="list-row ${i === 2 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '56 人' : '部门通讯录'}</span></div></div>`).join('')}
+                    </div></aside>
+                    <section class="pane primary">
+                        <div class="section-head"><h2>技术部</h2><button class="btn">${icon('download')}导出</button></div>
+                        <div class="list">${people.map(p => `<div class="list-row"><div class="row-icon" style="background:${p[3]}">${p[0].slice(0,1)}</div><div class="row-main"><strong>${p[0]}</strong><span>${p[1]}</span></div><span class="status ${p[2] === '离线' ? 'gray' : ''}">${p[2]}</span></div>`).join('')}</div>
+                    </section>
+                </div>`;
+        }
+
+        function renderMeeting() {
+            setTabs(['会议室', '会议列表', '预约记录']);
+            document.getElementById('statusText').textContent = '会议服务可用';
+            app.innerHTML = `<section class="pane primary pad"><div class="cards">
+                ${[
+                    ['会议室 A', '10:00-11:00 部门例会', '可预约'],
+                    ['会议室 B', '14:00-15:00 项目资料整理', '可预约'],
+                    ['线上会议', '16:00-16:30 周报同步', '已创建'],
+                    ['小会议间 C', '今日空闲', '可预约']
+                ].map((m, i) => `<div class="card"><h3>${m[0]}</h3><p>${m[1]}</p><p style="margin-top:10px"><span class="status ${i === 2 ? 'wait' : ''}">${m[2]}</span></p></div>`).join('')}
+            </div></section>`;
+        }
+
+        function renderCalendar() {
+            setTabs(['周', '月', '日程列表']);
+            document.getElementById('statusText').textContent = '日历同步完成';
+            const days = ['周一 1', '周二 2', '周三 3', '周四 4', '周五 5', '周六 6', '周日 7'];
+            const times = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '18:00'];
+            app.innerHTML = `<section class="pane primary pad"><div class="section-head" style="padding:0 0 16px;border:0"><h2>2026 年 6 月第一周</h2><button class="btn primary">${icon('plus')}新建日程</button></div>
+                <div class="calendar-grid">
+                    <div class="cal-cell cal-head"></div>${days.map(d => `<div class="cal-cell cal-head">${d}</div>`).join('')}
+                    ${times.map(t => `<div class="cal-cell cal-head">${t}</div>${days.map(d => `<div class="cal-cell">${eventFor(t, d)}</div>`).join('')}`).join('')}
+                </div></section>`;
+        }
+
+        function eventFor(time, day) {
+            const map = {
+                '10:00-周五 5': '<div class="event">部门例会<br>线上会议</div>',
+                '14:00-周五 5': '<div class="event">项目资料整理<br>文档中心</div>',
+                '15:00-周五 5': '<div class="event">设备台账同步<br>资产管理</div>',
+                '16:00-周五 5': '<div class="event">周报确认<br>技术一组</div>'
+            };
+            return map[`${time}-${day}`] || '';
+        }
+
+        function renderTodo() {
+            setTabs(['我的待办', '已完成', '我发起的']);
+            document.getElementById('statusText').textContent = '待办均已处理';
+            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>我的待办</h2><button class="btn">${icon('filter')}筛选</button></div><table class="table"><thead><tr><th>事项</th><th>来源</th><th>截止</th><th>状态</th></tr></thead><tbody>
+                ${[
+                    ['本周工作资料归档', '文档中心', '06-05', '已完成'],
+                    ['设备台账确认', '资产管理', '06-05', '已完成'],
+                    ['会议摘要确认', 'AI 听记', '06-05', '已完成'],
+                    ['个人资料同步确认', '工作台', '06-06', '已完成']
+                ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td></tr>`).join('')}
+            </tbody></table></section>`;
+        }
+
+        function renderDing() {
+            setTabs(['DING', '已发送', '签收记录']);
+            document.getElementById('statusText').textContent = 'DING 通知 0 条待签收';
+            app.innerHTML = `<section class="pane primary pad"><div class="cards">
+                ${[
+                    ['资料归档提醒', '已签收 5/5', '06-05 09:00'],
+                    ['设备台账同步', '已签收 4/4', '06-05 15:00'],
+                    ['周报模板更新', '已签收 8/8', '06-04 18:00']
+                ].map(d => `<div class="card"><h3>${d[0]}</h3><p>${d[1]}</p><p style="margin-top:10px;color:var(--subtle)">${d[2]}</p></div>`).join('')}
+            </div></section>`;
+        }
+
+        function renderVisitor() {
+            setTabs(['访客记录', '预约', '门禁联动']);
+            document.getElementById('statusText').textContent = '访客记录显示普通字段';
+            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>访客记录</h2><button class="btn">${icon('download')}导出</button></div><table class="table"><thead><tr><th>时间</th><th>访客/员工</th><th>事由</th><th>楼栋</th><th>状态</th></tr></thead><tbody>
+                ${[
+                    ['06-06 09:12', '顾路', '补交设备', 'C 座', '已登记'],
+                    ['06-05 16:20', '供应商接口', '设备维护', 'A 座', '已离场'],
+                    ['06-05 11:30', '行政快递', '文件送达', '前台', '已完成']
+                ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
+            </tbody></table></section>`;
+        }
+
+        function renderEquipment() {
+            setTabs(['设备归还', '资产台账', '回执']);
+            document.getElementById('statusText').textContent = '设备台账同步完成';
+            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>设备归还</h2><button class="btn primary">${icon('scan-line')}扫码入库</button></div><table class="table"><thead><tr><th>资产编号</th><th>名称</th><th>持有人</th><th>归还状态</th><th>回执</th></tr></thead><tbody>
+                ${[
+                    ['NH-LT-2206', '办公笔记本', '顾路', '已归还', '已生成'],
+                    ['NH-CARD-0606', '门禁工牌', '顾路', '待复核', '普通回执'],
+                    ['NH-KEY-0412', '办公柜钥匙', '顾路', '已归还', '已生成']
+                ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3] === '待复核' ? 'wait' : ''}">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}
+            </tbody></table></section>`;
+        }
+
+        function renderArchive() {
+            setTabs(['归档', '审批', '流转记录']);
+            document.getElementById('statusText').textContent = '归档与审批记录正常';
+            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>归档与审批</h2><button class="btn">${icon('archive')}批量归档</button></div><table class="table"><thead><tr><th>单据</th><th>类型</th><th>发起人</th><th>流程</th><th>状态</th></tr></thead><tbody>
+                ${[
+                    ['AR-0605-118', '办公用品领用确认', '行政', '已流转', '已完成'],
+                    ['AR-0605-119', '周报模板更新', '文档中心', '已发布', '已完成'],
+                    ['AR-0606-060', '会议室预约确认', '日程', '已确认', '已完成'],
+                    ['AR-0606-061', '设备回执归档', '资产管理', '普通流程', '已完成']
+                ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
+            </tbody></table></section>`;
+        }
+
+        function renderAdd() {
+            setTabs(['全部应用', '常用', '管理']);
+            document.getElementById('statusText').textContent = '应用中心可用';
+            app.innerHTML = `<section class="pane primary pad"><div class="app-grid">
+                ${APPS.filter(([key]) => key !== 'add').map(([key, name, ic]) => `<a class="app-tile" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer"><div class="title-icon">${icon(ic)}</div><strong>${name}</strong><span class="muted">已接入</span></a>`).join('')}
+                <a class="app-tile" href="badge-drop-test.html" target="_blank" rel="noopener noreferrer"><div class="title-icon">${icon('badge-check')}</div><strong>工牌校验</strong><span class="muted">测试入口</span></a>
+            </div></section>`;
+        }
+
+        const renderers = {
+            messages: renderMessages,
+            documents: renderDocuments,
+            aiTable: renderTable,
+            aiNote: renderNote,
+            contacts: renderContacts,
+            meeting: renderMeeting,
+            calendar: renderCalendar,
+            todo: renderTodo,
+            ding: renderDing,
+            visitor: renderVisitor,
+            equipment: renderEquipment,
+            archive: renderArchive,
+            add: renderAdd
         };
 
-        const key = new URLSearchParams(location.search).get('module') || '';
-        const data = modules[key] || ['模块待接入', 'folder-clock', '该模块入口已建立，证据内容尚未写入。'];
-        document.title = `${data[0]} - 南洄工作台`;
-        document.getElementById('moduleTitle').textContent = data[0];
-        document.getElementById('moduleDesc').textContent = data[2];
-        document.getElementById('moduleIcon').setAttribute('data-lucide', data[1]);
+        setShell();
+        (renderers[moduleKey] || renderMessages)();
         lucide.createIcons();
     </script>
 </body>
