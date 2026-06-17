@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMP 临时凭证</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-0: #030710;
+            --bg-1: #07111f;
+            --bg-2: #0f1f34;
+            --gold: #dfcf8d;
+            --gold-soft: rgba(223, 207, 141, 0.28);
+            --gold-hot: rgba(255, 236, 172, 0.9);
+            --text: #f5f2df;
+            --muted: rgba(229, 223, 192, 0.74);
+            --panel: rgba(8, 15, 28, 0.58);
+            --panel-line: rgba(223, 207, 141, 0.22);
+            --accent: #9bd6ff;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 18% 20%, rgba(120, 166, 255, 0.14), transparent 26%),
+                radial-gradient(circle at 82% 16%, rgba(223, 207, 141, 0.10), transparent 22%),
+                linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 42%, var(--bg-0) 100%);
+            color: var(--text);
+            font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+        }
+
+        body {
+            position: relative;
+            cursor: none;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 100% 3px, 72px 72px;
+            opacity: 0.34;
+            mix-blend-mode: screen;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            inset: 0;
+        }
+
+        .cursor-ring {
+            position: fixed;
+            width: 28px;
+            height: 28px;
+            margin-left: -14px;
+            margin-top: -14px;
+            border: 1px solid rgba(255, 238, 182, 0.30);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 50;
+            mix-blend-mode: screen;
+            transition: transform 180ms ease, border-color 220ms ease, opacity 220ms ease;
+        }
+
+        .overlay {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            padding: 28px;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .hero-copy {
+            align-self: flex-start;
+            max-width: 520px;
+            padding-top: 12px;
+        }
+
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border: 1px solid rgba(223, 207, 141, 0.24);
+            border-radius: 999px;
+            background: rgba(6, 12, 24, 0.36);
+            color: rgba(245, 238, 198, 0.86);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+        }
+
+        .hero-kicker::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 16px rgba(255, 235, 160, 0.65);
+        }
+
+        .hero-title {
+            margin-top: 20px;
+            font-size: clamp(32px, 4.2vw, 56px);
+            line-height: 1.12;
+            font-weight: 800;
+            text-shadow: 0 0 28px rgba(223, 207, 141, 0.08);
+        }
+
+        .hero-subtitle {
+            margin-top: 16px;
+            max-width: 460px;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .hero-tags {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hero-tag {
+            padding: 8px 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px;
+            background: rgba(7, 13, 24, 0.32);
+            color: rgba(233, 226, 197, 0.86);
+            font-size: 12px;
+        }
+
+        .console-card {
+            margin-left: auto;
+            width: min(440px, 100%);
+            align-self: flex-end;
+            border: 1px solid var(--panel-line);
+            border-radius: 22px;
+            background:
+                linear-gradient(180deg, rgba(16, 26, 44, 0.62), rgba(6, 12, 20, 0.78)),
+                rgba(8, 15, 28, 0.72);
+            box-shadow:
+                0 34px 90px rgba(0, 0, 0, 0.42),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+            backdrop-filter: blur(16px);
+            overflow: hidden;
+        }
+
+        .console-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(223, 207, 141, 0.12);
+        }
+
+        .console-head strong {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .console-head span {
+            color: rgba(229, 223, 192, 0.68);
+            font-size: 12px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-right: 8px;
+            border-radius: 50%;
+            background: #8ee8bf;
+            box-shadow: 0 0 18px rgba(142, 232, 191, 0.66);
+        }
+
+        .console-body {
+            padding: 20px 18px 18px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .meta-item {
+            padding: 14px 14px 13px;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .meta-label {
+            display: block;
+            color: rgba(229, 223, 192, 0.58);
+            font-size: 11px;
+            letter-spacing: 0.14em;
+        }
+
+        .meta-value {
+            display: block;
+            margin-top: 8px;
+            font-family: "Segoe UI", Consolas, monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            word-break: break-word;
+        }
+
+        .story-panel {
+            margin-top: 16px;
+            padding: 16px;
+            border: 1px solid rgba(223, 207, 141, 0.10);
+            border-radius: 18px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .story-panel p {
+            color: rgba(236, 231, 210, 0.82);
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .story-panel p + p {
+            margin-top: 8px;
+        }
+
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            appearance: none;
+            border: 1px solid rgba(223, 207, 141, 0.18);
+            border-radius: 999px;
+            min-height: 44px;
+            padding: 0 18px;
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 235, 160, 0.34);
+            background: rgba(255,255,255,0.07);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(201, 171, 83, 0.24), rgba(122, 178, 255, 0.14));
+            box-shadow: 0 0 28px rgba(223, 207, 141, 0.08);
+        }
+
+        .footer-note {
+            margin-top: 16px;
+            color: rgba(229, 223, 192, 0.54);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .subline {
+            position: fixed;
+            left: 50%;
+            bottom: 32px;
+            transform: translateX(-50%);
+            color: rgba(223, 207, 141, 0.62);
+            font-size: clamp(12px, 1.8vw, 16px);
+            letter-spacing: 0.44em;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 1400ms ease;
+            z-index: 15;
+            text-shadow: 0 0 24px rgba(223, 207, 141, 0.16);
+        }
+
+        .subline.is-visible {
+            opacity: 1;
+        }
+
+        .particle-message {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            z-index: 16;
+            width: min(620px, calc(100vw - 48px));
+            transform: translate(-50%, calc(-50% + 18px));
+            padding: 22px 28px 20px;
+            border: 1px solid rgba(223, 207, 141, 0.18);
+            border-radius: 24px;
+            background:
+                linear-gradient(180deg, rgba(8, 14, 24, 0.58), rgba(4, 8, 14, 0.34)),
+                rgba(7, 12, 20, 0.28);
+            backdrop-filter: blur(10px);
+            color: rgba(255, 250, 216, 0.96);
+            font-size: clamp(28px, 3.4vw, 46px);
+            font-weight: 900;
+            line-height: 1.16;
+            text-align: center;
+            text-shadow:
+                0 0 14px rgba(255, 236, 172, 0.20),
+                0 0 34px rgba(223, 207, 141, 0.12),
+                0 2px 10px rgba(0, 0, 0, 0.46);
+            box-shadow:
+                0 24px 80px rgba(0, 0, 0, 0.28),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+            pointer-events: none;
+            opacity: 0;
+            filter: blur(8px);
+            transition: opacity 1600ms ease, filter 1600ms ease, transform 1600ms ease;
+        }
+
+        .particle-message.is-visible {
+            opacity: 1;
+            filter: blur(0);
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .particle-message small {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            color: rgba(223, 207, 141, 0.78);
+            font-family: "Segoe UI", Consolas, monospace;
+            font-size: clamp(12px, 1.2vw, 15px);
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-shadow: 0 0 18px rgba(223, 207, 141, 0.12);
+        }
+
+        .particle-message small span {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 0 11px;
+            border: 1px solid rgba(223, 207, 141, 0.16);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.035);
+            white-space: nowrap;
+        }
+
+        @media (max-width: 980px) {
+            body { cursor: auto; }
+            .cursor-ring { display: none; }
+            .overlay {
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 20px;
+            }
+            .hero-copy {
+                max-width: none;
+                padding-top: 0;
+            }
+            .console-card {
+                width: 100%;
+                margin-left: 0;
+                align-self: stretch;
+            }
+            .subline {
+                bottom: 20px;
+                letter-spacing: 0.24em;
+            }
+            .particle-message {
+                width: min(520px, calc(100vw - 36px));
+                padding: 18px 18px 17px;
+                font-size: clamp(24px, 7vw, 36px);
+            }
+            .particle-message small {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 31px;
+            }
+            .hero-subtitle {
+                font-size: 14px;
+            }
+            .meta-grid {
+                grid-template-columns: 1fr;
+            }
+            .console-card {
+                border-radius: 18px;
+            }
+            .console-body {
+                padding: 16px;
+            }
+            .action-row {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="scene"></canvas>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <main class="overlay">
+        <section class="hero-copy">
+            <div class="hero-kicker">TMP TEMPORARY ACCESS</div>
+            <h1 class="hero-title">临时权限<br>止步于<br>正式系统之外。</h1>
+            <p class="hero-subtitle" id="heroSubtitle">
+                临时工牌可以通过门禁，却不会进入顾路的正式回收池。系统只保留一次到访、一段编号，以及一条随时可以被回收的权限痕迹。
+            </p>
+            <div class="hero-tags">
+                <span class="hero-tag" id="heroNameTag">NAME / TMP</span>
+                <span class="hero-tag" id="heroIdTag">ID / TMP-UNKNOWN</span>
+                <span class="hero-tag">POOL / TEMPORARY-CITY</span>
+            </div>
+        </section>
+
+        <aside class="console-card">
+            <div class="console-head">
+                <div>
+                    <strong><span class="status-dot"></span>TMP 访问留痕</strong>
+                    <span>旁观者编号已归档</span>
+                </div>
+                <span id="clockText">--:--:--</span>
+            </div>
+            <div class="console-body">
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">员工姓名</span>
+                        <span class="meta-value" id="nameValue">TMP</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">临时编号</span>
+                        <span class="meta-value" id="idValue">TMP-UNKNOWN</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">准入池</span>
+                        <span class="meta-value">TEMPORARY-CITY</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">记录状态</span>
+                        <span class="meta-value">ARCHIVED OBSERVER</span>
+                    </div>
+                </div>
+
+                <div class="story-panel">
+                    <p id="storyLineA">系统没有授予正式入口，只留下这枚临时编号。</p>
+                    <p id="storyLineB">它不属于主线权限，也不会进入顾路的工作台；它只证明，有人曾短暂抵达。</p>
+                </div>
+
+                <div class="action-row">
+                    <button class="btn btn-primary" type="button" id="backCredential">返回工牌入口</button>
+                    <button class="btn" type="button" id="resetTmp">清空临时留痕</button>
+                </div>
+
+                <div class="footer-note">
+                    TMP 工牌属于独立彩蛋路径，不影响顾路主线工作台与四个正式结局。
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <div class="subline" id="subline">感谢您对游戏的支持</div>
+    <div class="particle-message" id="particleMessage">
+        感谢您对游戏的支持
+        <small>
+            <span id="particleName">NAME / TMP</span>
+            <span id="particleId">ID / TMP-UNKNOWN</span>
+        </small>
+    </div>
+
+    <script>
+        (() => {
+            const canvas = document.getElementById('scene');
+            const ctx = canvas.getContext('2d');
+            const cursorRing = document.getElementById('cursorRing');
+            const subline = document.getElementById('subline');
+            const particleMessage = document.getElementById('particleMessage');
+            const particleName = document.getElementById('particleName');
+            const particleId = document.getElementById('particleId');
+            const clockText = document.getElementById('clockText');
+
+            const nameValue = document.getElementById('nameValue');
+            const idValue = document.getElementById('idValue');
+            const heroNameTag = document.getElementById('heroNameTag');
+            const heroIdTag = document.getElementById('heroIdTag');
+            const heroSubtitle = document.getElementById('heroSubtitle');
+            const storyLineA = document.getElementById('storyLineA');
+            const storyLineB = document.getElementById('storyLineB');
+
+            const params = new URLSearchParams(window.location.search);
+            const tmpName = params.get('name') || localStorage.getItem('nh_tmp_name') || '临时访客';
+            const tmpId = params.get('id') || localStorage.getItem('nh_tmp_id') || 'TMP-UNKNOWN';
+
+            nameValue.textContent = tmpName;
+            idValue.textContent = tmpId;
+            heroNameTag.textContent = `NAME / ${tmpName}`;
+            heroIdTag.textContent = `ID / ${tmpId}`;
+            particleName.textContent = `NAME / ${tmpName}`;
+            particleId.textContent = `ID / ${tmpId}`;
+            heroSubtitle.textContent = `${tmpName} 的临时凭证可以通过门禁，却无法进入顾路的正式回收池。系统只保留了 ${tmpId}，以及一条随时可以被回收的权限痕迹。`;
+            storyLineA.textContent = `${tmpName} 没有被授予正式入口，只留下这枚临时编号。`;
+            storyLineB.textContent = '它不属于主线权限，也不会进入顾路的工作台；它只证明，有人曾短暂抵达。';
+
+            function updateClock() {
+                const now = new Date();
+                clockText.textContent = now.toLocaleTimeString('zh-CN', { hour12: false });
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            let width = 0;
+            let height = 0;
+            let centerX = 0;
+            let centerY = 0;
+            let mouseX = -999;
+            let mouseY = -999;
+            let clicked = false;
+
+            const glowTextures = [48, 52, 56, 60, 64].map((hue) => {
+                const tex = document.createElement('canvas');
+                tex.width = tex.height = 128;
+                const g = tex.getContext('2d');
+                const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+                grad.addColorStop(0, `hsla(${hue}, 100%, 90%, 1)`);
+                grad.addColorStop(0.05, `hsla(${hue}, 100%, 80%, 0.8)`);
+                grad.addColorStop(0.16, `hsla(${hue}, 90%, 66%, 0.24)`);
+                grad.addColorStop(0.42, `hsla(${hue}, 82%, 52%, 0.04)`);
+                grad.addColorStop(1, 'transparent');
+                g.fillStyle = grad;
+                g.fillRect(0, 0, 128, 128);
+                return tex;
+            });
+
+            const stars = Array.from({ length: 260 }, () => ({
+                x: Math.random(),
+                y: Math.random(),
+                r: 0.3 + Math.random() * 0.9,
+                a: 0.04 + Math.random() * 0.24,
+                phase: Math.random() * Math.PI * 2,
+                speed: 0.3 + Math.random() * 2
+            }));
+
+            class Firefly {
+                constructor(x, y, born, ambient) {
+                    this.x = x;
+                    this.y = y;
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.px = x;
+                    this.py = y;
+                    this.born = born;
+                    this.ambient = ambient;
+                    this.tx = 0;
+                    this.ty = 0;
+                    this.hasTarget = false;
+                    this.delay = 0;
+                    this.size = 1.2 + Math.random() * 1.5;
+                    this.glow = 28 + Math.random() * 34;
+                    this.texture = glowTextures[Math.floor(Math.random() * glowTextures.length)];
+                    this.brightness = 0.38 + Math.random() * 0.46;
+                    this.phase = Math.random() * Math.PI * 2;
+                    this.speed = 1.5 + Math.random() * 2.1;
+                    this.spring = 0.022 + Math.random() * 0.038;
+                    this.index = 0;
+                }
+
+                assign(tx, ty, delay) {
+                    this.tx = tx;
+                    this.ty = ty;
+                    this.hasTarget = true;
+                    this.delay = delay;
+                }
+            }
+
+            const phases = [
+                { name: 'dark', duration: 1800 },
+                { name: 'single', duration: 2600 },
+                { name: 'multiply', duration: 5200 },
+                { name: 'dance', duration: 8000 },
+                { name: 'form', duration: 7600 },
+                { name: 'hold', duration: Infinity }
+            ];
+
+            function getPhase(time, startTime) {
+                const elapsed = time - startTime;
+                let sum = 0;
+                for (let i = 0; i < phases.length; i += 1) {
+                    sum += phases[i].duration;
+                    if (elapsed < sum) {
+                        return {
+                            name: phases[i].name,
+                            progress: Math.min(1, (elapsed - (sum - phases[i].duration)) / phases[i].duration)
+                        };
+                    }
+                }
+                return { name: 'hold', progress: 1 };
+            }
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                centerX = width / 2;
+                centerY = height / 2;
+            }
+
+            function drawStars(time) {
+                for (const star of stars) {
+                    const twinkle = 0.4 + 0.6 * Math.sin(star.phase + time * 0.0008 * star.speed);
+                    ctx.globalAlpha = star.a * twinkle;
+                    ctx.fillStyle = '#ced7e8';
+                    ctx.beginPath();
+                    ctx.arc(star.x * width, star.y * height, star.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function drawVignette() {
+                const grad = ctx.createRadialGradient(centerX, centerY, width * 0.08, centerX, centerY, width * 0.72);
+                grad.addColorStop(0, 'transparent');
+                grad.addColorStop(1, 'rgba(0, 0, 0, 0.58)');
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+            }
+
+            function sampleText(lines, size) {
+                const textLines = Array.isArray(lines) ? lines : [lines];
+                const offscreen = document.createElement('canvas');
+                const g = offscreen.getContext('2d');
+                const mainFont = `900 ${size}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
+                const metaSize = Math.max(14, Math.round(size * 0.26));
+                const metaFont = `800 ${metaSize}px "Segoe UI", Consolas, "Microsoft YaHei", sans-serif`;
+                g.font = mainFont;
+                const widths = textLines.map((line, index) => {
+                    g.font = index === 0 ? mainFont : metaFont;
+                    return g.measureText(line).width;
+                });
+                const textWidth = Math.max(...widths);
+                offscreen.width = Math.ceil(textWidth) + Math.ceil(size * 1.4);
+                offscreen.height = Math.ceil(size * 2.4);
+                g.fillStyle = '#ffffff';
+                g.textAlign = 'center';
+                g.textBaseline = 'middle';
+                g.font = mainFont;
+                g.fillText(textLines[0], offscreen.width / 2, offscreen.height / 2 - size * 0.22);
+                g.font = metaFont;
+                textLines.slice(1).forEach((line, index) => {
+                    g.fillText(line, offscreen.width / 2, offscreen.height / 2 + size * 0.44 + index * metaSize * 1.32);
+                });
+
+                const data = g.getImageData(0, 0, offscreen.width, offscreen.height).data;
+                const points = [];
+                const step = Math.max(5, Math.round(size / 13));
+                for (let y = 0; y < offscreen.height; y += step) {
+                    for (let x = 0; x < offscreen.width; x += step) {
+                        if (data[(y * offscreen.width + x) * 4 + 3] > 100) {
+                            points.push({ x: x - offscreen.width / 2, y: y - offscreen.height / 2 });
+                        }
+                    }
+                }
+                return points;
+            }
+
+            function dancePosition(index, total, time) {
+                const ratio = index / Math.max(1, total);
+                const t = time * 0.00028;
+                const golden = 1.618;
+                let px = Math.sin(ratio * Math.PI * 2 * 6 + t * 4) * 0.52
+                    + Math.sin(ratio * Math.PI * 2 * 4 + t * golden * 3) * 0.22
+                    + Math.cos(ratio * Math.PI * 2 * 9 + t * 2.2) * 0.10;
+                let py = Math.cos(ratio * Math.PI * 2 * 5 + t * 3.2) * 0.48
+                    + Math.sin(ratio * Math.PI * 2 * 7 + t * golden * 2.5) * 0.18
+                    + Math.sin(ratio * Math.PI * 2 * 3 + t * 1.7) * 0.07;
+                const rotation = t * 1.2;
+                const rx = px * Math.cos(rotation) - py * Math.sin(rotation);
+                const ry = px * Math.sin(rotation) + py * Math.cos(rotation);
+                const scale = 0.3 + Math.min(1, t * 0.45) * 0.7;
+                const breath = 1 + 0.04 * Math.sin(t * 3);
+                return {
+                    x: centerX + rx * width * 0.52 * scale * breath,
+                    y: centerY + ry * height * 0.52 * scale * breath
+                };
+            }
+
+            const particleTextMain = '感谢您对游戏的支持';
+            let targetPoints = [];
+            let textCount = 0;
+            let totalCount = 0;
+            let fireflies = [];
+            let sparkles = [];
+            let startTime = 0;
+            let started = false;
+            let assigned = false;
+            let lineShown = false;
+
+            function spawnSparkle(x, y, vx, vy) {
+                if (sparkles.length > 280) return;
+                sparkles.push({
+                    x,
+                    y,
+                    vx: vx * 0.3 + (Math.random() - 0.5) * 0.5,
+                    vy: vy * 0.3 + (Math.random() - 0.5) * 0.5,
+                    born: performance.now(),
+                    life: 360 + Math.random() * 320,
+                    size: 0.4 + Math.random() * 0.9
+                });
+            }
+
+            function updateFirefly(fly, time, phaseInfo) {
+                fly.px = fly.x;
+                fly.py = fly.y;
+
+                const dxMouse = fly.x - mouseX;
+                const dyMouse = fly.y - mouseY;
+                const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse) || 1;
+                const repelRadius = phaseInfo.name === 'form' ? 65 : 110;
+                const repelStrength = phaseInfo.name === 'form' ? 0.13 : 0.45;
+                if (distMouse < repelRadius) {
+                    const force = (repelRadius - distMouse) / repelRadius * repelStrength;
+                    fly.vx += dxMouse / distMouse * force;
+                    fly.vy += dyMouse / distMouse * force;
+                }
+
+                switch (phaseInfo.name) {
+                    case 'dark':
+                    case 'single': {
+                        const dx = fly.x - centerX;
+                        const dy = fly.y - centerY;
+                        const angle = Math.atan2(dy, dx);
+                        fly.vx += -Math.sin(angle) * 0.06;
+                        fly.vy += Math.cos(angle) * 0.06;
+                        fly.vx -= dx * 0.0003;
+                        fly.vy -= dy * 0.0003;
+                        fly.vx += (Math.random() - 0.5) * 0.08;
+                        fly.vy += (Math.random() - 0.5) * 0.08;
+                        fly.vx *= 0.96;
+                        fly.vy *= 0.96;
+                        fly.x += fly.vx;
+                        fly.y += fly.vy;
+                        break;
+                    }
+                    case 'multiply': {
+                        const vx = centerX + Math.sin(time * 0.0004) * width * 0.12;
+                        const vy = centerY + Math.cos(time * 0.00035) * height * 0.08;
+                        const dx = fly.x - vx;
+                        const dy = fly.y - vy;
+                        const angle = Math.atan2(dy, dx);
+                        fly.vx += -Math.sin(angle) * 0.09;
+                        fly.vy += Math.cos(angle) * 0.09;
+                        fly.vx -= dx * 0.0005;
+                        fly.vy -= dy * 0.0005;
+                        fly.vx += (Math.random() - 0.5) * 0.14;
+                        fly.vy += (Math.random() - 0.5) * 0.14;
+                        fly.vx *= 0.955;
+                        fly.vy *= 0.955;
+                        fly.x += fly.vx;
+                        fly.y += fly.vy;
+                        break;
+                    }
+                    case 'dance': {
+                        const dt = time - (startTime + phases[0].duration + phases[1].duration + phases[2].duration);
+                        const pos = dancePosition(fly.index, totalCount, dt);
+                        const stiffness = fly.ambient ? 0.009 : 0.014;
+                        fly.vx += (pos.x - fly.x) * stiffness;
+                        fly.vy += (pos.y - fly.y) * stiffness;
+                        fly.vx += (Math.random() - 0.5) * 0.07;
+                        fly.vy += (Math.random() - 0.5) * 0.07;
+                        fly.vx *= 0.955;
+                        fly.vy *= 0.955;
+                        fly.x += fly.vx;
+                        fly.y += fly.vy;
+                        break;
+                    }
+                    case 'form': {
+                        if (fly.ambient) {
+                            const angle = Math.atan2(fly.y - centerY, fly.x - centerX);
+                            fly.vx += -Math.sin(angle) * 0.03 + (Math.random() - 0.5) * 0.08;
+                            fly.vy += Math.cos(angle) * 0.03 + (Math.random() - 0.5) * 0.08;
+                            fly.vx *= 0.97;
+                            fly.vy *= 0.97;
+                            fly.x += fly.vx;
+                            fly.y += fly.vy;
+                        } else if (fly.hasTarget) {
+                            const eased = Math.max(0, Math.min((phaseInfo.progress - fly.delay) / Math.max(0.01, 1 - fly.delay), 1));
+                            if (eased > 0) {
+                                const stiffness = fly.spring * Math.min(1, eased * 2.5);
+                                fly.vx += (fly.tx - fly.x) * stiffness;
+                                fly.vy += (fly.ty - fly.y) * stiffness;
+                                fly.vx *= 0.86;
+                                fly.vy *= 0.86;
+                                fly.x += fly.vx;
+                                fly.y += fly.vy;
+                            }
+                        }
+                        break;
+                    }
+                    case 'hold': {
+                        if (fly.ambient) {
+                            const angle = Math.atan2(fly.y - centerY, fly.x - centerX);
+                            fly.vx += -Math.sin(angle) * 0.025 + (Math.random() - 0.5) * 0.06;
+                            fly.vy += Math.cos(angle) * 0.025 + (Math.random() - 0.5) * 0.06;
+                            fly.vx *= 0.97;
+                            fly.vy *= 0.97;
+                            fly.x += fly.vx;
+                            fly.y += fly.vy;
+                        } else if (fly.hasTarget) {
+                            const ox = Math.sin(time * 0.0018 + fly.phase) * 2;
+                            const oy = Math.cos(time * 0.0022 + fly.phase * 1.3) * 2;
+                            fly.vx += (fly.tx + ox - fly.x) * 0.1;
+                            fly.vy += (fly.ty + oy - fly.y) * 0.1;
+                            fly.vx *= 0.82;
+                            fly.vy *= 0.82;
+                            fly.x += fly.vx;
+                            fly.y += fly.vy;
+                        }
+                        break;
+                    }
+                }
+
+                const speed = Math.sqrt(fly.vx * fly.vx + fly.vy * fly.vy);
+                if (speed > 2.8 && Math.random() < 0.12) {
+                    spawnSparkle(fly.x, fly.y, fly.vx, fly.vy);
+                }
+            }
+
+            function drawFirefly(fly, time) {
+                const age = time - fly.born;
+                const fadeIn = Math.min(1, age / 600);
+                const flicker = 0.45 + 0.55 * Math.sin(fly.phase + time * 0.002 * fly.speed);
+                const alpha = Math.min(0.82, fly.brightness * flicker * fadeIn);
+                if (alpha < 0.003) return;
+
+                const glowSize = fly.glow * 0.78 * (0.85 + 0.15 * Math.sin(fly.phase * 1.5 + time * 0.0008));
+                ctx.globalAlpha = alpha * 0.72;
+                ctx.drawImage(fly.texture, fly.x - glowSize / 2, fly.y - glowSize / 2, glowSize, glowSize);
+                ctx.globalAlpha = alpha * 0.62;
+                ctx.fillStyle = '#fff8da';
+                ctx.beginPath();
+                ctx.arc(fly.x, fly.y, fly.size * 0.42, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            function init() {
+                if (started) return;
+                started = true;
+                resize();
+                const particleTextLines = [particleTextMain, `${tmpName} · ${tmpId}`];
+                const textWidthLimit = Math.min(width * 0.58, 680);
+                const estimate = particleTextMain.length * 1.05;
+                const fontSize = Math.min(Math.max(textWidthLimit / estimate, 24), width < 640 ? 32 : 48);
+                targetPoints = sampleText(particleTextLines, fontSize);
+                textCount = targetPoints.length;
+                totalCount = textCount + Math.max(140, Math.floor(textCount * 0.28));
+                fireflies = [new Firefly(centerX, centerY, performance.now(), false)];
+                fireflies[0].index = 0;
+                assigned = false;
+                startTime = performance.now();
+                requestAnimationFrame(frame);
+            }
+
+            function frame(time) {
+                const phaseInfo = getPhase(time, startTime);
+
+                if (phaseInfo.name === 'multiply') {
+                    const target = Math.min(totalCount, 1 + Math.floor(phaseInfo.progress * totalCount));
+                    while (fireflies.length < target) {
+                        const seed = fireflies[Math.floor(Math.random() * fireflies.length)];
+                        const fly = new Firefly(
+                            seed.x + (Math.random() - 0.5) * 180,
+                            seed.y + (Math.random() - 0.5) * 180,
+                            time,
+                            fireflies.length >= textCount
+                        );
+                        fly.index = fireflies.length;
+                        fireflies.push(fly);
+                    }
+                } else if ((phaseInfo.name === 'dance' || phaseInfo.name === 'form' || phaseInfo.name === 'hold') && fireflies.length < totalCount) {
+                    while (fireflies.length < totalCount) {
+                        const fly = new Firefly(
+                            centerX + (Math.random() - 0.5) * 400,
+                            centerY + (Math.random() - 0.5) * 400,
+                            time,
+                            fireflies.length >= textCount
+                        );
+                        fly.index = fireflies.length;
+                        fireflies.push(fly);
+                    }
+                }
+
+                if (phaseInfo.name === 'form' && !assigned) {
+                    const shuffled = [...targetPoints];
+                    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    let i = 0;
+                    for (const fly of fireflies) {
+                        if (!fly.ambient && i < shuffled.length) {
+                            fly.assign(centerX + shuffled[i].x, centerY + shuffled[i].y, Math.random() * 0.3);
+                            i += 1;
+                        }
+                    }
+                    assigned = true;
+                }
+
+                if (phaseInfo.name === 'hold' && !lineShown) {
+                    subline.classList.add('is-visible');
+                    particleMessage.classList.add('is-visible');
+                    lineShown = true;
+                }
+
+                for (const fly of fireflies) updateFirefly(fly, time, phaseInfo);
+
+                for (let i = sparkles.length - 1; i >= 0; i -= 1) {
+                    const sparkle = sparkles[i];
+                    if (time - sparkle.born > sparkle.life) {
+                        sparkles.splice(i, 1);
+                        continue;
+                    }
+                    sparkle.x += sparkle.vx;
+                    sparkle.y += sparkle.vy;
+                    sparkle.vx *= 0.96;
+                    sparkle.vy *= 0.96;
+                }
+
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = '#030710';
+                ctx.fillRect(0, 0, width, height);
+
+                drawStars(time);
+                drawVignette();
+
+                if (phaseInfo.name === 'dance') {
+                    const alpha = 0.06 * Math.min(1, phaseInfo.progress * 2);
+                    const halo = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, width * 0.36);
+                    halo.addColorStop(0, `rgba(78, 62, 22, ${alpha})`);
+                    halo.addColorStop(1, 'transparent');
+                    ctx.fillStyle = halo;
+                    ctx.fillRect(0, 0, width, height);
+                }
+
+                if (phaseInfo.name === 'form' || phaseInfo.name === 'hold') {
+                    const alpha = phaseInfo.name === 'form' ? phaseInfo.progress * 0.09 : 0.1;
+                    const halo = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, width * 0.32);
+                    halo.addColorStop(0, `rgba(90, 72, 26, ${alpha})`);
+                    halo.addColorStop(0.5, `rgba(70, 54, 18, ${alpha * 0.3})`);
+                    halo.addColorStop(1, 'transparent');
+                    ctx.fillStyle = halo;
+                    ctx.fillRect(0, 0, width, height);
+                }
+
+                ctx.globalCompositeOperation = 'lighter';
+                for (const fly of fireflies) drawFirefly(fly, time);
+
+                for (const sparkle of sparkles) {
+                    const age = time - sparkle.born;
+                    const alpha = (1 - age / sparkle.life) * 0.5;
+                    if (alpha < 0.005) continue;
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = '#ffe8a0';
+                    ctx.beginPath();
+                    ctx.arc(sparkle.x, sparkle.y, sparkle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                if (mouseX > 0) {
+                    const mouseGlow = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 82);
+                    mouseGlow.addColorStop(0, 'rgba(223, 207, 141, 0.03)');
+                    mouseGlow.addColorStop(1, 'transparent');
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = mouseGlow;
+                    ctx.fillRect(mouseX - 82, mouseY - 82, 164, 164);
+                }
+
+                if (clicked) {
+                    cursorRing.style.borderColor = 'rgba(255, 238, 182, 0.66)';
+                    cursorRing.style.transform = 'scale(1.18)';
+                    setTimeout(() => {
+                        cursorRing.style.borderColor = 'rgba(255, 238, 182, 0.30)';
+                        cursorRing.style.transform = 'scale(1)';
+                    }, 180);
+                    clicked = false;
+                }
+
+                requestAnimationFrame(frame);
+            }
+
+            function updatePointer(x, y) {
+                mouseX = x;
+                mouseY = y;
+                cursorRing.style.left = `${x}px`;
+                cursorRing.style.top = `${y}px`;
+            }
+
+            window.addEventListener('mousemove', (event) => updatePointer(event.clientX, event.clientY));
+            window.addEventListener('touchmove', (event) => {
+                const touch = event.touches && event.touches[0];
+                if (touch) updatePointer(touch.clientX, touch.clientY);
+            }, { passive: true });
+            window.addEventListener('mousedown', () => { clicked = true; });
+            window.addEventListener('touchstart', () => { clicked = true; }, { passive: true });
+            window.addEventListener('resize', resize);
+
+            document.getElementById('backCredential').addEventListener('click', () => {
+                window.location.href = 'credential-login.html';
+            });
+
+            document.getElementById('resetTmp').addEventListener('click', () => {
+                localStorage.removeItem('nh_tmp_easter_egg');
+                localStorage.removeItem('nh_tmp_name');
+                localStorage.removeItem('nh_tmp_id');
+                window.location.href = 'credential-login.html';
+            });
+
+            document.fonts?.ready?.then(() => setTimeout(init, 180));
+            setTimeout(init, 1200);
+        })();
+    </script>
+</body>
+</html>
