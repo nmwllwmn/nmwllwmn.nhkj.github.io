@@ -1038,25 +1038,33 @@
             bottom: 42px;
             z-index: 40;
             width: 340px;
+            min-width: 260px;
+            max-width: min(640px, calc(100vw - 80px));
+            min-height: 230px;
+            max-height: calc(100vh - 86px);
             border: 1px solid rgba(229, 230, 235, 0.96);
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.96);
             box-shadow: 0 18px 46px rgba(15, 23, 42, 0.16);
             backdrop-filter: blur(16px);
             transition: transform 0.22s ease, box-shadow 0.22s ease;
+            resize: both;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .xiaohui-float.is-collapsed {
-            transform: translateX(362px);
+            transform: translateX(calc(100% - 42px));
             box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
         }
 
         .xiaohui-tab {
             position: absolute;
-            left: -46px;
-            top: 14px;
+            left: 0;
+            top: 0;
+            bottom: 0;
             width: 42px;
-            min-height: 122px;
             border: 0;
             border-radius: 8px 0 0 8px;
             background: linear-gradient(180deg, #5d56d6, #2f75ff);
@@ -1084,11 +1092,14 @@
 
         .xiaohui-head {
             height: 48px;
+            margin-left: 42px;
             padding: 0 12px 0 14px;
             border-bottom: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             gap: 9px;
+            cursor: move;
+            flex-shrink: 0;
         }
 
         .xiaohui-head strong {
@@ -1102,36 +1113,19 @@
         }
 
         .xiaohui-body {
+            margin-left: 42px;
             padding: 12px;
-        }
-
-        .xiaohui-tools {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-
-        .xiaohui-chip {
-            border: 0;
-            border-radius: 999px;
-            background: var(--bg);
-            color: var(--text-2);
-            padding: 5px 9px;
-            font-size: 11.5px;
-            cursor: pointer;
-        }
-
-        .xiaohui-chip:hover {
-            background: var(--accent-light);
-            color: var(--accent);
+            flex: 1;
+            min-height: 0;
+            flex-direction: column;
         }
 
         .xiaohui-textarea {
             width: 100%;
-            min-height: 150px;
-            max-height: 240px;
-            resize: vertical;
+            flex: 1;
+            min-height: 120px;
+            resize: none;
             border: 1px solid var(--border);
             border-radius: 8px;
             outline: 0;
@@ -1160,11 +1154,6 @@
 
         .xiaohui-foot .save-state {
             margin-left: auto;
-        }
-
-        .xiaohui-open {
-            color: var(--accent);
-            font-size: 11.5px;
         }
 
         body.recovery-mode {
@@ -1239,6 +1228,38 @@
         body.recovery-mode .status-bar .dot {
             background: #c77b82;
             box-shadow: 0 0 10px rgba(199, 123, 130, 0.38);
+        }
+
+        body.recovery-mode .xiaohui-float {
+            border-color: rgba(255, 107, 122, 0.24);
+            background: rgba(35, 18, 22, 0.96);
+            box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+        }
+
+        body.recovery-mode .xiaohui-tab {
+            background: linear-gradient(180deg, #6f2d37, #9a4d58);
+            box-shadow: 0 12px 24px rgba(154, 77, 88, 0.24);
+        }
+
+        body.recovery-mode .xiaohui-head {
+            border-bottom-color: rgba(255, 107, 122, 0.18);
+            color: #f4d6da;
+        }
+
+        body.recovery-mode .xiaohui-head span,
+        body.recovery-mode .xiaohui-foot {
+            color: #c7979f;
+        }
+
+        body.recovery-mode .xiaohui-textarea {
+            border-color: rgba(255, 107, 122, 0.28);
+            background: rgba(20, 12, 15, 0.9);
+            color: #f2d9dd;
+        }
+
+        body.recovery-mode .xiaohui-textarea:focus {
+            border-color: #c77b82;
+            box-shadow: 0 0 0 2px rgba(199, 123, 130, 0.16);
         }
 
 
@@ -1523,10 +1544,11 @@
                 right: 10px;
                 bottom: 46px;
                 width: min(330px, calc(100vw - 60px));
+                max-width: calc(100vw - 60px);
             }
 
             .xiaohui-float.is-collapsed {
-                transform: translateX(calc(100% + 10px));
+                transform: translateX(calc(100% - 42px));
             }
         }
     </style>
@@ -1948,15 +1970,8 @@
                 <span id="xiaohuiModeLabel">普通视图</span>
             </div>
             <div class="xiaohui-body">
-                <div class="xiaohui-tools">
-                    <button class="xiaohui-chip" type="button" data-note-insert="【消息】行政通知、技术一组、人事服务台均为普通沟通。">摘消息</button>
-                    <button class="xiaohui-chip" type="button" data-note-insert="【文档】交接模板、设备台账、月报文件均显示可打开。">摘文档</button>
-                    <button class="xiaohui-chip" type="button" data-note-insert="【待办】资料归档、设备台账、会议摘要均显示已完成。">摘待办</button>
-                    <button class="xiaohui-chip" type="button" data-note-insert="【待核对】访客事由与设备台账字段需要回看原始来源。">待核对</button>
-                </div>
                 <textarea class="xiaohui-textarea" id="xiaohuiNotes" placeholder="把复核过程、可疑字段、回看位置记在这里。AI小洄会自动保存。"></textarea>
                 <div class="xiaohui-foot">
-                    <a class="xiaohui-open" href="module-shell.html?module=aiXiaohui" target="_blank" rel="noopener noreferrer">打开完整笔记</a>
                     <span class="save-state" id="xiaohuiSaveState">已同步</span>
                 </div>
             </div>
@@ -2110,8 +2125,18 @@
             const saveState = document.getElementById('xiaohuiSaveState');
             const storageKey = 'nh_xiaohui_notes';
             const openKey = 'nh_xiaohui_open';
+            const rectKey = 'nh_xiaohui_rect';
 
             notes.value = localStorage.getItem(storageKey) || '复核记录：\n- 首页表层状态正常，暂无红点。\n- 下一步回看文档、消息、访客记录的来源时间。\n';
+            const savedRect = JSON.parse(localStorage.getItem(rectKey) || 'null');
+            if (savedRect) {
+                float.style.left = `${savedRect.left}px`;
+                float.style.top = `${savedRect.top}px`;
+                float.style.right = 'auto';
+                float.style.bottom = 'auto';
+                float.style.width = `${savedRect.width}px`;
+                float.style.height = `${savedRect.height}px`;
+            }
             if (localStorage.getItem(openKey) === 'true') {
                 float.classList.remove('is-collapsed');
             }
@@ -2120,6 +2145,51 @@
                 event.stopPropagation();
                 float.classList.toggle('is-collapsed');
                 localStorage.setItem(openKey, String(!float.classList.contains('is-collapsed')));
+            });
+
+            function saveFloatRect() {
+                const rect = float.getBoundingClientRect();
+                localStorage.setItem(rectKey, JSON.stringify({
+                    left: Math.max(6, Math.round(rect.left)),
+                    top: Math.max(6, Math.round(rect.top)),
+                    width: Math.round(rect.width),
+                    height: Math.round(rect.height)
+                }));
+            }
+
+            const resizeObserver = new ResizeObserver(() => {
+                if (!float.classList.contains('is-collapsed')) saveFloatRect();
+            });
+            resizeObserver.observe(float);
+
+            const head = float.querySelector('.xiaohui-head');
+            head.addEventListener('pointerdown', (event) => {
+                if (float.classList.contains('is-collapsed')) return;
+                event.preventDefault();
+                head.setPointerCapture(event.pointerId);
+                const startRect = float.getBoundingClientRect();
+                const startX = event.clientX;
+                const startY = event.clientY;
+
+                function onMove(moveEvent) {
+                    const nextLeft = Math.min(window.innerWidth - startRect.width - 8, Math.max(8, startRect.left + moveEvent.clientX - startX));
+                    const nextTop = Math.min(window.innerHeight - startRect.height - 8, Math.max(8, startRect.top + moveEvent.clientY - startY));
+                    float.style.left = `${nextLeft}px`;
+                    float.style.top = `${nextTop}px`;
+                    float.style.right = 'auto';
+                    float.style.bottom = 'auto';
+                }
+
+                function onUp() {
+                    head.removeEventListener('pointermove', onMove);
+                    head.removeEventListener('pointerup', onUp);
+                    head.removeEventListener('pointercancel', onUp);
+                    saveFloatRect();
+                }
+
+                head.addEventListener('pointermove', onMove);
+                head.addEventListener('pointerup', onUp);
+                head.addEventListener('pointercancel', onUp);
             });
 
             notes.addEventListener('input', () => {
@@ -2131,14 +2201,6 @@
                 }, 360);
             });
 
-            document.querySelectorAll('[data-note-insert]').forEach((button) => {
-                button.addEventListener('click', () => {
-                    const insert = button.getAttribute('data-note-insert');
-                    notes.value = `${notes.value.trim()}\n- ${insert}\n`;
-                    notes.dispatchEvent(new Event('input'));
-                    notes.focus();
-                });
-            });
         }
 
         document.querySelectorAll('.header-tab').forEach((tab) => {
