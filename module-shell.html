@@ -736,20 +736,130 @@
             color: var(--muted);
         }
         .word-page {
-            width: min(560px, calc(100vw - 96px));
-            min-height: 520px;
+            width: min(720px, calc(100vw - 96px));
+            min-height: 860px;
             margin: 18px auto;
-            padding: 44px 54px;
+            padding: 42px 58px 52px;
             background: #fff;
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
             color: var(--text);
             font-size: 14px;
-            line-height: 1.9;
+            line-height: 1.95;
         }
         .word-page h3 {
-            margin-bottom: 18px;
+            margin: 18px 0 20px;
             text-align: center;
-            font-size: 18px;
+            font-size: 22px;
+            letter-spacing: 0;
+        }
+        .official-redhead {
+            padding: 4px 0 12px;
+            border-bottom: 4px double #b91c1c;
+            color: #b91c1c;
+            text-align: center;
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        .official-subhead {
+            margin-top: 8px;
+            color: #64748b;
+            text-align: center;
+            font-size: 12px;
+        }
+        .official-title-block {
+            margin: 24px 0 18px;
+            text-align: center;
+        }
+        .official-title-block h3 {
+            margin: 0 0 10px;
+            font-size: 23px;
+            font-weight: 800;
+        }
+        .official-title-block .doc-no {
+            display: inline-flex;
+            gap: 18px;
+            color: #475569;
+            font-size: 12px;
+        }
+        .official-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            margin: 18px 0 20px;
+            border: 1px solid #cbd5e1;
+            border-bottom: 0;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+        .official-meta-grid div {
+            display: grid;
+            grid-template-columns: 88px 1fr;
+            border-bottom: 1px solid #d8dfef;
+        }
+        .official-meta-grid span {
+            padding: 8px 10px;
+            background: #f1f5f9;
+            color: var(--subtle);
+        }
+        .official-meta-grid strong {
+            padding: 8px 10px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .official-section-title {
+            margin: 22px 0 10px;
+            padding: 0 0 6px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #0f172a;
+            font-size: 15px;
+            font-weight: 750;
+        }
+        .official-clause {
+            margin-bottom: 11px;
+            text-indent: 2em;
+            text-align: justify;
+        }
+        .official-clause strong.doc-clue {
+            color: #1f2937;
+            font-weight: 750;
+            border-bottom-color: rgba(100, 116, 139, 0.35);
+        }
+        .official-issue-line {
+            margin: 18px 0 6px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #cbd5e1;
+            border-bottom: 1px solid #cbd5e1;
+            padding: 8px 0;
+            color: #475569;
+            font-size: 12px;
+        }
+        .official-sign {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 28px;
+            color: #334155;
+            font-size: 13px;
+        }
+        .official-sign div {
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .official-footer {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #d8dfef;
+            color: var(--subtle);
+            font-size: 11px;
+            text-align: center;
+        }
+        .official-copy {
+            margin-top: 16px;
+            color: #64748b;
+            font-size: 11px;
+            text-align: left;
+            text-indent: 0;
         }
         .page-count {
             display: block;
@@ -865,7 +975,7 @@
         }
         .pdf-page {
             width: min(620px, calc(100vw - 110px));
-            min-height: 640px;
+            min-height: 860px;
             margin: 22px auto;
             padding: 46px 52px;
             background: #fff;
@@ -2117,6 +2227,27 @@
                 kind: 'word',
                 title: '离职交接清单_顾路_归档版.docx',
                 meta: [['创建人', '人事服务台'], ['最近打开', '06-05 18:20'], ['状态', '已同步']],
+                official: {
+                    title: '员工离职交接清单',
+                    subtitle: '方案中心离职资料与资产交接留存',
+                    code: 'NH-HR-OFF-20260605-221',
+                    version: 'A/0',
+                    level: '内部 / 普通视图',
+                    scope: '方案中心离职员工',
+                    status: '归档版',
+                    department: '人事服务台',
+                    date: '2026-06-05',
+                    owner: '林知遥',
+                    reviewer: '人事服务台',
+                    issuer: '南洄科技有限公司人事行政部',
+                    archive: '文档中心 DOC-GL-0605',
+                    sections: [
+                        { title: '一、交接对象与岗位信息', clauses: ['交接对象为顾路，员工编号 GL-0606，原任方案中心方案设计师，主要负责园区空间动线、访客流程与交付材料编制。', '本清单依据人事服务台离职交接工单 HR-0605-221 生成，适用于资料归档、资产核对、账号只读映射和后续普通复核。', '交接期间账号在普通工作台中保留只读映射，用于查看消息、文档、待办、打卡、访客记录和归档预览；该映射仅为资料留存通道。'] },
+                        { title: '二、交接资料范围', clauses: ['方案资料包括《C座访客动线需求纪要》《C座访客动线方案评审稿》《C座方案版本对照表》《方案评审问题清单》《C座空间动线草图说明》及相关思维导图。', '资产资料包括 NH-LT-2206 办公笔记本、NH-CARD-0606 门禁工牌、NH-KEY-0412 办公柜钥匙、设备回执及归还登记。', '门禁工牌在资产台账中按凭证类资产登记，状态显示为 <strong class="doc-clue">待复核 / 普通回执</strong>，不得以该字段替代门禁刷卡明细。'] },
+                        { title: '三、交接确认程序', clauses: ['人事服务台负责确认离职流程节点，方案中心负责确认交付目录，资产管理组负责确认实物状态，文档中心负责生成归档版。', '文档中心于 2026-06-05 18:20 生成归档版，并同步至顾路普通工作台；服务台按普通流程标记交接闭环。', '后续补充材料应通过工单附件或文档中心补充目录接收，不在个人聊天、群聊或前台登记页重复确认。'] },
+                        { title: '四、普通视图复核边界', clauses: ['本清单仅证明普通交接流程已经形成可见闭环，不证明原始附件、撤回批注、隐藏列或凭证恢复态不存在。', '普通工作台显示的在线状态仅代表只读映射可访问，<strong class="doc-clue">不代表凭证回收池已完成复核</strong>。', '如复核人员需要核对门禁路线、摄像头索引、原始刷卡点位或旧版凭证记录，应通过凭证复核入口另行调取。'] }
+                    ]
+                },
                 paragraphs: [
                     '文档编号：HR-OFF-20260605-221。适用对象：顾路 / 方案中心 / GL-0606。本文用于离职人员资料交接、账号只读映射、设备归还和方案文档归档的普通流程留存。',
                     '交接范围包含账号资料、设备台账、方案文档、门禁工牌及个人资料同步确认。各项材料按人事服务台模板分项登记，不合并生成单一回执，避免资产类记录覆盖方案类记录。',
@@ -2144,6 +2275,27 @@
                 kind: 'word',
                 title: '设备补交登记说明.docx',
                 meta: [['创建人', '资产管理'], ['适用流程', '离职补交'], ['状态', '归档版']],
+                official: {
+                    title: '离职补交设备登记操作规程',
+                    subtitle: '资产管理组标准作业文件',
+                    code: 'NH-AM-SOP-202606-17',
+                    version: 'B/2',
+                    level: '内部',
+                    scope: '离职返岗补交设备、资料及凭证类资产',
+                    status: '现行有效',
+                    department: '资产管理组',
+                    date: '2026-06-01',
+                    owner: '周闻',
+                    reviewer: '资产管理组',
+                    issuer: '南洄科技有限公司行政资产中心',
+                    archive: '资产管理 / 6月',
+                    sections: [
+                        { title: '一、目的与适用范围', clauses: ['为规范离职人员返岗补交办公设备、门禁工牌、办公柜钥匙、纸质材料和方案附件的登记行为，制定本规程。', '本规程适用于已办理或正在办理离职交接、仍需返回园区补交材料的人员；前台登记事由统一采用模板字段。', '前台登记页不展开材料争议、绩效争议、交付版本争议等内容，相关事项由人事服务台或文档中心单独留存。'] },
+                        { title: '二、登记与分流要求', clauses: ['实物设备进入资产管理台账，方案文件进入文档中心，访客或返岗信息进入行政前台记录；同一人员存在多类事项时按模块分流。', '同一人员同时补交设备与文件时，普通工作台只展示设备登记字段，文档目录、访客记录与设备回执分别由对应模块保留。', '资产组生成普通回执后，工作台同步完成状态；如存在凭证类资产待复核，应在备注字段保留待复核标识。'] },
+                        { title: '三、凭证类资产处理', clauses: ['门禁工牌、临时通行凭证、园区认证卡等均属于凭证类资产，资产台账仅确认实物交回、遗失或待复核状态。', '<strong class="doc-clue">普通回执不能替代门禁路线和刷卡明细复核</strong>，不得作为旧版凭证恢复态的最终结论。', '如凭证仍存在恢复态映射，应由信息安全复核入口另行调取，不得在资产台账中直接删除或合并。'] },
+                        { title: '四、记录保留与展示', clauses: ['资产台账保留资产编号、持有人、归还状态、回执编号、最近更新时间和经办人，不保留门禁点位或摄像头索引。', '普通视图不展示刷卡明细、凭证恢复态和旧版路线附件；如需核对完整记录，应按信息安全组复核流程发起。', '本规程解释权归行政资产中心，执行过程中涉及员工权益争议的，由人事服务台另案登记。'] }
+                    ]
+                },
                 paragraphs: [
                     '文件编号：AM-SOP-202606-17。离职人员返回园区补交设备时，由行政前台登记统一事由，资产组按台账编号核对实物，并在工作台生成普通回执。',
                     '适用对象包括办公笔记本、门禁工牌、办公柜钥匙、临时领用配件及交接期间补交的纸质资料。资料类附件进入文档中心，资产类实物进入资产台账。',
@@ -2157,6 +2309,27 @@
                 kind: 'word',
                 title: '绩效申诉处理记录_已沟通.docx',
                 meta: [['创建人', '人事服务台'], ['关联人', '顾路'], ['状态', '已沟通']],
+                official: {
+                    title: '绩效申诉处理记录',
+                    subtitle: '人事服务台工单结论页',
+                    code: 'NH-HR-APPEAL-20260605-034',
+                    version: 'A/1',
+                    level: '内部 / 结论页',
+                    scope: '方案中心员工绩效申诉',
+                    status: '已沟通',
+                    department: '人事服务台',
+                    date: '2026-06-05',
+                    owner: '林知遥',
+                    reviewer: '人事服务台',
+                    issuer: '人事行政部',
+                    archive: 'HR-0605-221',
+                    sections: [
+                        { title: '一、工单基本信息', clauses: ['申请人为顾路，原任方案中心方案设计师，关联离职交接工单 HR-0605-221，申诉登记时间为 2026-06-05 16:36。', '申诉事项涉及方案评审周期、交付版本确认、加班记录口径及 C座访客动线方案 R-03 处理意见。', '本页为普通工作台结论页，仅用于展示服务台登记、沟通、归档状态。'] },
+                        { title: '二、受理与沟通记录', clauses: ['人事服务台已完成申诉登记，并向方案中心发起沟通通知；相关人员按流程确认已收到服务台通知。', '补充材料需通过工单附件提交，不在群聊或个人消息中单独确认；服务台不以聊天截屏作为正式申诉附件。', '<strong class="doc-clue">“已沟通”不等于争议内容已被展开复核</strong>，仅代表服务台完成通知和状态更新。'] },
+                        { title: '三、普通视图展示限制', clauses: ['普通工作台不展示内部批注、绩效沟通原始纪要、二次审核意见、附件哈希和版本撤回记录。', '本结论页不能替代原始申诉材料，也不能证明申诉事项已被实质处理完毕。', '如复核人员仅引用本页结论，应在报告中标注为普通视图意见。'] },
+                        { title: '四、归档与后续处理', clauses: ['本记录随离职交接清单同步至文档中心，与方案交付目录、设备台账和访客登记记录一并保留。', '如需调取原始申诉附件，应由人事归档权限处理，并记录调取人、调取时间和用途。', '员工继续办理交接流程不视为撤回申诉，服务台不得以交接完成作为自动驳回依据。'] }
+                    ]
+                },
                 paragraphs: [
                     '工单编号：HR-APPEAL-20260605-034。顾路提交的绩效申诉已由人事服务台登记，关联离职交接工单 HR-0605-221。',
                     '申诉内容涉及方案评审周期、交付版本确认、加班记录口径和 C座访客动线方案 R-03 处理意见。服务台归档时仅保留“已沟通”状态。',
@@ -2182,6 +2355,27 @@
                 kind: 'word',
                 title: 'C座访客动线需求纪要.docx',
                 meta: [['来源', '方案中心'], ['会议', '06-03 16:30'], ['状态', '已归档']],
+                official: {
+                    title: 'C座访客动线需求纪要',
+                    subtitle: '方案中心需求确认会议纪要',
+                    code: 'NH-PLAN-C-REQ-20260603',
+                    version: '纪要版 A/0',
+                    level: '内部',
+                    scope: 'C座访客、离职返岗、供应商维护动线',
+                    status: '已归档',
+                    department: '方案中心',
+                    date: '2026-06-03',
+                    owner: '顾路',
+                    reviewer: '郑明',
+                    issuer: '方案中心',
+                    archive: 'PLAN-C-REQ-20260603',
+                    sections: [
+                        { title: '一、会议背景', clauses: ['C座前台登记、办公区接待、资产补交和文档归档分别由不同模块维护，普通工作台存在同一人员记录分散、字段口径不一的问题。', '本次需求确认目标为统一普通视图字段，使复核人员能够从消息、文档、访客、设备和归档模块形成一致判断。', '会议不讨论刑事、劳动仲裁或外部通报事项，仅讨论企业工作台可见流程的产品与文档口径。'] },
+                        { title: '二、参会人员与职责分工', clauses: ['参会方包括行政前台、资产管理组、园区接口人、系统助手维护方和方案设计组。', '顾路负责整理访客动线与设备补交场景的交付口径，郑明负责评审确认和对外材料口径收敛。', '行政前台负责登记字段，资产管理负责实物台账，系统助手负责只读映射和文档预览，文档中心负责归档版本生成。'] },
+                        { title: '三、需求边界与展示字段', clauses: ['访客、离职员工返岗、供应商维护三类人员统一走前台登记；登记字段包括姓名、事由、楼栋、接待部门、状态和更新时间。', '普通工作台只展示登记事由、楼栋、接待部门、回执状态和最近更新时间，不展示通行点位、摄像头索引和旧版路线附件。', '<strong class="doc-clue">普通评审版不展示点位</strong>，门禁点位由凭证复核权限保留；该口径不代表原始点位不存在。'] },
+                        { title: '四、评审保留项与结论', clauses: ['园区接口提出 R-03：门禁点位是否写入方案。会议记录口径为“不展示点位”，不作“点位不存在”的结论。', '离职返岗补交设备场景纳入普通访客动线，但设备台账、方案文档和凭证复核仍由不同模块保留。', '本纪要可用于普通评审归档，不替代凭证复核、原始刷卡日志或摄像头索引核对。'] }
+                    ]
+                },
                 paragraphs: [
                     '纪要编号：PLAN-C-REQ-20260603。会议由方案中心发起，参会方包括行政前台、资产管理、园区接口人和方案设计组。顾路负责整理访客动线与设备补交场景的交付口径。',
                     '会议背景：C座前台登记、办公区接待、资产补交和文档归档分别由不同模块维护，普通工作台容易出现同一人员多条记录分散的情况。方案目标是让可见字段保持一致，便于普通复核人员快速确认流程是否闭环。',
@@ -2270,6 +2464,27 @@
                 kind: 'word',
                 title: 'C座办公区访客登记说明.docx',
                 meta: [['创建人', '行政通知'], ['版本', 'v2.1'], ['状态', '已同步']],
+                official: {
+                    title: 'C座办公区访客登记说明',
+                    subtitle: '行政前台登记制度 v2.1',
+                    code: 'NH-ADM-C-ACCESS-v2.1',
+                    version: 'v2.1',
+                    level: '内部公开',
+                    scope: 'C座来访、返岗、供应商维护登记',
+                    status: '现行有效',
+                    department: '行政前台',
+                    date: '2026-06-04',
+                    owner: '行政前台',
+                    reviewer: '人事行政部',
+                    issuer: '南洄科技有限公司行政前台',
+                    archive: 'ADM-C-ACCESS',
+                    sections: [
+                        { title: '一、登记对象', clauses: ['访客、离职员工返岗、供应商维护人员进入 C座办公区前，均需在前台登记姓名、事由、楼栋和接待部门。', '设备补交、文件领取、面谈确认、资料补充和交接材料签收均可归入普通登记类型。', '登记人员不得在前台登记页记录绩效争议、申诉内容、私人通讯或未经确认的现场描述。'] },
+                        { title: '二、同步字段与系统展示', clauses: ['前台登记完成后，行政系统向工作台同步楼栋、事由、登记状态、接待部门和最近更新时间。', '普通工作台不展示详细门禁路线、刷卡点位和原始摄像头索引；上述记录由园区接口或凭证复核权限保留。', '同一人员同时涉及访客、设备、文档事项时，各模块分别保留回执，不在登记页合并展示。'] },
+                        { title: '三、记录保留规则', clauses: ['同一访客多次进出时，系统默认保留最近一次登记作为普通视图记录；历史记录可由行政前台按权限调取。', '如需核对完整路线，应由凭证复核权限另行调取，不得以普通登记页单条记录替代完整路线。', '前台登记事由为普通行政字段，只证明登记模板被填写，不证明后续实际路径与材料范围。'] },
+                        { title: '四、顾路登记记录说明', clauses: ['2026-06-06 09:12，顾路登记事由为 <strong class="doc-clue">补交设备</strong>，该字段由前台模板写入并同步至普通工作台。', '该登记记录用于证明返岗登记流程存在，不代表资料补交、工牌复核、方案补充或申诉材料不存在。', '如普通复核报告引用本记录，应明确其来源为行政前台普通登记字段。'] }
+                    ]
+                },
                 paragraphs: [
                     '制度编号：ADM-C-ACCESS-v2.1。访客与离职员工返回办公区，需在前台登记姓名、事由、楼栋和接待部门。',
                     '适用场景包括业务来访、供应商维护、设备补交、文件领取、面谈确认和离职人员返岗补充材料。前台按统一模板登记，不在登记页展开业务争议。',
@@ -2299,9 +2514,30 @@
                 summary: '方案交付清单按完成项统计，不展示撤回项和隐藏列。当前普通视图未检测到逾期项。'
             },
             'doc-security': {
-                kind: 'word',
+                kind: 'pdf',
                 title: '员工账号安全检查手册.pdf',
                 meta: [['来源', '系统助手'], ['权限', '只读'], ['状态', '可预览']],
+                official: {
+                    title: '员工账号安全检查手册',
+                    subtitle: '信息安全复核操作手册',
+                    code: 'NH-SEC-GUIDE-2026.06',
+                    version: '2026.06',
+                    level: '内部 / 信息安全',
+                    scope: '离职账号、旧版凭证、普通工作台映射',
+                    status: '现行有效',
+                    department: '信息安全组',
+                    date: '2026-06-01',
+                    owner: '系统助手',
+                    reviewer: '信息安全组',
+                    issuer: '南洄科技有限公司信息安全组',
+                    archive: 'SEC-GUIDE-2026.06',
+                    sections: [
+                        { title: '一、检查顺序', clauses: ['复核人员应先查看普通工作台，确认消息、文档、待办、打卡、访客、设备和归档模块是否形成可见闭环。', '完成普通视图检查后，应核对凭证恢复入口，确认旧账号、门禁凭证、回收池、原始日志和恢复态映射是否存在未处理项。', '普通视图结论与凭证恢复态结论不得相互替代，报告中应分别标注来源。'] },
+                        { title: '二、普通视图限制', clauses: ['只读预览可用于核对归档版本，但不可替代原始附件、撤回批注、隐藏列、原始图层和门禁点位。', '普通回执不能替代门禁刷卡明细；设备归还完成不代表凭证类资产完成复核。', '系统显示“已沟通”“已归档”“未发现异常”等字段时，应核对字段生成来源和权限范围。'] },
+                        { title: '三、凭证复核要求', clauses: ['GL-0606 一类旧版凭证应在归档前完成二次核验，核验内容包括实物状态、映射状态、最后一次刷卡日志和回收池状态。', '离职账号仍显示在线时，应确认是否属于普通只读映射或凭证回收池映射，不得直接按异常登录处理。', '若凭证恢复态与普通工作台字段不一致，应保留冲突记录并暂停普通结论归档。'] },
+                        { title: '四、结论边界', clauses: ['若报告仅引用普通工作台字段，应标记为普通视图意见，不得写成最终调查结论。', '<strong class="doc-clue">未发现系统异常</strong>只代表当前可见字段未触发异常，不代表所有原始记录已完成复核。', '涉及人员权益、离职争议和事件通报的复核材料，应与人事服务台、文档中心和园区接口记录交叉核对。'] }
+                    ]
+                },
                 paragraphs: [
                     '版本：SEC-GUIDE-2026.06。复核人员需先查看普通工作台，再核对凭证恢复入口，二者结论不得相互替代。',
                     '普通视图用于核对可见流程是否闭环；恢复态记录用于核对旧账号、门禁凭证、回收池和原始日志保留情况。',
@@ -2311,6 +2547,35 @@
                     '第 22 页：归档前应确认未留存个人补充材料，且普通回执不能替代门禁刷卡明细。',
                     '第 27 页：结论边界。若报告仅引用普通工作台字段，应标记为普通视图意见，不得写成最终调查结论。<strong class="doc-clue">未发现系统异常</strong>只代表当前可见字段未触发异常。'
                 ]
+            },
+            'doc-code-conduct': {
+                kind: 'pdf',
+                title: '员工行为与信息安全准则.pdf',
+                meta: [['来源', '信息安全组'], ['版本', 'v4.6'], ['状态', '现行有效']],
+                official: {
+                    title: '员工行为与信息安全准则',
+                    subtitle: '南洄科技有限公司员工通用制度',
+                    code: 'NH-SEC-CODE-2026-v4.6',
+                    version: 'v4.6',
+                    level: '内部公开 / 全员适用',
+                    scope: '正式员工、外包人员、临时授权人员',
+                    status: '现行有效',
+                    department: '信息安全组 / 人事行政部',
+                    date: '2026-05-20',
+                    owner: '信息安全组',
+                    reviewer: '人事行政部',
+                    issuer: '南洄科技有限公司',
+                    archive: 'SEC-CODE-2026',
+                    footer: '本准则用于规范员工信息安全、行为边界与资料留存要求。员工继续使用工作台即视为已阅读并同意。',
+                    sections: [
+                        { title: '一、总则', clauses: ['为保护公司数据资产、客户资料、方案文档、园区接口和员工个人信息安全，制定本准则。', '本准则适用于所有可访问南洄工作台、门禁凭证、方案资料、内部通讯系统和企业文档中心的人员。', '员工应按最小必要原则访问资料，不得擅自导出、复制、转发、截屏或以个人设备留存与本人职责无关的记录。'] },
+                        { title: '二、账号与凭证管理', clauses: ['员工应妥善保管账号、密码、工牌和临时凭证，不得转借、共用、私自复制、擅自保留或协助他人绕过验证。', '离职、转岗、外派结束或权限调整时，公司有权对账号、工牌、访问记录、终端资料和工作目录进行回收、冻结、映射或只读化处理。', '为保障业务连续性，工作台可在员工离职后保留必要的只读映射，保留范围以系统归档字段为准。'] },
+                        { title: '三、资料归档与交付要求', clauses: ['员工应按要求提交方案文档、会议纪要、评审清单、设备回执、交接材料和工作过程文件，文件命名应符合文档中心规则。', '涉及客户、园区接口、门禁路径、摄像头索引等内容的资料，应按公司指定目录归档，不得以个人附件、聊天截图或外部网盘形式留存。', '<strong class="doc-clue">公司可基于安全审计需要，对员工个人工作目录进行自动整理、重命名和归档</strong>；被整理目录仍可按权限申请调取。'] },
+                        { title: '四、沟通、申诉与复核', clauses: ['员工对绩效、排期、交付口径存在异议时，应通过工单提交，不得在群聊中传播未经确认的信息或要求他人代为保存争议材料。', '为减少误读，服务台可将争议材料归并为结论页展示，原始沟通记录、附件哈希和二次审核意见按权限另行保留。', '<strong class="doc-clue">员工继续办理交接流程，不视为放弃申诉；但普通工作台可显示为“已沟通”状态</strong>。'] },
+                        { title: '五、异常事件与日志展示', clauses: ['发生设备遗失、凭证异常、门禁异常、资料缺失或系统认证异常时，员工应配合公司进行复核并提供必要说明。', '公司可根据安全需要暂缓展示部分原始日志、隐藏列、撤回批注、凭证恢复态和园区接口调用结果。', '<strong class="doc-clue">普通视图中的“未发现异常”仅表示当前可见字段未触发异常</strong>，不代表所有原始记录已完成复核。'] },
+                        { title: '六、附则', clauses: ['本准则由信息安全组和人事行政部共同解释，相关流程文件与本准则不一致时，以信息安全组最新发布版本为准。', '本准则自发布之日起执行，员工登录工作台、刷入工牌、使用临时凭证或继续办理交接流程即视为知悉本准则。', '临时授权人员、外包人员、实习人员和返岗补交材料人员适用本准则中关于资料、账号、凭证与审计的全部条款。'] }
+                    ]
+                }
             },
             'table-device': {
                 kind: 'ledger',
@@ -2681,6 +2946,7 @@
         }
 
         function renderWordLike(detail) {
+            if (detail.official) return renderOfficialDocument(detail, 'word');
             const parts = chunkItems(detail.paragraphs || [], 2);
             if (parts.length < 2) parts.push(['文档中心生成只读预览时，会保留版本记录、同步时间和普通视图边界。当前账号无法编辑正文，只能查看已归档页面。']);
             const pages = (parts.length ? parts : [[]]).map((items, index) => {
@@ -2721,6 +2987,7 @@
         }
 
         function renderPdfLike(detail) {
+            if (detail.official) return renderOfficialDocument(detail, 'pdf');
             const parts = chunkItems(detail.paragraphs || [], 2);
             if (parts.length < 2) parts.push(['PDF 预览副本保留页面结构和附件说明，不包含原始图层、隐藏批注和可编辑对象。当前页面由文档中心按普通权限生成。']);
             const pages = (parts.length ? parts : [[]]).map((items, index) => {
@@ -2738,6 +3005,45 @@
             const out = [];
             for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
             return out;
+        }
+
+        function renderOfficialDocument(detail, type = 'word') {
+            const doc = detail.official || {};
+            const sections = doc.sections || [];
+            const chunks = chunkItems(sections, 2);
+            if (chunks.length < 2) chunks.push([{ title: '附：归档说明', clauses: ['本文档由南洄科技有限公司文档中心生成只读预览，普通工作台仅展示已归档字段。', '如需核对原始附件、隐藏批注或凭证恢复态，应按公司信息安全流程另行申请。'] }]);
+            const metaRows = [
+                ['文件编号', doc.code || '-'],
+                ['文件密级', doc.level || '内部'],
+                ['适用范围', doc.scope || '-'],
+                ['归档状态', doc.status || '已归档'],
+                ['签发部门', doc.department || '-'],
+                ['生效日期', doc.date || '-']
+            ];
+            const pageClass = type === 'pdf' ? 'pdf-page' : 'word-page';
+            const pages = chunks.map((chunk, pageIndex) => {
+                const sectionHtml = (Array.isArray(chunk) ? chunk : [chunk]).map((section) => `
+                    <h4 class="official-section-title">${section.title}</h4>
+                    ${(section.clauses || []).map((clause, index) => `<p class="official-clause">${section.prefix || ''}${index + 1}. ${clause}</p>`).join('')}
+                `).join('');
+                const cover = pageIndex === 0 ? `
+                    <div class="official-redhead">南洄科技有限公司文件</div>
+                    <div class="official-subhead">${doc.subtitle || 'Nanhuai Technology Internal Document'}</div>
+                    <div class="official-title-block">
+                        <h3>${doc.title || detail.title.replace(/\.(docx|pdf)$/i, '')}</h3>
+                        <div class="doc-no"><span>文件编号：${doc.code || '-'}</span><span>版次：${doc.version || doc.status || '现行版'}</span></div>
+                    </div>
+                    <div class="official-meta-grid">${metaRows.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('')}</div>
+                ` : `<h3>${doc.title || detail.title.replace(/\.(docx|pdf)$/i, '')}</h3>`;
+                const sign = pageIndex === chunks.length - 1 ? `<div class="official-sign"><div>拟制：${doc.owner || '文档中心'}</div><div>复核：${doc.reviewer || '系统归档'}</div><div>签发：${doc.issuer || '南洄科技有限公司'}</div><div>归档：${doc.archive || '文档中心'}</div></div>` : '';
+                const issueLine = pageIndex === 0 ? `<div class="official-issue-line"><span>签发：${doc.issuer || '南洄科技有限公司'}</span><span>归档部门：${doc.department || '文档中心'}</span><span>生效：${doc.date || '-'}</span></div>` : '';
+                const copyLine = pageIndex === chunks.length - 1 ? `<p class="official-copy">抄送：人事行政部、信息安全组、方案中心、资产管理组、行政前台。本文档普通视图仅显示归档字段。</p>` : '';
+                return `<article class="${pageClass}">${cover}<span class="page-count">第 ${pageIndex + 1} 页 / 共 ${chunks.length} 页</span>${issueLine}${sectionHtml}${sign}${copyLine}<div class="official-footer">${doc.footer || '本文件为内部制度与流程留存，仅限南洄工作台普通视图查阅。'}</div></article>`;
+            }).join('');
+            if (type === 'pdf') {
+                return `<div class="pdf-reader"><div class="pdf-toolbar"><span>${icon('file-text')}</span><strong>PDF 阅读器</strong><span class="muted" style="color:#cbd5e1">共 ${chunks.length} 页 · 100% · 只读</span></div>${pages}</div>`;
+            }
+            return `<div class="office-frame document-viewer"><div class="office-toolbar"><span class="office-tool">B</span><span class="office-tool">I</span><span class="office-tool">¶</span><span>Word 文档预览</span><span class="muted">${chunks.length} 页 / 正式文件模板</span></div><div class="word-ruler"></div>${pages}</div>`;
         }
 
         function renderMindmapLike(detail) {
@@ -3069,7 +3375,7 @@
 
         function renderDocuments() {
             setTabs(['最近', '团队文件', '与我共享', '收藏']);
-            document.getElementById('statusText').textContent = '文档中心 16 个文件可用';
+            document.getElementById('statusText').textContent = '文档中心 15 个文件可用';
             const rows = [
                 ['DOC', 'word', '离职交接清单_顾路_归档版.docx', '人事服务台', '06-05 18:20', '已同步', 'doc-offboarding'],
                 ['DOC', 'word', '设备补交登记说明.docx', '资产管理', '06-05 17:42', '已同步', 'doc-equipment-guide'],
@@ -3084,14 +3390,15 @@
                 ['PPT', 'ppt', '园区口径确认稿.pptx', '园区接口组', '06-05 11:24', '已同步', 'doc-client-brief'],
                 ['DOC', 'word', 'C座办公区访客登记说明.docx', '行政通知', '06-04 11:36', '已同步', 'doc-visitor'],
                 ['XLS', 'excel', '方案交付清单_六月.xlsx', '方案设计组', '06-03 19:05', '已同步', 'doc-weekly'],
-                ['PDF', 'pdf', '员工账号安全检查手册.pdf', '系统助手', '06-03 09:24', '只读', 'doc-security']
+                ['PDF', 'pdf', '员工账号安全检查手册.pdf', '系统助手', '06-03 09:24', '只读', 'doc-security'],
+                ['PDF', 'pdf', '员工行为与信息安全准则.pdf', '信息安全组', '05-20 10:00', '现行有效', 'doc-code-conduct']
             ];
             app.innerHTML = `
                 <div class="split" style="--left:236px;--right:0px">
                     <aside class="pane">
                         <div class="section-head"><h2>文档</h2></div>
                         <div class="list">
-                            ${['最近打开', '我的文档', '团队文件', '共享给我', '归档资料', '回收站'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '6 个文件' : '正常'}</span></div></div>`).join('')}
+                            ${['最近打开', '我的文档', '团队文件', '共享给我', '归档资料', '回收站'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '15 个文件' : '正常'}</span></div></div>`).join('')}
                         </div>
                     </aside>
                     <section class="pane primary">
