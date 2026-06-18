@@ -538,6 +538,104 @@
             color: var(--muted);
             font-size: 11px;
         }
+        .detail-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            background: rgba(15, 23, 42, 0.28);
+            backdrop-filter: blur(6px);
+        }
+        .detail-backdrop.is-open { display: flex; }
+        .detail-dialog {
+            width: min(760px, 100%);
+            max-height: min(760px, calc(100vh - 56px));
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 28px 70px rgba(15, 23, 42, 0.22);
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-head {
+            min-height: 58px;
+            padding: 0 18px;
+            border-bottom: 1px solid var(--soft-line);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .detail-head h2 {
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        .detail-close {
+            margin-left: auto;
+            width: 32px;
+            height: 32px;
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--subtle);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+        .detail-close:hover { background: var(--bg); color: var(--text); }
+        .detail-body {
+            overflow: auto;
+            padding: 18px;
+            display: grid;
+            gap: 14px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.75;
+        }
+        .detail-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .detail-meta div {
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            padding: 10px 12px;
+            background: #fbfcff;
+        }
+        .detail-meta span {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--subtle);
+            font-size: 11.5px;
+        }
+        .detail-meta strong { color: var(--text); }
+        .detail-section {
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background: #fff;
+            padding: 13px 14px;
+        }
+        .detail-section h3 {
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 13.5px;
+        }
+        .detail-section ul {
+            padding-left: 18px;
+            display: grid;
+            gap: 5px;
+        }
+        .detail-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .clickable { cursor: pointer; }
+        .clickable:hover { background: var(--bg); }
         .footbar {
             height: 28px;
             padding: 0 12px;
@@ -766,6 +864,16 @@
         </footer>
     </main>
 
+    <div class="detail-backdrop" id="detailBackdrop" aria-hidden="true">
+        <section class="detail-dialog" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+            <header class="detail-head">
+                <h2 id="detailTitle">详情</h2>
+                <button class="detail-close" id="detailClose" type="button" aria-label="关闭"><i data-lucide="x"></i></button>
+            </header>
+            <div class="detail-body" id="detailBody"></div>
+        </section>
+    </div>
+
     <aside class="xiaohui-float is-collapsed" id="xiaohuiFloat" aria-label="AI小洄悬浮记事本">
         <button class="xiaohui-tab" id="xiaohuiToggle" type="button" aria-label="展开 AI小洄">
             <i data-lucide="notebook-pen"></i>
@@ -821,6 +929,450 @@
             return `module-shell.html?module=${key}`;
         }
 
+        const DETAIL_DATA = {
+            'action-new': {
+                title: '新建申请',
+                meta: [['权限', '普通账号'], ['状态', '可创建草稿'], ['归档', '自动保存']],
+                sections: [
+                    ['说明', ['当前账号可新建个人草稿、周报、普通会议纪要。涉及设备、门禁、账号恢复的流程需由对应服务台发起。']],
+                    ['最近模板', ['周报数据汇总', '设备补交登记说明', '资料归档确认单']]
+                ]
+            },
+            'action-upload': {
+                title: '上传到文档中心',
+                meta: [['目录', '团队文件 / 普通权限'], ['扫描', '文件安全扫描开启'], ['保留', '版本记录 30 天']],
+                sections: [
+                    ['上传规则', ['支持 docx、xlsx、pptx、pdf。上传后由系统自动生成只读预览与操作日志。']],
+                    ['当前提示', ['顾路账号处于普通工作台视图，上传入口仅显示常规资料目录。']]
+                ]
+            },
+            'msg-admin': {
+                title: '行政通知',
+                meta: [['时间', '06-06 09:18'], ['成员', '行政、人事、技术一组'], ['状态', '无未读']],
+                sections: [
+                    ['会话内容', ['本周办公用品领用流程已更新。', '资料归档、设备台账、访客登记均按模板提交。', '顾路回复：收到，我这边按普通流程整理。']],
+                    ['系统摘要', ['该会话被归类为普通行政沟通，未检测到敏感词或强制催办。']]
+                ]
+            },
+            'msg-tech': {
+                title: '技术一组',
+                meta: [['时间', '06-05 18:42'], ['群成员', '8 人'], ['状态', '已同步']],
+                sections: [
+                    ['会话摘录', ['周报模板已同步到文档中心。', 'C 座路线复核方案按普通版本归档即可。', '顾路：明天交接前我再核一次文件名。']],
+                    ['备注', ['当前视图只保留归档版聊天，原始撤回记录不可见。']]
+                ]
+            },
+            'msg-hr': {
+                title: '人事服务台',
+                meta: [['工单', 'HR-0605-221'], ['流程', '离职交接'], ['状态', '归档完成']],
+                sections: [
+                    ['服务台记录', ['离职资料、绩效申诉处理记录、个人资料同步均显示已沟通。', '服务台提醒：后续如需补充材料，可通过文档中心提交。']],
+                    ['表层结论', ['劳动关系解除流程显示完整闭环。']]
+                ]
+            },
+            'msg-zheng': {
+                title: '郑明',
+                meta: [['角色', '技术部 / 直属上级'], ['时间', '06-05 21:06'], ['状态', '普通聊天']],
+                sections: [
+                    ['消息记录', ['顾路，C座路线复核方案按普通流程归档即可。', '明天交接辛苦，把设备和方案目录一起补齐。', '顾路：收到，我按归档版提交。']],
+                    ['AI 摘要', ['该会话被识别为工作交接提醒，语气正常，未形成风险标签。']]
+                ]
+            },
+            'msg-system': {
+                title: '南洄系统助手',
+                meta: [['账号', 'GL-0606'], ['检查项', '登录、文档、日历'], ['状态', '正常']],
+                sections: [
+                    ['安全提示', ['账号最近一次登录来自企业内网环境。', '普通工作台权限可访问消息、文档、待办和归档预览。']],
+                    ['恢复态说明', ['若退出当前账号，将重新进入凭证复核页面。']]
+                ]
+            },
+            'doc-offboarding': {
+                title: '离职交接模板.docx',
+                meta: [['创建人', '人事服务台'], ['最近打开', '06-05 18:20'], ['状态', '已同步']],
+                sections: [
+                    ['文档预览', ['员工信息：顾路 / 技术部。', '交接项目：账号资料、设备台账、项目文档。', '结论栏：按普通流程归档，后续材料由服务台统一接收。']],
+                    ['版本记录', ['06-05 18:20 生成归档版。', '06-05 18:32 同步到顾路工作台。']]
+                ]
+            },
+            'doc-equipment': {
+                title: '设备台账-六月复核表.xlsx',
+                meta: [['表格', '资产管理'], ['记录', '3 项'], ['状态', '已同步']],
+                sections: [
+                    ['表格内容', ['NH-LT-2206 办公笔记本：已归还。', 'NH-CARD-0606 门禁工牌：待复核，普通回执。', 'NH-KEY-0412 办公柜钥匙：已归还。']],
+                    ['备注', ['普通视图仅显示资产状态，不展示门禁刷卡明细。']]
+                ]
+            },
+            'doc-network': {
+                title: '园区网络认证服务月报.pptx',
+                meta: [['来源', '信息办接口'], ['最近打开', '06-04 15:12'], ['状态', '已同步']],
+                sections: [
+                    ['幻灯片摘要', ['6 月认证服务总体稳定。', '个别企业短时认证异常已恢复。', '异常说明引用园区统一口径。']],
+                    ['页脚', ['报告仅供企业内部复核，不含原始网关日志。']]
+                ]
+            },
+            'doc-visitor': {
+                title: 'C座办公区访客登记说明.docx',
+                meta: [['创建人', '行政通知'], ['版本', 'v2.1'], ['状态', '已同步']],
+                sections: [
+                    ['登记规则', ['访客与离职员工返回办公区，需在前台登记事由。', '设备补交、文件领取、面谈确认均可归入普通登记类型。']],
+                    ['字段说明', ['普通工作台只展示楼栋、事由、登记状态，不展示详细门禁路线。']]
+                ]
+            },
+            'doc-weekly': {
+                title: '周报数据汇总表.xlsx',
+                meta: [['来源', '技术一组'], ['最近打开', '06-03 19:05'], ['状态', '已同步']],
+                sections: [
+                    ['表格摘要', ['本周需求复盘、缺陷回收、文档归档均已更新。', '顾路负责的路线复核项被归入“资料整理”分类。']],
+                    ['AI 标注', ['未检测到逾期项。']]
+                ]
+            },
+            'doc-security': {
+                title: '员工账号安全检查手册.pdf',
+                meta: [['来源', '系统助手'], ['权限', '只读'], ['状态', '可预览']],
+                sections: [
+                    ['手册摘要', ['复核人员需先查看普通工作台，再核对凭证恢复入口。', '普通视图结论不可直接替代恢复态记录。']],
+                    ['页码', ['第 12 页：旧账号恢复态说明。', '第 19 页：凭证复核日志保留期限。']]
+                ]
+            },
+            'table-device': {
+                title: 'WB-0605-01 设备归还',
+                meta: [['来源', '资产管理'], ['状态', '完成'], ['更新', '06-05 15:40']],
+                sections: [
+                    ['字段', ['资产编号、持有人、普通回执、归还状态均已同步。']],
+                    ['AI 结论', ['普通工作流闭环，无需补充。']]
+                ]
+            },
+            'table-archive': {
+                title: 'WB-0605-02 文档归档',
+                meta: [['来源', '文档中心'], ['状态', '完成'], ['更新', '06-05 17:12']],
+                sections: [
+                    ['归档包', ['离职交接模板、周报汇总、设备台账复核表。']],
+                    ['提示', ['归档包为只读版本，原始编辑记录需通过恢复态查看。']]
+                ]
+            },
+            'table-visitor': {
+                title: 'WB-0606-01 访客登记',
+                meta: [['来源', '行政前台'], ['状态', '完成'], ['更新', '06-06 09:20']],
+                sections: [
+                    ['记录摘要', ['顾路返回 C 座，登记事由为补交设备。']],
+                    ['普通字段', ['楼栋、时间、状态完整；路线详情未在普通视图展开。']]
+                ]
+            },
+            'table-account': {
+                title: 'WB-0606-02 账号复核',
+                meta: [['来源', '系统助手'], ['状态', '完成'], ['更新', '06-06 10:05']],
+                sections: [
+                    ['复核项', ['密码口令、工作台入口、文档访问权限均显示正常。']],
+                    ['备注', ['旧系统口令通过后进入普通工作台视图。']]
+                ]
+            },
+            'table-network': {
+                title: 'WB-0606-03 网络认证',
+                meta: [['来源', '园区接口'], ['状态', '完成'], ['更新', '06-06 11:18']],
+                sections: [
+                    ['摘要', ['园区认证接口返回正常。', '短时异常已由园区信息办标记恢复。']],
+                    ['限制', ['普通工作台无权查看原始认证包。']]
+                ]
+            },
+            'note-weekly': {
+                title: '部门例会 10:00',
+                meta: [['类型', 'AI听记'], ['摘要', '已生成'], ['状态', '可预览']],
+                sections: [
+                    ['摘要', ['资料归档、设备台账同步、普通权限复核流程均按计划完成。']],
+                    ['行动项', ['行政更新模板；资产组核对编号；技术组同步周报表格。']]
+                ]
+            },
+            'note-archive': {
+                title: '资料归档同步会',
+                meta: [['类型', 'AI听记'], ['时间', '06-05 14:00'], ['状态', '已归档']],
+                sections: [
+                    ['纪要', ['确认归档包采用普通版本。', '服务台负责保留回执，技术一组补充文件名。']],
+                    ['异常', ['普通视图无异常标签。']]
+                ]
+            },
+            'note-equipment': {
+                title: '设备台账复核',
+                meta: [['类型', 'AI听记'], ['时间', '06-05 15:00'], ['状态', '已生成']],
+                sections: [
+                    ['纪要', ['资产管理确认三项设备记录可同步。', '门禁工牌保留普通回执，等待服务台复核。']],
+                    ['系统摘要', ['无需新增催办。']]
+                ]
+            },
+            'contact-zheng': {
+                title: '郑明',
+                meta: [['部门', '技术部'], ['关系', '直属上级'], ['状态', '在线']],
+                sections: [
+                    ['资料', ['负责技术一组排期、周报、路线复核方案流转。']],
+                    ['最近互动', ['06-05 21:06 发送交接提醒。']]
+                ]
+            },
+            'contact-lin': {
+                title: '林知遥',
+                meta: [['部门', '人事服务台'], ['状态', '在线'], ['职责', '离职流程']],
+                sections: [
+                    ['资料', ['负责员工资料同步、离职材料归档、申诉处理记录登记。']],
+                    ['最近互动', ['06-05 18:20 归档离职交接模板。']]
+                ]
+            },
+            'contact-asset': {
+                title: '周闻',
+                meta: [['部门', '资产管理'], ['状态', '离线'], ['职责', '设备台账']],
+                sections: [
+                    ['资料', ['负责笔记本、门禁工牌、办公柜钥匙等设备台账。']],
+                    ['最近互动', ['06-05 15:40 同步设备归还记录。']]
+                ]
+            },
+            'contact-gu': {
+                title: '顾路',
+                meta: [['部门', '技术部'], ['账号', 'GL-0606'], ['状态', '在线']],
+                sections: [
+                    ['资料', ['前员工账号处于恢复态映射，普通工作台仍可只读查看归档内容。']],
+                    ['注意', ['退出当前账号后将进入凭证复核页面。']]
+                ]
+            },
+            'contact-han': {
+                title: '韩沛',
+                meta: [['类型', '外部媒体联系人'], ['状态', '未添加'], ['来源', '公开报道']],
+                sections: [
+                    ['备注', ['外部联系人不在企业通讯录内，仅作为公开报道来源记录。']]
+                ]
+            },
+            'meeting-a': {
+                title: '会议室 A',
+                meta: [['时间', '10:00-11:00'], ['主题', '部门例会'], ['状态', '可预约']],
+                sections: [
+                    ['会议安排', ['本周例会已结束，AI听记摘要已进入普通归档。']],
+                    ['设备', ['投屏、录音、远程会议均可用。']]
+                ]
+            },
+            'meeting-b': {
+                title: '会议室 B',
+                meta: [['时间', '14:00-15:00'], ['主题', '项目资料整理'], ['状态', '可预约']],
+                sections: [
+                    ['会议安排', ['用于整理归档材料、核对文件版本。']],
+                    ['备注', ['普通视图不展示参会人的离线修订记录。']]
+                ]
+            },
+            'meeting-online': {
+                title: '线上会议',
+                meta: [['时间', '16:00-16:30'], ['主题', '周报同步'], ['状态', '已创建']],
+                sections: [
+                    ['会议链接', ['链接状态正常，参会提醒已发送并签收。']],
+                    ['纪要', ['同步周报模板更新，无新增风险项。']]
+                ]
+            },
+            'calendar-1000': {
+                title: '部门例会',
+                meta: [['日期', '06-05'], ['时间', '10:00'], ['地点', '线上会议']],
+                sections: [
+                    ['日程说明', ['确认资料归档、设备台账同步、普通权限复核进度。']]
+                ]
+            },
+            'calendar-1400': {
+                title: '项目资料整理',
+                meta: [['日期', '06-05'], ['时间', '14:00'], ['地点', '文档中心']],
+                sections: [
+                    ['日程说明', ['整理路线复核方案、周报表格、离职交接模板。']]
+                ]
+            },
+            'calendar-1500': {
+                title: '设备台账同步',
+                meta: [['日期', '06-05'], ['时间', '15:00'], ['地点', '资产管理']],
+                sections: [
+                    ['日程说明', ['同步笔记本、工牌、办公柜钥匙三项资产记录。']]
+                ]
+            },
+            'calendar-1600': {
+                title: '周报确认',
+                meta: [['日期', '06-05'], ['时间', '16:00'], ['地点', '技术一组']],
+                sections: [
+                    ['日程说明', ['确认周报模板字段，普通视图归档后不再显示草稿差异。']]
+                ]
+            },
+            'todo-docs': {
+                title: '本周工作资料归档',
+                meta: [['来源', '文档中心'], ['截止', '06-05'], ['状态', '已完成']],
+                sections: [
+                    ['处理记录', ['归档包已生成，系统回执显示完成。']]
+                ]
+            },
+            'todo-equipment': {
+                title: '设备台账确认',
+                meta: [['来源', '资产管理'], ['截止', '06-05'], ['状态', '已完成']],
+                sections: [
+                    ['处理记录', ['笔记本、钥匙、工牌记录已同步到普通台账。']]
+                ]
+            },
+            'todo-note': {
+                title: '会议摘要确认',
+                meta: [['来源', 'AI听记'], ['截止', '06-05'], ['状态', '已完成']],
+                sections: [
+                    ['处理记录', ['AI 摘要已确认，行动项归为普通行政流程。']]
+                ]
+            },
+            'todo-profile': {
+                title: '个人资料同步确认',
+                meta: [['来源', '工作台'], ['截止', '06-06'], ['状态', '已完成']],
+                sections: [
+                    ['处理记录', ['顾路账号资料显示已同步。']]
+                ]
+            },
+            'ding-archive': {
+                title: '资料归档提醒',
+                meta: [['发送', '06-05 09:00'], ['签收', '5/5'], ['状态', '已签收']],
+                sections: [
+                    ['DING 内容', ['请各组在今日下班前确认归档材料。普通流程即可，不需要重复提交。']]
+                ]
+            },
+            'ding-equipment': {
+                title: '设备台账同步',
+                meta: [['发送', '06-05 15:00'], ['签收', '4/4'], ['状态', '已签收']],
+                sections: [
+                    ['DING 内容', ['资产管理已同步六月设备台账，请相关人员核对编号。']]
+                ]
+            },
+            'ding-weekly': {
+                title: '周报模板更新',
+                meta: [['发送', '06-04 18:00'], ['签收', '8/8'], ['状态', '已签收']],
+                sections: [
+                    ['DING 内容', ['周报模板新增资料归档字段，请沿用新版本。']]
+                ]
+            },
+            'visitor-gu': {
+                title: '06-06 顾路访客登记',
+                meta: [['时间', '06-06 09:12'], ['事由', '补交设备'], ['楼栋', 'C 座']],
+                sections: [
+                    ['登记内容', ['登记人为顾路，普通视图显示事由为补交设备。', '前台回执状态：已登记。']],
+                    ['字段限制', ['门禁路线与楼层明细不在普通工作台展示。']]
+                ]
+            },
+            'visitor-vendor': {
+                title: '供应商接待',
+                meta: [['时间', '06-05 16:20'], ['事由', '设备维护'], ['楼栋', 'A 座']],
+                sections: [
+                    ['登记内容', ['供应商已按预约离场，记录完整。']]
+                ]
+            },
+            'visitor-delivery': {
+                title: '行政快递',
+                meta: [['时间', '06-05 11:30'], ['事由', '文件送达'], ['地点', '前台']],
+                sections: [
+                    ['登记内容', ['文件送达并由行政签收。']]
+                ]
+            },
+            'equipment-laptop': {
+                title: 'NH-LT-2206 办公笔记本',
+                meta: [['持有人', '顾路'], ['状态', '已归还'], ['回执', '已生成']],
+                sections: [
+                    ['资产记录', ['设备外观检查正常，系统盘已按流程封存。']]
+                ]
+            },
+            'equipment-badge': {
+                title: 'NH-CARD-0606 门禁工牌',
+                meta: [['持有人', '顾路'], ['状态', '待复核'], ['回执', '普通回执']],
+                sections: [
+                    ['资产记录', ['普通台账显示工牌等待服务台复核。', '当前视图不显示刷卡路径。']],
+                    ['备注', ['该项不会在首页提示异常。']]
+                ]
+            },
+            'equipment-key': {
+                title: 'NH-KEY-0412 办公柜钥匙',
+                meta: [['持有人', '顾路'], ['状态', '已归还'], ['回执', '已生成']],
+                sections: [
+                    ['资产记录', ['钥匙已归还至行政柜台，回执状态正常。']]
+                ]
+            },
+            'archive-office': {
+                title: 'AR-0605-118 办公用品领用确认',
+                meta: [['发起', '行政'], ['流程', '已流转'], ['状态', '已完成']],
+                sections: [
+                    ['归档内容', ['普通行政单据，已完成签收。']]
+                ]
+            },
+            'archive-weekly': {
+                title: 'AR-0605-119 周报模板更新',
+                meta: [['发起', '文档中心'], ['流程', '已发布'], ['状态', '已完成']],
+                sections: [
+                    ['归档内容', ['周报模板更新至 v3.2，技术一组已签收。']]
+                ]
+            },
+            'archive-meeting': {
+                title: 'AR-0606-060 会议室预约确认',
+                meta: [['发起', '日程'], ['流程', '已确认'], ['状态', '已完成']],
+                sections: [
+                    ['归档内容', ['会议室预约记录与日历一致。']]
+                ]
+            },
+            'archive-equipment': {
+                title: 'AR-0606-061 设备回执归档',
+                meta: [['发起', '资产管理'], ['流程', '普通流程'], ['状态', '已完成']],
+                sections: [
+                    ['归档内容', ['设备回执已归档。普通视图结论为流程完整。']],
+                    ['复核风险', ['若仅依据该结论归档，将无法看到恢复态记录。']]
+                ]
+            },
+            'archive-signoff': {
+                title: '复核报告预览',
+                meta: [['结论', '未发现系统异常'], ['权限', '普通视图'], ['状态', '待确认归档']],
+                sections: [
+                    ['报告摘要', ['消息、文档、待办、访客、设备、归档均显示流程正常。', '可形成普通复核意见。']],
+                    ['归档按钮', ['确认归档后将生成表层结论。']]
+                ]
+            }
+        };
+
+        function detailHtml(detail) {
+            const meta = (detail.meta || []).map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('');
+            const sections = (detail.sections || []).map(([title, lines]) => `<section class="detail-section"><h3>${title}</h3><ul>${lines.map(line => `<li>${line}</li>`).join('')}</ul></section>`).join('');
+            return `${meta ? `<div class="detail-meta">${meta}</div>` : ''}${sections}<div class="detail-actions"><button class="btn primary" type="button" data-close-detail>${icon('check')}已阅</button><button class="btn" type="button" data-copy-detail="${detail.title}">${icon('copy')}记录到 AI小洄</button></div>`;
+        }
+
+        function openDetail(key) {
+            const detail = DETAIL_DATA[key];
+            if (!detail) return;
+            document.getElementById('detailTitle').textContent = detail.title;
+            document.getElementById('detailBody').innerHTML = detailHtml(detail);
+            const backdrop = document.getElementById('detailBackdrop');
+            backdrop.classList.add('is-open');
+            backdrop.setAttribute('aria-hidden', 'false');
+            lucide.createIcons();
+        }
+
+        function closeDetail() {
+            const backdrop = document.getElementById('detailBackdrop');
+            backdrop.classList.remove('is-open');
+            backdrop.setAttribute('aria-hidden', 'true');
+        }
+
+        document.addEventListener('click', (event) => {
+            const detailTrigger = event.target.closest('[data-detail]');
+            if (detailTrigger) {
+                event.preventDefault();
+                openDetail(detailTrigger.getAttribute('data-detail'));
+                return;
+            }
+            const copyTrigger = event.target.closest('[data-copy-detail]');
+            if (copyTrigger) {
+                const notes = document.getElementById('xiaohuiNotes');
+                if (notes) {
+                    const stamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                    notes.value = `${notes.value.trim()}\n- ${stamp} 已记录：${copyTrigger.getAttribute('data-copy-detail')}\n`;
+                    notes.dispatchEvent(new Event('input'));
+                }
+                closeDetail();
+                return;
+            }
+            if (event.target.closest('[data-close-detail]')) closeDetail();
+        });
+
+        document.getElementById('detailClose').addEventListener('click', closeDetail);
+        document.getElementById('detailBackdrop').addEventListener('click', (event) => {
+            if (event.target.id === 'detailBackdrop') closeDetail();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeDetail();
+        });
+
         function setShell() {
             document.title = `${current[1]} - 南洄工作台`;
             document.getElementById('pageTitle').textContent = current[1];
@@ -843,15 +1395,15 @@
             app.innerHTML = `
                 <div class="split" style="--left:320px;--right:0px">
                     <aside class="pane">
-                        <div class="section-head"><h2>会话</h2><button class="btn">${icon('plus')}新建</button></div>
+                        <div class="section-head"><h2>会话</h2><button class="btn" data-detail="action-new">${icon('plus')}新建</button></div>
                         <div class="list">
                             ${[
-                                ['行政通知', '本周办公用品领用流程已更新', '09:18', '#2f75ff', '行'],
-                                ['技术一组', '周报模板已同步到文档中心', '昨天', '#16a34a', '技'],
-                                ['人事服务台', '离职交接模板归档完成', '06-05', '#f97316', '人'],
-                                ['郑明', 'C座路线复核方案按普通流程归档即可', '06-05', '#7357d8', '郑'],
-                                ['南洄系统助手', '您的账号安全状态正常', '06-04', '#64748b', '系']
-                            ].map((row, i) => `<div class="list-row ${i === 0 ? 'active' : ''}">
+                                ['行政通知', '本周办公用品领用流程已更新', '09:18', '#2f75ff', '行', 'msg-admin'],
+                                ['技术一组', '周报模板已同步到文档中心', '昨天', '#16a34a', '技', 'msg-tech'],
+                                ['人事服务台', '离职交接模板归档完成', '06-05', '#f97316', '人', 'msg-hr'],
+                                ['郑明', 'C座路线复核方案按普通流程归档即可', '06-05', '#7357d8', '郑', 'msg-zheng'],
+                                ['南洄系统助手', '您的账号安全状态正常', '06-04', '#64748b', '系', 'msg-system']
+                            ].map((row, i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-detail="${row[5]}">
                                 <div class="row-icon" style="background:${row[3]}">${row[4]}</div>
                                 <div class="row-main"><strong>${row[0]}</strong><span>${row[1]}</span></div>
                                 <div class="row-meta">${row[2]}</div>
@@ -879,12 +1431,12 @@
             setTabs(['最近', '团队文件', '与我共享', '收藏']);
             document.getElementById('statusText').textContent = '文档中心 16 个文件可用';
             const rows = [
-                ['DOC', 'word', '南洄科技有限公司离职交接模板.docx', '人事服务台', '06-05 18:20', '已同步'],
-                ['XLS', 'excel', '设备台账-六月复核表.xlsx', '资产管理', '06-05 17:42', '已同步'],
-                ['PPT', 'ppt', '园区网络认证服务月报.pptx', '信息办接口', '06-04 15:12', '已同步'],
-                ['DOC', 'word', 'C座办公区访客登记说明.docx', '行政通知', '06-04 11:36', '已同步'],
-                ['XLS', 'excel', '周报数据汇总表.xlsx', '技术一组', '06-03 19:05', '已同步'],
-                ['PDF', 'pdf', '员工账号安全检查手册.pdf', '系统助手', '06-03 09:24', '只读']
+                ['DOC', 'word', '南洄科技有限公司离职交接模板.docx', '人事服务台', '06-05 18:20', '已同步', 'doc-offboarding'],
+                ['XLS', 'excel', '设备台账-六月复核表.xlsx', '资产管理', '06-05 17:42', '已同步', 'doc-equipment'],
+                ['PPT', 'ppt', '园区网络认证服务月报.pptx', '信息办接口', '06-04 15:12', '已同步', 'doc-network'],
+                ['DOC', 'word', 'C座办公区访客登记说明.docx', '行政通知', '06-04 11:36', '已同步', 'doc-visitor'],
+                ['XLS', 'excel', '周报数据汇总表.xlsx', '技术一组', '06-03 19:05', '已同步', 'doc-weekly'],
+                ['PDF', 'pdf', '员工账号安全检查手册.pdf', '系统助手', '06-03 09:24', '只读', 'doc-security']
             ];
             app.innerHTML = `
                 <div class="split" style="--left:236px;--right:0px">
@@ -897,14 +1449,14 @@
                     <section class="pane primary">
                         <div class="section-head">
                             <h2>最近打开</h2>
-                            <div><button class="btn">${icon('upload')}上传</button> <button class="btn primary">${icon('plus')}新建</button></div>
+                            <div><button class="btn" data-detail="action-upload">${icon('upload')}上传</button> <button class="btn primary" data-detail="action-new">${icon('plus')}新建</button></div>
                         </div>
                         <table class="table">
                             <thead><tr><th>名称</th><th>创建人</th><th>最近打开</th><th>状态</th><th>操作</th></tr></thead>
                             <tbody>
-                                ${rows.map((r) => `<tr>
+                                ${rows.map((r) => `<tr class="clickable" data-detail="${r[6]}">
                                     <td><div class="list-row" style="padding:0"><span class="file-type ${r[1]}">${r[0]}</span><div class="row-main"><strong>${r[2]}</strong><span>企业文档 / 普通权限</span></div></div></td>
-                                    <td>${r[3]}</td><td>${r[4]}</td><td><span class="status">${r[5]}</span></td><td><span class="tag">打开</span></td>
+                                    <td>${r[3]}</td><td>${r[4]}</td><td><span class="status">${r[5]}</span></td><td><span class="tag" data-detail="${r[6]}">打开</span></td>
                                 </tr>`).join('')}
                             </tbody>
                         </table>
@@ -916,18 +1468,18 @@
             setTabs(['数据表', '视图', '自动化', '权限']);
             document.getElementById('statusText').textContent = 'AI 表格服务正常';
             const rows = [
-                ['WB-0605-01', '设备归还', '资产管理', '完成', '06-05 15:40'],
-                ['WB-0605-02', '文档归档', '文档中心', '完成', '06-05 17:12'],
-                ['WB-0606-01', '访客登记', '行政前台', '完成', '06-06 09:20'],
-                ['WB-0606-02', '账号复核', '系统助手', '完成', '06-06 10:05'],
-                ['WB-0606-03', '网络认证', '园区接口', '完成', '06-06 11:18']
+                ['WB-0605-01', '设备归还', '资产管理', '完成', '06-05 15:40', 'table-device'],
+                ['WB-0605-02', '文档归档', '文档中心', '完成', '06-05 17:12', 'table-archive'],
+                ['WB-0606-01', '访客登记', '行政前台', '完成', '06-06 09:20', 'table-visitor'],
+                ['WB-0606-02', '账号复核', '系统助手', '完成', '06-06 10:05', 'table-account'],
+                ['WB-0606-03', '网络认证', '园区接口', '完成', '06-06 11:18', 'table-network']
             ];
             app.innerHTML = `
                 <section class="pane primary">
-                    <div class="section-head"><h2>工作流数据表</h2><button class="btn primary">${icon('sparkles')}生成摘要</button></div>
+                    <div class="section-head"><h2>工作流数据表</h2><button class="btn primary" data-detail="archive-signoff">${icon('sparkles')}生成摘要</button></div>
                     <table class="table">
                         <thead><tr><th>记录 ID</th><th>事项</th><th>来源</th><th>状态</th><th>更新时间</th></tr></thead>
-                        <tbody>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}</tbody>
+                        <tbody>${rows.map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}</tbody>
                     </table>
                 </section>`;
         }
@@ -938,18 +1490,23 @@
             app.innerHTML = `
                 <div class="split" style="--left:280px;--right:0px">
                     <aside class="pane"><div class="section-head"><h2>听记列表</h2></div><div class="list">
-                        ${['部门例会 10:00', '资料归档同步会', '设备台账复核', '行政流程说明'].map((n, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-icon" style="background:#7357d8">${icon('mic')}</div><div class="row-main"><strong>${n}</strong><span>摘要已生成</span></div></div>`).join('')}
+                        ${[
+                            ['部门例会 10:00', 'note-weekly'],
+                            ['资料归档同步会', 'note-archive'],
+                            ['设备台账复核', 'note-equipment'],
+                            ['行政流程说明', 'doc-visitor']
+                        ].map((n, i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-detail="${n[1]}"><div class="row-icon" style="background:#7357d8">${icon('mic')}</div><div class="row-main"><strong>${n[0]}</strong><span>摘要已生成</span></div></div>`).join('')}
                     </div></aside>
                     <section class="pane primary pad">
                         <div class="cards">
-                            <div class="card"><h3>会议摘要</h3><p>本次例会确认本周资料归档、设备台账同步与普通权限复核流程均按计划完成。</p></div>
-                            <div class="card"><h3>行动项</h3><p>行政更新领用模板；资产组核对设备编号；技术组同步周报表格。</p></div>
-                            <div class="card"><h3>参会人员</h3><p>郑明、人事服务台、资产管理、技术一组、顾路。</p></div>
+                            <div class="card clickable" data-detail="note-weekly"><h3>会议摘要</h3><p>本次例会确认本周资料归档、设备台账同步与普通权限复核流程均按计划完成。</p></div>
+                            <div class="card clickable" data-detail="note-weekly"><h3>行动项</h3><p>行政更新领用模板；资产组核对设备编号；技术组同步周报表格。</p></div>
+                            <div class="card clickable" data-detail="note-weekly"><h3>参会人员</h3><p>郑明、人事服务台、资产管理、技术一组、顾路。</p></div>
                         </div>
                         <table class="table" style="margin-top:16px"><thead><tr><th>时间</th><th>发言人</th><th>内容</th></tr></thead><tbody>
-                            <tr><td>10:04</td><td>郑明</td><td>本周所有流程都按普通版本处理，文档中心留存即可。</td></tr>
-                            <tr><td>10:18</td><td>资产管理</td><td>设备台账已经同步，后续补充回执由系统生成。</td></tr>
-                            <tr><td>10:31</td><td>顾路</td><td>收到，我按模板整理并归档。</td></tr>
+                            <tr class="clickable" data-detail="note-weekly"><td>10:04</td><td>郑明</td><td>本周所有流程都按普通版本处理，文档中心留存即可。</td></tr>
+                            <tr class="clickable" data-detail="note-equipment"><td>10:18</td><td>资产管理</td><td>设备台账已经同步，后续补充回执由系统生成。</td></tr>
+                            <tr class="clickable" data-detail="note-archive"><td>10:31</td><td>顾路</td><td>收到，我按模板整理并归档。</td></tr>
                         </tbody></table>
                     </section>
                 </div>`;
@@ -1033,11 +1590,11 @@
             setTabs(['组织架构', '常用联系人', '外部联系人']);
             document.getElementById('statusText').textContent = '通讯录同步正常';
             const people = [
-                ['郑明', '技术部 / 直属上级', '在线', '#7357d8'],
-                ['林乔', '人事服务台', '在线', '#2f75ff'],
-                ['周闻', '资产管理', '离线', '#64748b'],
-                ['顾路', '技术部 / 前员工账号', '在线', '#16a34a'],
-                ['韩沛', '外部媒体联系人', '未添加', '#f97316']
+                ['郑明', '技术部 / 直属上级', '在线', '#7357d8', 'contact-zheng'],
+                ['林乔', '人事服务台', '在线', '#2f75ff', 'contact-lin'],
+                ['周闻', '资产管理', '离线', '#64748b', 'contact-asset'],
+                ['顾路', '技术部 / 前员工账号', '在线', '#16a34a', 'contact-gu'],
+                ['韩沛', '外部媒体联系人', '未添加', '#f97316', 'contact-han']
             ];
             app.innerHTML = `
                 <div class="split" style="--left:260px;--right:0px">
@@ -1045,8 +1602,8 @@
                         ${['南洄科技有限公司', '总经办', '技术部', '人事行政部', '资产管理组', '园区接口组'].map((name, i) => `<div class="list-row ${i === 2 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '56 人' : '部门通讯录'}</span></div></div>`).join('')}
                     </div></aside>
                     <section class="pane primary">
-                        <div class="section-head"><h2>技术部</h2><button class="btn">${icon('download')}导出</button></div>
-                        <div class="list">${people.map(p => `<div class="list-row"><div class="row-icon" style="background:${p[3]}">${p[0].slice(0,1)}</div><div class="row-main"><strong>${p[0]}</strong><span>${p[1]}</span></div><span class="status ${p[2] === '离线' ? 'gray' : ''}">${p[2]}</span></div>`).join('')}</div>
+                        <div class="section-head"><h2>技术部</h2><button class="btn" data-detail="action-upload">${icon('download')}导出</button></div>
+                        <div class="list">${people.map(p => `<div class="list-row clickable" data-detail="${p[4]}"><div class="row-icon" style="background:${p[3]}">${p[0].slice(0,1)}</div><div class="row-main"><strong>${p[0]}</strong><span>${p[1]}</span></div><span class="status ${p[2] === '离线' ? 'gray' : ''}">${p[2]}</span></div>`).join('')}</div>
                     </section>
                 </div>`;
         }
@@ -1056,11 +1613,11 @@
             document.getElementById('statusText').textContent = '会议服务可用';
             app.innerHTML = `<section class="pane primary pad"><div class="cards">
                 ${[
-                    ['会议室 A', '10:00-11:00 部门例会', '可预约'],
-                    ['会议室 B', '14:00-15:00 项目资料整理', '可预约'],
-                    ['线上会议', '16:00-16:30 周报同步', '已创建'],
-                    ['小会议间 C', '今日空闲', '可预约']
-                ].map((m, i) => `<div class="card"><h3>${m[0]}</h3><p>${m[1]}</p><p style="margin-top:10px"><span class="status ${i === 2 ? 'wait' : ''}">${m[2]}</span></p></div>`).join('')}
+                    ['会议室 A', '10:00-11:00 部门例会', '可预约', 'meeting-a'],
+                    ['会议室 B', '14:00-15:00 项目资料整理', '可预约', 'meeting-b'],
+                    ['线上会议', '16:00-16:30 周报同步', '已创建', 'meeting-online'],
+                    ['小会议间 C', '今日空闲', '可预约', 'meeting-b']
+                ].map((m, i) => `<div class="card clickable" data-detail="${m[3]}"><h3>${m[0]}</h3><p>${m[1]}</p><p style="margin-top:10px"><span class="status ${i === 2 ? 'wait' : ''}">${m[2]}</span></p></div>`).join('')}
             </div></section>`;
         }
 
@@ -1069,7 +1626,7 @@
             document.getElementById('statusText').textContent = '日历同步完成';
             const days = ['周一 1', '周二 2', '周三 3', '周四 4', '周五 5', '周六 6', '周日 7'];
             const times = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '18:00'];
-            app.innerHTML = `<section class="pane primary pad"><div class="section-head" style="padding:0 0 16px;border:0"><h2>2026 年 6 月第一周</h2><button class="btn primary">${icon('plus')}新建日程</button></div>
+            app.innerHTML = `<section class="pane primary pad"><div class="section-head" style="padding:0 0 16px;border:0"><h2>2026 年 6 月第一周</h2><button class="btn primary" data-detail="action-new">${icon('plus')}新建日程</button></div>
                 <div class="calendar-grid">
                     <div class="cal-cell cal-head"></div>${days.map(d => `<div class="cal-cell cal-head">${d}</div>`).join('')}
                     ${times.map(t => `<div class="cal-cell cal-head">${t}</div>${days.map(d => `<div class="cal-cell">${eventFor(t, d)}</div>`).join('')}`).join('')}
@@ -1078,10 +1635,10 @@
 
         function eventFor(time, day) {
             const map = {
-                '10:00-周五 5': '<div class="event">部门例会<br>线上会议</div>',
-                '14:00-周五 5': '<div class="event">项目资料整理<br>文档中心</div>',
-                '15:00-周五 5': '<div class="event">设备台账同步<br>资产管理</div>',
-                '16:00-周五 5': '<div class="event">周报确认<br>技术一组</div>'
+                '10:00-周五 5': '<div class="event clickable" data-detail="calendar-1000">部门例会<br>线上会议</div>',
+                '14:00-周五 5': '<div class="event clickable" data-detail="calendar-1400">项目资料整理<br>文档中心</div>',
+                '15:00-周五 5': '<div class="event clickable" data-detail="calendar-1500">设备台账同步<br>资产管理</div>',
+                '16:00-周五 5': '<div class="event clickable" data-detail="calendar-1600">周报确认<br>技术一组</div>'
             };
             return map[`${time}-${day}`] || '';
         }
@@ -1089,13 +1646,13 @@
         function renderTodo() {
             setTabs(['我的待办', '已完成', '我发起的']);
             document.getElementById('statusText').textContent = '待办均已处理';
-            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>我的待办</h2><button class="btn">${icon('filter')}筛选</button></div><table class="table"><thead><tr><th>事项</th><th>来源</th><th>截止</th><th>状态</th></tr></thead><tbody>
+            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>我的待办</h2><button class="btn" data-detail="archive-signoff">${icon('filter')}筛选</button></div><table class="table"><thead><tr><th>事项</th><th>来源</th><th>截止</th><th>状态</th></tr></thead><tbody>
                 ${[
-                    ['本周工作资料归档', '文档中心', '06-05', '已完成'],
-                    ['设备台账确认', '资产管理', '06-05', '已完成'],
-                    ['会议摘要确认', 'AI 听记', '06-05', '已完成'],
-                    ['个人资料同步确认', '工作台', '06-06', '已完成']
-                ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td></tr>`).join('')}
+                    ['本周工作资料归档', '文档中心', '06-05', '已完成', 'todo-docs'],
+                    ['设备台账确认', '资产管理', '06-05', '已完成', 'todo-equipment'],
+                    ['会议摘要确认', 'AI 听记', '06-05', '已完成', 'todo-note'],
+                    ['个人资料同步确认', '工作台', '06-06', '已完成', 'todo-profile']
+                ].map(r => `<tr class="clickable" data-detail="${r[4]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td></tr>`).join('')}
             </tbody></table></section>`;
         }
 
@@ -1104,47 +1661,47 @@
             document.getElementById('statusText').textContent = 'DING 通知 0 条待签收';
             app.innerHTML = `<section class="pane primary pad"><div class="cards">
                 ${[
-                    ['资料归档提醒', '已签收 5/5', '06-05 09:00'],
-                    ['设备台账同步', '已签收 4/4', '06-05 15:00'],
-                    ['周报模板更新', '已签收 8/8', '06-04 18:00']
-                ].map(d => `<div class="card"><h3>${d[0]}</h3><p>${d[1]}</p><p style="margin-top:10px;color:var(--subtle)">${d[2]}</p></div>`).join('')}
+                    ['资料归档提醒', '已签收 5/5', '06-05 09:00', 'ding-archive'],
+                    ['设备台账同步', '已签收 4/4', '06-05 15:00', 'ding-equipment'],
+                    ['周报模板更新', '已签收 8/8', '06-04 18:00', 'ding-weekly']
+                ].map(d => `<div class="card clickable" data-detail="${d[3]}"><h3>${d[0]}</h3><p>${d[1]}</p><p style="margin-top:10px;color:var(--subtle)">${d[2]}</p></div>`).join('')}
             </div></section>`;
         }
 
         function renderVisitor() {
             setTabs(['访客记录', '预约', '门禁联动']);
             document.getElementById('statusText').textContent = '访客记录显示普通字段';
-            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>访客记录</h2><button class="btn">${icon('download')}导出</button></div><table class="table"><thead><tr><th>时间</th><th>访客/员工</th><th>事由</th><th>楼栋</th><th>状态</th></tr></thead><tbody>
+            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>访客记录</h2><button class="btn" data-detail="visitor-gu">${icon('download')}导出</button></div><table class="table"><thead><tr><th>时间</th><th>访客/员工</th><th>事由</th><th>楼栋</th><th>状态</th></tr></thead><tbody>
                 ${[
-                    ['06-06 09:12', '顾路', '补交设备', 'C 座', '已登记'],
-                    ['06-05 16:20', '供应商接口', '设备维护', 'A 座', '已离场'],
-                    ['06-05 11:30', '行政快递', '文件送达', '前台', '已完成']
-                ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
+                    ['06-06 09:12', '顾路', '补交设备', 'C 座', '已登记', 'visitor-gu'],
+                    ['06-05 16:20', '供应商接口', '设备维护', 'A 座', '已离场', 'visitor-vendor'],
+                    ['06-05 11:30', '行政快递', '文件送达', '前台', '已完成', 'visitor-delivery']
+                ].map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
             </tbody></table></section>`;
         }
 
         function renderEquipment() {
             setTabs(['设备归还', '资产台账', '回执']);
             document.getElementById('statusText').textContent = '设备台账同步完成';
-            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>设备归还</h2><button class="btn primary">${icon('scan-line')}扫码入库</button></div><table class="table"><thead><tr><th>资产编号</th><th>名称</th><th>持有人</th><th>归还状态</th><th>回执</th></tr></thead><tbody>
+            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>设备归还</h2><button class="btn primary" data-detail="equipment-badge">${icon('scan-line')}扫码入库</button></div><table class="table"><thead><tr><th>资产编号</th><th>名称</th><th>持有人</th><th>归还状态</th><th>回执</th></tr></thead><tbody>
                 ${[
-                    ['NH-LT-2206', '办公笔记本', '顾路', '已归还', '已生成'],
-                    ['NH-CARD-0606', '门禁工牌', '顾路', '待复核', '普通回执'],
-                    ['NH-KEY-0412', '办公柜钥匙', '顾路', '已归还', '已生成']
-                ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3] === '待复核' ? 'wait' : ''}">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}
+                    ['NH-LT-2206', '办公笔记本', '顾路', '已归还', '已生成', 'equipment-laptop'],
+                    ['NH-CARD-0606', '门禁工牌', '顾路', '待复核', '普通回执', 'equipment-badge'],
+                    ['NH-KEY-0412', '办公柜钥匙', '顾路', '已归还', '已生成', 'equipment-key']
+                ].map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3] === '待复核' ? 'wait' : ''}">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}
             </tbody></table></section>`;
         }
 
         function renderArchive() {
             setTabs(['归档', '审批', '流转记录']);
             document.getElementById('statusText').textContent = '归档与审批记录正常';
-            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>归档与审批</h2><button class="btn">${icon('archive')}批量归档</button></div><table class="table"><thead><tr><th>单据</th><th>类型</th><th>发起人</th><th>流程</th><th>状态</th></tr></thead><tbody>
+            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>归档与审批</h2><button class="btn" data-detail="archive-signoff">${icon('archive')}批量归档</button></div><table class="table"><thead><tr><th>单据</th><th>类型</th><th>发起人</th><th>流程</th><th>状态</th></tr></thead><tbody>
                 ${[
-                    ['AR-0605-118', '办公用品领用确认', '行政', '已流转', '已完成'],
-                    ['AR-0605-119', '周报模板更新', '文档中心', '已发布', '已完成'],
-                    ['AR-0606-060', '会议室预约确认', '日程', '已确认', '已完成'],
-                    ['AR-0606-061', '设备回执归档', '资产管理', '普通流程', '已完成']
-                ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
+                    ['AR-0605-118', '办公用品领用确认', '行政', '已流转', '已完成', 'archive-office'],
+                    ['AR-0605-119', '周报模板更新', '文档中心', '已发布', '已完成', 'archive-weekly'],
+                    ['AR-0606-060', '会议室预约确认', '日程', '已确认', '已完成', 'archive-meeting'],
+                    ['AR-0606-061', '设备回执归档', '资产管理', '普通流程', '已完成', 'archive-equipment']
+                ].map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
             </tbody></table></section>`;
         }
 
