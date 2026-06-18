@@ -543,15 +543,17 @@
             inset: 0;
             z-index: 70;
             display: none;
-            align-items: center;
-            justify-content: center;
             padding: 28px;
             background: rgba(15, 23, 42, 0.28);
             backdrop-filter: blur(6px);
         }
-        .detail-backdrop.is-open { display: flex; }
+        .detail-backdrop.is-open { display: block; }
         .detail-dialog {
+            position: fixed;
+            left: 50%;
+            top: 50%;
             width: min(980px, 100%);
+            height: min(760px, calc(100vh - 56px));
             max-height: min(760px, calc(100vh - 56px));
             overflow: hidden;
             border: 1px solid var(--line);
@@ -560,6 +562,16 @@
             box-shadow: 0 28px 70px rgba(15, 23, 42, 0.22);
             display: flex;
             flex-direction: column;
+            resize: both;
+            transform: translate(-50%, -50%);
+        }
+        .detail-dialog.is-maximized {
+            left: 14px !important;
+            top: 14px !important;
+            width: calc(100vw - 28px) !important;
+            height: calc(100vh - 28px) !important;
+            max-height: calc(100vh - 28px);
+            transform: none !important;
         }
         .detail-head {
             min-height: 58px;
@@ -568,13 +580,21 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: move;
+            user-select: none;
         }
         .detail-head h2 {
             font-size: 16px;
             line-height: 1.4;
         }
-        .detail-close {
+        .detail-window-actions {
             margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .detail-close,
+        .detail-max {
             width: 32px;
             height: 32px;
             border: 0;
@@ -585,7 +605,8 @@
             display: grid;
             place-items: center;
         }
-        .detail-close:hover { background: var(--bg); color: var(--text); }
+        .detail-close:hover,
+        .detail-max:hover { background: var(--bg); color: var(--text); }
         .detail-body {
             overflow: auto;
             padding: 18px;
@@ -628,11 +649,6 @@
             padding-left: 18px;
             display: grid;
             gap: 5px;
-        }
-        .detail-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
         }
         .office-frame {
             border: 1px solid var(--soft-line);
@@ -1394,7 +1410,10 @@
         <section class="detail-dialog" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
             <header class="detail-head">
                 <h2 id="detailTitle">详情</h2>
-                <button class="detail-close" id="detailClose" type="button" aria-label="关闭"><i data-lucide="x"></i></button>
+                <div class="detail-window-actions">
+                    <button class="detail-max" id="detailMax" type="button" aria-label="放大"><i data-lucide="maximize-2"></i></button>
+                    <button class="detail-close" id="detailClose" type="button" aria-label="关闭"><i data-lucide="x"></i></button>
+                </div>
             </header>
             <div class="detail-body" id="detailBody"></div>
         </section>
@@ -1534,7 +1553,8 @@
                 meta: [['创建人', '人事服务台'], ['最近打开', '06-05 18:20'], ['状态', '已同步']],
                 paragraphs: [
                     '员工信息：顾路 / 技术部。',
-                    '交接项目：账号资料、设备台账、项目文档。',
+                    '交接项目：账号资料、设备台账、项目文档、门禁工牌。',
+                    '归档备注：顾路按要求把个人文件、设备和回执拆开交接，避免重复登记。',
                     '结论栏：按普通流程归档，后续材料由服务台统一接收。'
                 ],
                 notes: ['06-05 18:20 生成归档版。', '06-05 18:32 同步到顾路工作台。']
@@ -1559,7 +1579,8 @@
                 paragraphs: [
                     '离职人员返回园区补交设备时，由前台登记统一事由，资产组按台账编号核对。',
                     '如设备与文档同时补交，普通工作台仅展示设备登记字段。',
-                    '系统生成普通回执后，设备台账与访客登记会自动同步。'
+                    '系统生成普通回执后，设备台账与访客登记会自动同步。',
+                    '补交过程中如果存在多次核验，只以最后一次回执为准。'
                 ]
             },
             'doc-appeal': {
@@ -1569,7 +1590,8 @@
                 paragraphs: [
                     '顾路提交的绩效申诉已由人事服务台登记。',
                     '当前归档版显示双方已沟通，后续问题走工单补充。',
-                    '普通工作台不展示内部批注，仅保留服务台结论页。'
+                    '普通工作台不展示内部批注，仅保留服务台结论页。',
+                    '结论页只留下“已沟通”，不再展开争议内容。'
                 ]
             },
             'doc-network': {
@@ -1589,7 +1611,8 @@
                 paragraphs: [
                     '访客与离职员工返回办公区，需在前台登记事由。',
                     '设备补交、文件领取、面谈确认均可归入普通登记类型。',
-                    '普通工作台只展示楼栋、事由、登记状态，不展示详细门禁路线。'
+                    '普通工作台只展示楼栋、事由、登记状态，不展示详细门禁路线。',
+                    '同一访客多次进出时，系统只保留最近一次登记。'
                 ]
             },
             'doc-weekly': {
@@ -1601,7 +1624,8 @@
                 rows: [
                     ['需求复盘', '完成', '技术一组', '已归档'],
                     ['缺陷回收', '完成', '技术一组', '已归档'],
-                    ['文档整理', '完成', '顾路', '归入资料整理']
+                    ['文档整理', '完成', '顾路', '归入资料整理'],
+                    ['路线复核', '完成', '顾路', '只保留汇总']
                 ],
                 summary: '未检测到逾期项。'
             },
@@ -1613,7 +1637,8 @@
                     '复核人员需先查看普通工作台，再核对凭证恢复入口。',
                     '普通视图结论不可直接替代恢复态记录。',
                     '第 12 页：旧账号恢复态说明。',
-                    '第 19 页：凭证复核日志保留期限。'
+                    '第 19 页：凭证复核日志保留期限。',
+                    '第 22 页：归档前应确认未留存个人补充材料。'
                 ]
             },
             'table-device': {
@@ -1635,7 +1660,8 @@
                 timeline: [
                     ['17:00', '文档中心', '生成归档包'],
                     ['17:08', '顾路', '确认归档版'],
-                    ['17:12', '系统', '完成同步']
+                    ['17:12', '系统', '完成同步'],
+                    ['17:18', '服务台', '标记已闭环']
                 ]
             },
             'table-visitor': {
@@ -1645,7 +1671,8 @@
                 timeline: [
                     ['09:12', '前台', '顾路登记补交设备'],
                     ['09:16', '行政', '回执已生成'],
-                    ['09:20', '系统', '同步至工作台']
+                    ['09:20', '系统', '同步至工作台'],
+                    ['09:21', '工作台', '仅显示普通字段']
                 ]
             },
             'table-account': {
@@ -1666,7 +1693,8 @@
                 timeline: [
                     ['11:06', '园区接口', '返回正常'],
                     ['11:09', '信息办', '标记恢复'],
-                    ['11:18', '工作台', '同步完成']
+                    ['11:18', '工作台', '同步完成'],
+                    ['11:20', '顾路', '未再追问']
                 ]
             },
             'note-weekly': {
@@ -1675,7 +1703,8 @@
                 meta: [['类型', 'AI听记'], ['摘要', '已生成'], ['状态', '可预览']],
                 paragraphs: [
                     '资料归档、设备台账同步、普通权限复核流程均按计划完成。',
-                    '行政更新模板；资产组核对编号；技术组同步周报表格。'
+                    '行政更新模板；资产组核对编号；技术组同步周报表格。',
+                    '会议末尾没有人提到异常，只说“按流程闭环”。'
                 ]
             },
             'note-archive': {
@@ -1685,7 +1714,8 @@
                 paragraphs: [
                     '确认归档包采用普通版本。',
                     '服务台负责保留回执，技术一组补充文件名。',
-                    '普通视图无异常标签。'
+                    '普通视图无异常标签。',
+                    '纪要末尾统一写成“材料已接收”。'
                 ]
             },
             'note-equipment': {
@@ -1695,7 +1725,8 @@
                 paragraphs: [
                     '资产管理确认三项设备记录可同步。',
                     '门禁工牌保留普通回执，等待服务台复核。',
-                    '无需新增催办。'
+                    '无需新增催办。',
+                    '如果后续还有文件，一律先走回执。'
                 ]
             },
             'contact-zheng': {
@@ -1933,7 +1964,7 @@
         function detailHtml(detail) {
             const meta = (detail.meta || []).map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('');
             const content = renderDetailContent(detail);
-            return `${meta ? `<div class="detail-meta">${meta}</div>` : ''}${content}<div class="detail-actions"><button class="btn primary" type="button" data-close-detail>${icon('check')}已阅</button><button class="btn" type="button" data-copy-detail="${detail.title}">${icon('copy')}记录到 AI小洄</button></div>`;
+            return `${meta ? `<div class="detail-meta">${meta}</div>` : ''}${content}`;
         }
 
         function renderDetailContent(detail) {
@@ -2016,6 +2047,13 @@
             document.getElementById('detailTitle').textContent = detail.title;
             document.getElementById('detailBody').innerHTML = detailHtml(detail);
             const backdrop = document.getElementById('detailBackdrop');
+            const dialog = backdrop.querySelector('.detail-dialog');
+            dialog.classList.remove('is-maximized');
+            dialog.style.left = '50%';
+            dialog.style.top = '50%';
+            dialog.style.transform = 'translate(-50%, -50%)';
+            dialog.style.width = 'min(980px, 100%)';
+            dialog.style.height = 'min(760px, calc(100vh - 56px))';
             backdrop.classList.add('is-open');
             backdrop.setAttribute('aria-hidden', 'false');
             lucide.createIcons();
@@ -2034,26 +2072,54 @@
                 openDetail(detailTrigger.getAttribute('data-detail'));
                 return;
             }
-            const copyTrigger = event.target.closest('[data-copy-detail]');
-            if (copyTrigger) {
-                const notes = document.getElementById('xiaohuiNotes');
-                if (notes) {
-                    const stamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-                    notes.value = `${notes.value.trim()}\n- ${stamp} 已记录：${copyTrigger.getAttribute('data-copy-detail')}\n`;
-                    notes.dispatchEvent(new Event('input'));
-                }
-                closeDetail();
-                return;
-            }
-            if (event.target.closest('[data-close-detail]')) closeDetail();
         });
 
         document.getElementById('detailClose').addEventListener('click', closeDetail);
+        document.getElementById('detailMax').addEventListener('click', (event) => {
+            event.stopPropagation();
+            const dialog = document.querySelector('.detail-dialog');
+            const isMax = dialog.classList.toggle('is-maximized');
+            event.currentTarget.innerHTML = icon(isMax ? 'minimize-2' : 'maximize-2');
+            lucide.createIcons();
+        });
         document.getElementById('detailBackdrop').addEventListener('click', (event) => {
             if (event.target.id === 'detailBackdrop') closeDetail();
         });
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') closeDetail();
+        });
+
+        const detailDialog = document.querySelector('.detail-dialog');
+        const detailHead = document.querySelector('.detail-head');
+        detailHead.addEventListener('pointerdown', (event) => {
+            if (event.target.closest('button') || detailDialog.classList.contains('is-maximized')) return;
+            event.preventDefault();
+            detailHead.setPointerCapture(event.pointerId);
+            const startRect = detailDialog.getBoundingClientRect();
+            const startX = event.clientX;
+            const startY = event.clientY;
+            detailDialog.style.transform = 'none';
+            detailDialog.style.left = `${startRect.left}px`;
+            detailDialog.style.top = `${startRect.top}px`;
+            detailDialog.style.width = `${startRect.width}px`;
+            detailDialog.style.height = `${startRect.height}px`;
+
+            function onMove(moveEvent) {
+                const nextLeft = Math.min(window.innerWidth - startRect.width - 8, Math.max(8, startRect.left + moveEvent.clientX - startX));
+                const nextTop = Math.min(window.innerHeight - 58, Math.max(8, startRect.top + moveEvent.clientY - startY));
+                detailDialog.style.left = `${nextLeft}px`;
+                detailDialog.style.top = `${nextTop}px`;
+            }
+
+            function onUp() {
+                detailHead.removeEventListener('pointermove', onMove);
+                detailHead.removeEventListener('pointerup', onUp);
+                detailHead.removeEventListener('pointercancel', onUp);
+            }
+
+            detailHead.addEventListener('pointermove', onMove);
+            detailHead.addEventListener('pointerup', onUp);
+            detailHead.addEventListener('pointercancel', onUp);
         });
 
         function setShell() {
