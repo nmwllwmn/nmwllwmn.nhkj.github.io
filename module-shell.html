@@ -438,6 +438,7 @@
         .excel { background: #16a34a; }
         .ppt { background: #f97316; }
         .pdf { background: #ef4444; }
+        .mind { background: #7357d8; }
         .calendar-grid {
             display: grid;
             grid-template-columns: 76px repeat(7, minmax(96px, 1fr));
@@ -745,6 +746,20 @@
             text-align: center;
             font-size: 18px;
         }
+        .word-ruler {
+            height: 22px;
+            border-bottom: 1px solid var(--soft-line);
+            background: repeating-linear-gradient(90deg, #f7f8fb 0 38px, #e7ebf2 39px 40px);
+        }
+        .word-doc-meta {
+            margin: -18px 0 22px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eef1f5;
+            color: var(--subtle);
+            font-size: 11px;
+            text-align: center;
+            text-indent: 0;
+        }
         .word-page p { margin-bottom: 12px; text-indent: 2em; }
         .word-page .doc-note {
             margin-top: 18px;
@@ -775,6 +790,23 @@
             color: var(--muted);
             font-weight: 500;
         }
+        .excel-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 8px 10px 0;
+            background: #f7faf7;
+            border-bottom: 1px solid var(--soft-line);
+        }
+        .excel-tab {
+            padding: 7px 14px;
+            border: 1px solid #dbe7dd;
+            border-bottom: 0;
+            border-radius: 6px 6px 0 0;
+            background: #fff;
+            color: #1f6b3f;
+            font-size: 12px;
+            font-weight: 650;
+        }
         .excel-grid {
             width: 100%;
             min-width: 640px;
@@ -802,6 +834,47 @@
             color: var(--subtle);
             text-align: center;
         }
+        .pdf-reader {
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #e8ebef;
+        }
+        .pdf-toolbar {
+            height: 42px;
+            padding: 0 12px;
+            background: #343a40;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+        .pdf-page {
+            width: min(620px, calc(100vw - 110px));
+            min-height: 640px;
+            margin: 22px auto;
+            padding: 46px 52px;
+            background: #fff;
+            box-shadow: 0 14px 34px rgba(15, 23, 42, 0.2);
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.85;
+        }
+        .pdf-page h3 {
+            margin-bottom: 18px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .pdf-stamp {
+            margin-top: 22px;
+            padding: 10px 12px;
+            border: 1px solid #d8dfef;
+            border-radius: 6px;
+            color: var(--subtle);
+            font-size: 12px;
+            text-align: center;
+        }
         .ppt-stage {
             padding: 18px;
             background: #eef1f5;
@@ -824,6 +897,14 @@
             font-size: 11px;
         }
         .ppt-thumb.active { border-color: var(--orange); }
+        .ppt-thumb span {
+            display: block;
+            width: 48px;
+            height: 28px;
+            border-radius: 3px;
+            background: linear-gradient(135deg, #fff7ed, #fff);
+            border: 1px solid #fed7aa;
+        }
         .ppt-slide {
             aspect-ratio: 16 / 9;
             padding: 42px 54px;
@@ -843,6 +924,46 @@
             color: var(--muted);
             font-size: 16px;
         }
+        .mindmap-canvas {
+            position: relative;
+            min-height: 560px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background:
+                linear-gradient(#f4f6fb 1px, transparent 1px),
+                linear-gradient(90deg, #f4f6fb 1px, transparent 1px),
+                #fff;
+            background-size: 28px 28px;
+            overflow: hidden;
+        }
+        .mind-line {
+            position: absolute;
+            height: 2px;
+            background: #cbd5e1;
+            transform-origin: left center;
+        }
+        .mind-node {
+            position: absolute;
+            min-width: 120px;
+            max-width: 190px;
+            padding: 10px 12px;
+            border: 1px solid #d8dfef;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+            color: var(--text);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+        .mind-node.root {
+            min-width: 170px;
+            background: linear-gradient(135deg, var(--accent), #2f75ff);
+            color: #fff;
+            border-color: transparent;
+            font-weight: 700;
+            text-align: center;
+        }
+        .mind-node strong { display: block; margin-bottom: 4px; }
         .chat-preview {
             display: grid;
             gap: 12px;
@@ -1998,7 +2119,7 @@
                 summary: '问题清单全部关闭，因此普通视图自动归为“已完成”。其中 R-03 的处理口径只说明不展示，不说明原始点位是否存在。'
             },
             'doc-floorplan': {
-                kind: 'word',
+                kind: 'pdf',
                 title: 'C座空间动线草图说明.pdf',
                 meta: [['来源', '方案设计组'], ['版本', 'v3.2 附件说明'], ['状态', '只读']],
                 paragraphs: [
@@ -2008,6 +2129,21 @@
                     '预览限制：若需查看原始图层、隐藏标注或旧版路径，应从凭证复核入口调取。普通账号仅能看到当前文字说明。'
                 ],
                 notes: ['附件预览由文档中心自动生成。', '原始图层未随普通工作台同步。']
+            },
+            'doc-mindmap': {
+                kind: 'mindmap',
+                title: 'C座方案逻辑思维导图.mind',
+                meta: [['来源', '顾路'], ['最近打开', '06-05 17:06'], ['状态', '只读']],
+                nodes: [
+                    { id: 'root', root: true, title: 'C座访客动线方案', text: '普通评审版 v3.2', x: 380, y: 230, w: 170, h: 58 },
+                    { id: 'req', parent: 'root', title: '需求纪要', text: '访客 / 离职返岗 / 供应商', x: 70, y: 72, w: 160, h: 62 },
+                    { id: 'review', parent: 'root', title: '评审问题', text: 'R-03 不展示点位', x: 94, y: 356, w: 150, h: 62 },
+                    { id: 'version', parent: 'root', title: '版本对照', text: 'v3.2 交付版', x: 650, y: 86, w: 150, h: 62 },
+                    { id: 'asset', parent: 'root', title: '设备回执', text: '工牌待复核', x: 680, y: 346, w: 150, h: 62 },
+                    { id: 'archive', parent: 'root', title: '归档口径', text: '普通视图闭环', x: 386, y: 464, w: 160, h: 62 },
+                    { id: 'visitor', parent: 'req', title: '访客登记', text: '只显示普通字段', x: 36, y: 210, w: 150, h: 58 },
+                    { id: 'layer', parent: 'review', title: '草图图层', text: '原始图层未同步', x: 246, y: 430, w: 150, h: 58 }
+                ]
             },
             'doc-client-brief': {
                 kind: 'ppt',
@@ -2401,6 +2537,8 @@
             if (detail.kind === 'word' || detail.kind === 'note') return renderWordLike(detail);
             if (detail.kind === 'excel') return renderExcelLike(detail);
             if (detail.kind === 'ppt') return renderPptLike(detail);
+            if (detail.kind === 'pdf') return renderPdfLike(detail);
+            if (detail.kind === 'mindmap') return renderMindmapLike(detail);
             if (detail.kind === 'chat') return renderChatLike(detail);
             if (detail.kind === 'ledger') return renderLedgerLike(detail);
             if (detail.kind === 'record') return renderRecordLike(detail);
@@ -2416,8 +2554,9 @@
             const paragraphs = (detail.paragraphs || []).map((text) => `<p>${text}</p>`).join('');
             const notes = (detail.notes || []).map((text) => `<p class="doc-note">${text}</p>`).join('');
             return `<div class="office-frame">
-                <div class="office-toolbar"><span class="office-tool">B</span><span class="office-tool">I</span><span class="office-tool">¶</span><span>${detail.kind === 'note' ? 'AI 听记摘要' : 'Word 预览'}</span></div>
-                <article class="word-page"><h3>${detail.title.replace(/\.(docx|pdf)$/i, '')}</h3>${paragraphs}${notes}</article>
+                <div class="office-toolbar"><span class="office-tool">B</span><span class="office-tool">I</span><span class="office-tool">¶</span><span>${detail.kind === 'note' ? 'AI 听记摘要' : 'Word 文档预览'}</span><span class="muted">页面 1 / 自动分页</span></div>
+                <div class="word-ruler"></div>
+                <article class="word-page"><h3>${detail.title.replace(/\.(docx|pdf)$/i, '')}</h3><p class="word-doc-meta">南洄科技有限公司 · 文档中心 · 普通工作台只读预览</p>${paragraphs}${notes}</article>
             </div>`;
         }
 
@@ -2425,7 +2564,8 @@
             const header = `<tr><th class="row-head"></th>${(detail.columns || []).map((col, index) => `<th>${String.fromCharCode(65 + index)} · ${col}</th>`).join('')}</tr>`;
             const rows = (detail.rows || []).map((row, index) => `<tr><td class="row-head">${index + 1}</td>${row.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('');
             return `<div class="office-frame">
-                <div class="office-toolbar"><span class="office-tool">Σ</span><span class="office-tool">fx</span><span>${detail.sheetName || 'Sheet1'}</span></div>
+                <div class="office-toolbar"><span class="office-tool">Σ</span><span class="office-tool">fx</span><span>Excel 工作簿</span><span class="muted">${detail.title}</span></div>
+                <div class="excel-tabs"><span class="excel-tab">${detail.sheetName || 'Sheet1'}</span><span class="note-chip">隐藏列未展开</span><span class="note-chip">只读</span></div>
                 <div class="excel-formula"><span>fx</span><strong>${detail.summary || detail.title}</strong></div>
                 <div class="excel-wrap"><table class="excel-grid">${header}${rows}</table></div>
             </div>`;
@@ -2435,12 +2575,38 @@
             const slides = detail.slides || [];
             const active = slides[0] || { title: detail.title, bullets: [] };
             return `<div class="office-frame">
-                <div class="office-toolbar"><span class="office-tool">${icon('play')}</span><span class="office-tool">${icon('layout-template')}</span><span>PowerPoint 预览</span></div>
+                <div class="office-toolbar"><span class="office-tool">${icon('play')}</span><span class="office-tool">${icon('layout-template')}</span><span>PowerPoint 幻灯片预览</span><span class="muted">${slides.length || 1} 张幻灯片 / 只读</span></div>
                 <div class="ppt-stage">
-                    <div class="ppt-thumbs">${slides.map((slide, index) => `<div class="ppt-thumb ${index === 0 ? 'active' : ''}">${index + 1}</div>`).join('')}</div>
+                    <div class="ppt-thumbs">${slides.map((slide, index) => `<div class="ppt-thumb ${index === 0 ? 'active' : ''}"><span></span>${index + 1}</div>`).join('')}</div>
                     <section class="ppt-slide"><h3>${active.title}</h3><ul>${(active.bullets || []).map((item) => `<li>${item}</li>`).join('')}</ul></section>
                 </div>
             </div>`;
+        }
+
+        function renderPdfLike(detail) {
+            const paragraphs = (detail.paragraphs || []).map((text) => `<p>${text}</p>`).join('');
+            const notes = (detail.notes || []).map((text) => `<p class="doc-note">${text}</p>`).join('');
+            return `<div class="pdf-reader">
+                <div class="pdf-toolbar"><span>${icon('file-text')}</span><strong>PDF 阅读器</strong><span class="muted" style="color:#cbd5e1">第 1 / 1 页 · 100% · 只读</span></div>
+                <article class="pdf-page"><h3>${detail.title.replace(/\.pdf$/i, '')}</h3>${paragraphs}${notes}<div class="pdf-stamp">南洄科技有限公司文档中心 · PDF 预览副本 · 原始图层未随普通工作台同步</div></article>
+            </div>`;
+        }
+
+        function renderMindmapLike(detail) {
+            const nodes = detail.nodes || [];
+            const lines = nodes.filter((node) => node.parent).map((node) => {
+                const parent = nodes.find((item) => item.id === node.parent);
+                if (!parent) return '';
+                const x1 = parent.x + parent.w / 2;
+                const y1 = parent.y + parent.h / 2;
+                const x2 = node.x + node.w / 2;
+                const y2 = node.y + node.h / 2;
+                const length = Math.hypot(x2 - x1, y2 - y1);
+                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                return `<span class="mind-line" style="left:${x1}px;top:${y1}px;width:${length}px;transform:rotate(${angle}deg)"></span>`;
+            }).join('');
+            const boxes = nodes.map((node) => `<div class="mind-node ${node.root ? 'root' : ''}" style="left:${node.x}px;top:${node.y}px;width:${node.w}px;min-height:${node.h}px"><strong>${node.title}</strong>${node.text || ''}</div>`).join('');
+            return `<div class="office-frame"><div class="office-toolbar"><span class="office-tool">${icon('network')}</span><span>思维导图预览</span><span class="muted">节点 ${nodes.length} / 只读</span></div><div class="mindmap-canvas">${lines}${boxes}</div></div>`;
         }
 
         function renderChatLike(detail) {
@@ -2765,6 +2931,7 @@
                 ['XLS', 'excel', 'C座方案版本对照表.xlsx', '文档中心', '06-05 16:48', '已同步', 'doc-version'],
                 ['XLS', 'excel', '方案评审问题清单.xlsx', '方案设计组', '06-05 16:20', '已关闭', 'doc-review'],
                 ['PDF', 'pdf', 'C座空间动线草图说明.pdf', '方案设计组', '06-05 14:32', '只读', 'doc-floorplan'],
+                ['MIND', 'mind', 'C座方案逻辑思维导图.mind', '顾路', '06-05 17:06', '只读', 'doc-mindmap'],
                 ['PPT', 'ppt', '园区口径确认稿.pptx', '园区接口组', '06-05 11:24', '已同步', 'doc-client-brief'],
                 ['DOC', 'word', 'C座办公区访客登记说明.docx', '行政通知', '06-04 11:36', '已同步', 'doc-visitor'],
                 ['XLS', 'excel', '方案交付清单_六月.xlsx', '方案设计组', '06-03 19:05', '已同步', 'doc-weekly'],
@@ -2806,6 +2973,7 @@
                 ['WB-0605-04', '方案版本对照', '文档中心', '完成', '06-05 16:48', 'doc-version'],
                 ['WB-0605-05', '评审问题清单', '方案设计组', '完成', '06-05 16:20', 'doc-review'],
                 ['WB-0605-06', '草图说明预览', '方案设计组', '只读', '06-05 14:32', 'doc-floorplan'],
+                ['WB-0605-07', '方案逻辑导图', '顾路', '只读', '06-05 17:06', 'doc-mindmap'],
                 ['WB-0606-01', '访客登记', '行政前台', '完成', '06-06 09:20', 'table-visitor'],
                 ['WB-0606-02', '账号复核', '系统助手', '完成', '06-06 10:05', 'table-account'],
                 ['WB-0606-03', '网络认证', '园区接口', '完成', '06-06 11:18', 'table-network']
