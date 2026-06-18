@@ -1230,6 +1230,56 @@
         }
         .clickable { cursor: pointer; }
         .clickable:hover { background: var(--bg); }
+        .surface-clue {
+            font-weight: 650;
+            color: #26334f;
+            font-family: "Microsoft YaHei UI", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+            text-decoration: underline;
+            text-decoration-color: rgba(115, 87, 216, 0.22);
+            text-underline-offset: 3px;
+            text-decoration-thickness: 1px;
+        }
+        .surface-report {
+            display: grid;
+            gap: 14px;
+        }
+        .surface-report .report-cover {
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            padding: 22px;
+            background:
+                linear-gradient(135deg, rgba(115, 87, 216, 0.08), rgba(47, 117, 255, 0.04)),
+                #fff;
+        }
+        .surface-report .report-cover h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: var(--text);
+        }
+        .surface-report .report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .surface-report .report-cell {
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            padding: 12px;
+            background: #fbfcff;
+        }
+        .surface-report .report-cell span {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--subtle);
+            font-size: 12px;
+        }
+        .surface-report .ending-note {
+            border-left: 3px solid rgba(115, 87, 216, 0.45);
+            padding: 12px 14px;
+            color: var(--muted);
+            line-height: 1.85;
+            background: rgba(115, 87, 216, 0.045);
+        }
         .footbar {
             height: 28px;
             padding: 0 12px;
@@ -1535,6 +1585,163 @@
 
         function appUrl(key) {
             return `module-shell.html?module=${key}`;
+        }
+
+        const SURFACE_CHAIN_KEY = 'nh_surface_chain';
+        const SURFACE_MODULE_FLAGS = {
+            messages: 'messagesViewed',
+            documents: 'documentsViewed',
+            aiTable: 'tableViewed',
+            aiNote: 'aiNoteViewed',
+            contacts: 'contactsViewed',
+            meeting: 'meetingViewed',
+            calendar: 'calendarViewed',
+            todo: 'todoViewed',
+            ding: 'dingViewed',
+            visitor: 'visitorViewed',
+            equipment: 'equipmentViewed',
+            archive: 'archiveViewed'
+        };
+        const SURFACE_DETAIL_FLAGS = {
+            'msg-admin': 'msgAdmin',
+            'msg-tech': 'msgTech',
+            'msg-hr': 'msgHr',
+            'msg-zheng': 'msgZheng',
+            'msg-system': 'msgSystem',
+            'doc-offboarding': 'docOffboarding',
+            'doc-equipment': 'docEquipment',
+            'doc-equipment-guide': 'docEquipmentGuide',
+            'doc-appeal': 'docAppeal',
+            'doc-network': 'docNetwork',
+            'doc-visitor': 'docVisitor',
+            'doc-weekly': 'docWeekly',
+            'doc-security': 'docSecurity',
+            'table-device': 'tableDevice',
+            'table-archive': 'tableArchive',
+            'table-visitor': 'tableVisitor',
+            'table-account': 'tableAccount',
+            'table-network': 'tableNetwork',
+            'note-weekly': 'noteWeekly',
+            'note-archive': 'noteArchive',
+            'note-equipment': 'noteEquipment',
+            'contact-zheng': 'contactZheng',
+            'contact-lin': 'contactLin',
+            'contact-asset': 'contactAsset',
+            'contact-gu': 'contactGu',
+            'meeting-a': 'meetingA',
+            'meeting-b': 'meetingB',
+            'meeting-online': 'meetingOnline',
+            'calendar-1000': 'calendar1000',
+            'calendar-1400': 'calendar1400',
+            'calendar-1500': 'calendar1500',
+            'calendar-1600': 'calendar1600',
+            'todo-docs': 'todoDocs',
+            'todo-equipment': 'todoEquipment',
+            'todo-note': 'todoNote',
+            'todo-profile': 'todoProfile',
+            'ding-archive': 'dingArchive',
+            'ding-equipment': 'dingEquipment',
+            'ding-weekly': 'dingWeekly',
+            'visitor-gu': 'visitorGu',
+            'visitor-vendor': 'visitorVendor',
+            'visitor-delivery': 'visitorDelivery',
+            'equipment-laptop': 'equipmentLaptop',
+            'equipment-badge': 'equipmentBadge',
+            'equipment-key': 'equipmentKey',
+            'archive-office': 'archiveOffice',
+            'archive-weekly': 'archiveWeekly',
+            'archive-meeting': 'archiveMeeting',
+            'archive-equipment': 'archiveEquipment',
+            'archive-signoff': 'archiveSignoff'
+        };
+        const SURFACE_REQUIRED_FLAGS = [
+            'homeReport',
+            'loginOldPassword',
+            'workbenchViewed',
+            'todoViewed',
+            'todoDocs',
+            'todoNote',
+            'todoProfile',
+            'todoEquipment',
+            'documentsViewed',
+            'docOffboarding',
+            'docEquipmentGuide',
+            'docAppeal',
+            'docEquipment',
+            'docVisitor',
+            'docWeekly',
+            'messagesViewed',
+            'msgTech',
+            'msgHr',
+            'msgZheng',
+            'aiNoteViewed',
+            'noteWeekly',
+            'tableViewed',
+            'tableArchive',
+            'tableVisitor',
+            'visitorViewed',
+            'visitorGu',
+            'equipmentViewed',
+            'equipmentBadge',
+            'calendarViewed',
+            'calendar1400',
+            'dingViewed',
+            'dingArchive',
+            'archiveViewed',
+            'archiveEquipment'
+        ];
+
+        function readSurfaceChain() {
+            try {
+                return JSON.parse(localStorage.getItem(SURFACE_CHAIN_KEY) || '{}') || {};
+            } catch (error) {
+                return {};
+            }
+        }
+
+        function writeSurfaceChain(next) {
+            localStorage.setItem(SURFACE_CHAIN_KEY, JSON.stringify(next));
+        }
+
+        function setSurfaceFlag(flag) {
+            if (!flag) return;
+            const state = readSurfaceChain();
+            if (state[flag]) return;
+            state[flag] = true;
+            state.updatedAt = new Date().toISOString();
+            writeSurfaceChain(state);
+        }
+
+        function surfaceChainComplete() {
+            const state = readSurfaceChain();
+            return SURFACE_REQUIRED_FLAGS.every((flag) => state[flag]);
+        }
+
+        function markCurrentModule() {
+            setSurfaceFlag(SURFACE_MODULE_FLAGS[moduleKey]);
+        }
+
+        function clueText(text) {
+            return `<span class="surface-clue">${text}</span>`;
+        }
+
+        function decorateSurfaceClues(html) {
+            const terms = [
+                'GL-0606',
+                'NH-CARD-0606',
+                '普通工作台',
+                '普通视图',
+                '普通回执',
+                '补交设备',
+                '归档版',
+                '只保留',
+                '未发现系统异常',
+                '凭证复核',
+                '待复核',
+                '06-06 09:12',
+                '06-05 21:06'
+            ];
+            return terms.reduce((next, term) => next.split(term).join(clueText(term)), html);
         }
 
         function closeAccountMenus() {
@@ -2045,7 +2252,7 @@
         function detailHtml(detail) {
             const meta = (detail.meta || []).map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('');
             const content = renderDetailContent(detail);
-            return `${meta ? `<div class="detail-meta">${meta}</div>` : ''}${content}`;
+            return decorateSurfaceClues(`${meta ? `<div class="detail-meta">${meta}</div>` : ''}${content}`);
         }
 
         function renderDetailContent(detail) {
@@ -2055,6 +2262,7 @@
             if (detail.kind === 'chat') return renderChatLike(detail);
             if (detail.kind === 'ledger') return renderLedgerLike(detail);
             if (detail.kind === 'record') return renderRecordLike(detail);
+            if (detail.kind === 'surface-ending') return renderSurfaceEnding(detail);
             if (detail.kind === 'profile') return renderProfileLike(detail);
             if (detail.kind === 'agenda') return renderAgendaLike(detail);
             if (detail.kind === 'checklist') return renderChecklistLike(detail);
@@ -2109,6 +2317,35 @@
             return `<div class="timeline-view">${(detail.timeline || []).map(([time, source, text]) => `<div class="timeline-row"><div class="timeline-time">${time}</div><div class="timeline-source">${source}</div><div>${text}</div></div>`).join('')}</div>`;
         }
 
+        function renderSurfaceEnding(detail) {
+            localStorage.setItem('nh_surface_bad_ending', 'true');
+            const state = readSurfaceChain();
+            const checkedCount = SURFACE_REQUIRED_FLAGS.filter((flag) => state[flag]).length;
+            return `<div class="office-frame surface-report">
+                <div class="office-toolbar"><span class="office-tool">${icon('file-check-2')}</span><span>复核报告预览</span><span class="muted">普通工作台视图</span></div>
+                <section class="report-cover">
+                    <p class="muted" style="margin:0 0 8px">南洄科技有限公司 / 信息安全复核</p>
+                    <h3>顾路工作台表层复核意见</h3>
+                    <p class="muted" style="line-height:1.8">复核范围覆盖消息、文档、待办、AI 听记、访客登记、设备回执、DING 与归档记录。当前视图内未发现系统越权、异常通讯或未闭环流程。</p>
+                </section>
+                <div class="report-grid">
+                    <div class="report-cell"><span>账号</span><strong>${clueText('GL-0606')}</strong></div>
+                    <div class="report-cell"><span>视图</span><strong>${clueText('普通工作台')}</strong></div>
+                    <div class="report-cell"><span>已核对项目</span><strong>${checkedCount} / ${SURFACE_REQUIRED_FLAGS.length}</strong></div>
+                    <div class="report-cell"><span>归档结论</span><strong>${clueText('未发现系统异常')}</strong></div>
+                </div>
+                <section class="detail-section">
+                    <h3>复核摘要</h3>
+                    <p>顾路账号在普通工作台中保留的记录呈现为完整闭环：人事交接显示已沟通，设备台账显示已生成普通回执，访客登记显示事由为补交设备，消息与 DING 均为常规工作提醒。</p>
+                    <p>AI 听记与周报表格将路线复核归入资料整理，归档中心据此生成“未发现系统异常”的预览意见。该意见仅覆盖当前可见字段，并未展开凭证恢复态、门禁刷卡明细与原始撤回记录。</p>
+                </section>
+                <section class="ending-note">
+                    三天后，旧版凭证回收池按保留策略清空。${clueText('GL-0606')} 不再出现在可复核列表中，普通工作台只剩这份看起来合规的报告。<br>
+                    表层复核完成，结论被系统自动记为：草率的笨蛋。
+                </section>
+            </div>`;
+        }
+
         function renderProfileLike(detail) {
             const profile = detail.profile || { name: detail.title, badge: detail.title.slice(0, 1), role: '' };
             return `<div class="profile-card"><div class="profile-avatar">${profile.badge}</div><div><h3>${profile.name}</h3><p>${profile.role}</p><p class="muted">${profile.status || ''}</p></div></div><table class="ledger-table" style="margin-top:12px">${(detail.fields || []).map(([label, value]) => `<tr><td>${label}</td><td>${value}</td></tr>`).join('')}</table>`;
@@ -2123,8 +2360,12 @@
         }
 
         function openDetail(key) {
-            const detail = DETAIL_DATA[key];
+            setSurfaceFlag(SURFACE_DETAIL_FLAGS[key]);
+            let detail = DETAIL_DATA[key];
             if (!detail) return;
+            if (key === 'archive-signoff' && surfaceChainComplete()) {
+                detail = { ...detail, kind: 'surface-ending' };
+            }
             document.getElementById('detailTitle').textContent = detail.title;
             document.getElementById('detailBody').innerHTML = detailHtml(detail);
             const backdrop = document.getElementById('detailBackdrop');
@@ -2228,6 +2469,7 @@
         function renderMessages() {
             setTabs(['消息', '组织', '@我']);
             document.getElementById('statusText').textContent = '消息同步完成，无未读异常';
+            const chatFlags = { admin: 'msgAdmin', tech: 'msgTech', hr: 'msgHr', zheng: 'msgZheng', system: 'msgSystem' };
             const conversations = [
                 {
                     id: 'admin',
@@ -2333,9 +2575,10 @@
                 </div>`;
             const renderChat = (chatId) => {
                 const chat = conversations.find((item) => item.id === chatId) || conversations[0];
+                setSurfaceFlag(chatFlags[chat.id]);
                 document.getElementById('chatTitle').textContent = chat.name;
                 document.getElementById('chatMeta').textContent = chat.members;
-                document.getElementById('chatBody').innerHTML = chat.messages.map(([time, author, text, self]) => `
+                document.getElementById('chatBody').innerHTML = decorateSurfaceClues(chat.messages.map(([time, author, text, self]) => `
                     <div class="msg ${self ? 'self' : ''}">
                         <div class="row-icon" style="background:${self ? '#7357d8' : chat.color}">${self ? '顾' : chat.avatar}</div>
                         <div>
@@ -2343,7 +2586,7 @@
                             <div class="bubble">${text}</div>
                         </div>
                     </div>
-                `).join('');
+                `).join(''));
                 document.querySelectorAll('[data-chat-id]').forEach((row) => row.classList.toggle('active', row.getAttribute('data-chat-id') === chat.id));
                 const body = document.getElementById('chatBody');
                 body.scrollTop = body.scrollHeight;
@@ -3169,6 +3412,7 @@
         }
 
         setShell();
+        markCurrentModule();
         (renderers[moduleKey] || renderMessages)();
         initXiaohuiFloat();
         lucide.createIcons();

@@ -1236,6 +1236,16 @@
             background: #fff;
         }
 
+        .surface-clue {
+            font-weight: 650;
+            color: #26334f;
+            font-family: "Microsoft YaHei UI", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+            text-decoration: underline;
+            text-decoration-color: rgba(115, 87, 216, 0.22);
+            text-underline-offset: 3px;
+            text-decoration-thickness: 1px;
+        }
+
         .xiaohui-foot {
             margin-top: 9px;
             display: flex;
@@ -2167,6 +2177,24 @@
             if (el) el.style[prop] = value;
         }
 
+        function markSurfaceFlag(flag) {
+            try {
+                const key = 'nh_surface_chain';
+                const state = JSON.parse(localStorage.getItem(key) || '{}') || {};
+                state[flag] = true;
+                state.updatedAt = new Date().toISOString();
+                localStorage.setItem(key, JSON.stringify(state));
+            } catch (error) {
+                localStorage.setItem('nh_surface_chain', JSON.stringify({ [flag]: true }));
+            }
+        }
+
+        function decorateSurfaceClues(html) {
+            return ['GL-0606', '普通工作台', '归档预览', '只读归档资料'].reduce((next, term) => (
+                next.split(term).join(`<span class="surface-clue">${term}</span>`)
+            ), html);
+        }
+
         const HOME_DETAILS = {
             notifications: {
                 title: '通知中心',
@@ -2213,12 +2241,12 @@
             const detail = HOME_DETAILS[key];
             if (!detail) return;
             document.getElementById('homeDetailTitle').textContent = detail.title;
-            document.getElementById('homeDetailBody').innerHTML = detail.sections.map(([title, lines]) => `
+            document.getElementById('homeDetailBody').innerHTML = decorateSurfaceClues(detail.sections.map(([title, lines]) => `
                 <section>
                     <h3>${title}</h3>
                     <ul>${lines.map((line) => `<li>${line}</li>`).join('')}</ul>
                 </section>
-            `).join('');
+            `).join(''));
             const backdrop = document.getElementById('homeDetailBackdrop');
             backdrop.classList.add('is-open');
             backdrop.setAttribute('aria-hidden', 'false');
@@ -2290,6 +2318,7 @@
             }
 
             localStorage.setItem('nh_workbench_mode', 'normal');
+            markSurfaceFlag('workbenchViewed');
         }
 
         function closeAccountMenus() {

@@ -624,6 +624,18 @@
     </div>
 
     <script>
+        function markSurfaceFlag(flag) {
+            try {
+                const key = 'nh_surface_chain';
+                const state = JSON.parse(localStorage.getItem(key) || '{}') || {};
+                state[flag] = true;
+                state.updatedAt = new Date().toISOString();
+                localStorage.setItem(key, JSON.stringify(state));
+            } catch (error) {
+                localStorage.setItem('nh_surface_chain', JSON.stringify({ [flag]: true }));
+            }
+        }
+
         function downloadGuBadge() {
             const link = document.createElement('a');
             link.href = 'badge-template.html';
@@ -635,6 +647,7 @@
 
         document.getElementById('startInvestigation').addEventListener('click', (event) => {
             event.preventDefault();
+            markSurfaceFlag('homeReport');
             downloadGuBadge();
             window.setTimeout(() => {
                 window.open('login.html', '_blank', 'noopener,noreferrer');

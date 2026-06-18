@@ -394,6 +394,18 @@
     -->
 
     <script>
+        function markSurfaceFlag(flag) {
+            try {
+                const key = 'nh_surface_chain';
+                const state = JSON.parse(localStorage.getItem(key) || '{}') || {};
+                state[flag] = true;
+                state.updatedAt = new Date().toISOString();
+                localStorage.setItem(key, JSON.stringify(state));
+            } catch (error) {
+                localStorage.setItem('nh_surface_chain', JSON.stringify({ [flag]: true }));
+            }
+        }
+
         // 标签切换
         document.querySelectorAll('.login-tab').forEach(tab => {
             tab.addEventListener('click', () => {
@@ -430,6 +442,7 @@
                 localStorage.setItem('dingtalk_logged_in', 'true');
                 localStorage.setItem('dingtalk_user', username);
                 localStorage.setItem('nh_workbench_mode', 'normal');
+                markSurfaceFlag('loginOldPassword');
                 window.open('workbench.html', '_blank', 'noopener,noreferrer');
             } else {
                 errorMsg.textContent = '认证失败：旧口令为四位数字';
