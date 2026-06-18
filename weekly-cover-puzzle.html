@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>周报封面预览 - 南洄工作台</title>
+    <title>方案封面预览 - 南洄工作台</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
@@ -249,7 +249,7 @@
     <header class="topbar">
         <div class="mark">洄</div>
         <div class="title">
-            <strong>周报封面预览</strong>
+            <strong>方案封面预览</strong>
             <span>南洄科技有限公司 / 文档中心 / 普通工作台视图</span>
         </div>
         <div class="toolbar">
@@ -266,7 +266,7 @@
             </div>
             <div class="puzzle-wrap">
                 <div class="board-shell">
-                    <div class="board" id="board" aria-label="周报封面拼图"></div>
+                    <div class="board" id="board" aria-label="方案封面拼图"></div>
                     <div class="board-meta">
                         <span>点击空格旁边的碎片移动。</span>
                         <span id="statusText">封面切片待校准</span>
@@ -282,10 +282,10 @@
             </div>
             <div class="level-row" id="levelCards"></div>
             <div class="note">
-                文档中心偶尔会把周报封面切片打乱。完成三次校准后，系统会生成一张可归档的封面预览。这个入口不影响正式复核流程。
+                文档中心偶尔会把方案封面切片打乱。完成三次校准后，系统会生成一张可归档的封面预览。这个入口不影响正式复核流程。
             </div>
             <div class="cover-preview">
-                <img id="previewImg" alt="周报封面预览">
+                <img id="previewImg" alt="方案封面预览">
             </div>
             <div class="result" id="resultBox">
                 <strong>封面已生成。</strong><br>
@@ -297,7 +297,7 @@
     <footer class="footbar">
         <span>南洄科技有限公司</span>
         <span>/</span>
-        <span>周报封面预览</span>
+        <span>方案封面预览</span>
         <span style="margin-left:auto;">Surface Easter Egg / 不写入主线证据</span>
     </footer>
 
@@ -340,15 +340,15 @@
                     <rect x="72" y="72" width="756" height="756" fill="#fff" stroke="#d8dfef" stroke-width="3"/>
                     <rect x="72" y="72" width="756" height="112" fill="url(#bar)"/>
                     <text x="116" y="142" font-size="38" font-family="Microsoft YaHei, sans-serif" fill="#fff" font-weight="700">南洄科技有限公司</text>
-                    <text x="116" y="286" font-size="62" font-family="Microsoft YaHei, sans-serif" fill="#1d2129" font-weight="800">周报封面</text>
-                    <text x="120" y="342" font-size="24" font-family="Microsoft YaHei, sans-serif" fill="#4e5969">技术一组 / 普通工作台视图</text>
+                    <text x="116" y="286" font-size="62" font-family="Microsoft YaHei, sans-serif" fill="#1d2129" font-weight="800">方案封面</text>
+                    <text x="120" y="342" font-size="24" font-family="Microsoft YaHei, sans-serif" fill="#4e5969">方案设计组 / 普通工作台视图</text>
                     <rect x="116" y="398" width="668" height="2" fill="#e5e6eb"/>
-                    <text x="120" y="466" font-size="28" font-family="Microsoft YaHei, sans-serif" fill="#1d2129">文件名：周报数据汇总表.xlsx</text>
+                    <text x="120" y="466" font-size="28" font-family="Microsoft YaHei, sans-serif" fill="#1d2129">文件名：方案交付清单_六月.xlsx</text>
                     <text x="120" y="526" font-size="28" font-family="Microsoft YaHei, sans-serif" fill="#1d2129">责任人：顾路 / GL-0606</text>
                     <text x="120" y="586" font-size="28" font-family="Microsoft YaHei, sans-serif" fill="#1d2129">版本号：v3.2 / 归档草稿</text>
                     <text x="120" y="646" font-size="28" font-family="Microsoft YaHei, sans-serif" fill="#1d2129">日期：06-05</text>
                     <rect x="116" y="704" width="668" height="72" rx="12" fill="#f5f7fb" stroke="#e5e6eb"/>
-                    <text x="140" y="750" font-size="24" font-family="Microsoft YaHei, sans-serif" fill="#4e5969">归档编号：SURFACE-WEEKLY-0605</text>
+                    <text x="140" y="750" font-size="24" font-family="Microsoft YaHei, sans-serif" fill="#4e5969">归档编号：SURFACE-PLAN-0605</text>
                     <text x="116" y="818" font-size="20" font-family="Microsoft YaHei, sans-serif" fill="#86909c">封面预览仅用于版式校准，不写入主线证据。</text>
                     <circle cx="775" cy="812" r="26" fill="#7357d8"/>
                     <text x="758" y="823" font-size="26" font-family="Microsoft YaHei, sans-serif" fill="#fff" font-weight="700">洄</text>
@@ -457,7 +457,7 @@
                 localStorage.setItem('nh_surface_cover_puzzle_done', 'true');
                 const notes = localStorage.getItem('nh_xiaohui_notes') || '';
                 if (!notes.includes('封面比正文更整齐')) {
-                    localStorage.setItem('nh_xiaohui_notes', `${notes.trim()}\n- 周报封面预览：封面比正文更整齐。\n`.trim());
+                    localStorage.setItem('nh_xiaohui_notes', `${notes.trim()}\n- 方案封面预览：封面比正文更整齐。\n`.trim());
                 }
                 return;
             }
