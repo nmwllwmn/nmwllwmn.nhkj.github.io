@@ -2902,6 +2902,7 @@
             app.innerHTML = `<section class="pane primary pad"><div class="app-grid">
                 ${APPS.filter(([key]) => key !== 'add').map(([key, name, ic]) => `<a class="app-tile" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer"><div class="title-icon">${icon(ic)}</div><strong>${name}</strong><span class="muted">已接入</span></a>`).join('')}
                 <a class="app-tile" href="badge-drop-test.html" target="_blank" rel="noopener noreferrer"><div class="title-icon">${icon('badge-check')}</div><strong>工牌校验</strong><span class="muted">测试入口</span></a>
+                <a class="app-tile" href="weekly-cover-puzzle.html" target="_blank" rel="noopener noreferrer"><div class="title-icon">${icon('layout-template')}</div><strong>周报封面预览</strong><span class="muted">版式校准</span></a>
             </div></section>`;
         }
 
