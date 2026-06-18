@@ -432,6 +432,112 @@
         .app-tile:hover { border-color: var(--accent); box-shadow: var(--shadow); }
         .app-tile .title-icon { width: 40px; height: 40px; }
         .app-tile strong { font-size: 13px; }
+        .note-workspace {
+            height: 100%;
+            display: grid;
+            grid-template-columns: 276px minmax(0, 1fr) 300px;
+            background: var(--bg);
+        }
+        .note-editor {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+        .note-title-input {
+            width: 100%;
+            border: 0;
+            outline: 0;
+            color: var(--text);
+            font-size: 22px;
+            font-weight: 750;
+            padding: 22px 24px 8px;
+        }
+        .note-meta {
+            padding: 0 24px 18px;
+            color: var(--subtle);
+            font-size: 12px;
+            border-bottom: 1px solid var(--soft-line);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .note-body {
+            flex: 1;
+            min-height: 0;
+            padding: 24px;
+            overflow: auto;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.9;
+        }
+        .note-body h3 {
+            margin: 18px 0 8px;
+            color: var(--text);
+            font-size: 15px;
+        }
+        .note-body ul {
+            padding-left: 20px;
+            display: grid;
+            gap: 6px;
+        }
+        .note-body mark {
+            padding: 1px 4px;
+            border-radius: 4px;
+            background: #fff7d6;
+            color: #7c5b00;
+        }
+        .xiaohui-panel {
+            background: #fbfcff;
+            border-left: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+        }
+        .xiaohui-card {
+            margin: 12px;
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+        }
+        .xiaohui-card h3 {
+            margin-bottom: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .xiaohui-card p {
+            color: var(--subtle);
+            font-size: 12px;
+            line-height: 1.75;
+        }
+        .quote-list {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .quote {
+            padding: 9px 10px;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            background: var(--accent-soft);
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .note-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .note-chip {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #f2f3f5;
+            color: var(--muted);
+            font-size: 11px;
+        }
         .footbar {
             height: 28px;
             padding: 0 12px;
@@ -443,6 +549,124 @@
             align-items: center;
             gap: 10px;
         }
+        .xiaohui-float {
+            position: fixed;
+            right: 16px;
+            bottom: 42px;
+            z-index: 40;
+            width: 340px;
+            border: 1px solid rgba(229, 230, 235, 0.96);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 18px 46px rgba(15, 23, 42, 0.16);
+            backdrop-filter: blur(16px);
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+        .xiaohui-float.is-collapsed {
+            transform: translateX(362px);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+        }
+        .xiaohui-tab {
+            position: absolute;
+            left: -46px;
+            top: 14px;
+            width: 42px;
+            min-height: 122px;
+            border: 0;
+            border-radius: 8px 0 0 8px;
+            background: linear-gradient(180deg, #5d56d6, #2f75ff);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 12px 24px rgba(47, 117, 255, 0.22);
+        }
+        .xiaohui-tab svg {
+            width: 18px;
+            height: 18px;
+        }
+        .xiaohui-tab span {
+            writing-mode: vertical-rl;
+            letter-spacing: 1px;
+            font-size: 12px;
+            font-weight: 650;
+        }
+        .xiaohui-head {
+            height: 48px;
+            padding: 0 12px 0 14px;
+            border-bottom: 1px solid var(--soft-line);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .xiaohui-head strong {
+            font-size: 13.5px;
+        }
+        .xiaohui-head span {
+            margin-left: auto;
+            color: var(--subtle);
+            font-size: 11.5px;
+        }
+        .xiaohui-body {
+            padding: 12px;
+        }
+        .xiaohui-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .xiaohui-chip {
+            border: 0;
+            border-radius: 999px;
+            background: var(--bg);
+            color: var(--muted);
+            padding: 5px 9px;
+            font-size: 11.5px;
+            cursor: pointer;
+        }
+        .xiaohui-chip:hover {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+        .xiaohui-textarea {
+            width: 100%;
+            min-height: 150px;
+            max-height: 240px;
+            resize: vertical;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            outline: 0;
+            padding: 10px 11px;
+            color: var(--text);
+            background: #fbfcff;
+            font: inherit;
+            font-size: 12.5px;
+            line-height: 1.7;
+        }
+        .xiaohui-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(47, 117, 255, 0.13);
+            background: #fff;
+        }
+        .xiaohui-foot {
+            margin-top: 9px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--subtle);
+            font-size: 11.5px;
+        }
+        .xiaohui-foot .save-state {
+            margin-left: auto;
+        }
+        .xiaohui-open {
+            color: var(--accent);
+            font-size: 11.5px;
+        }
 
         @media (max-width: 900px) {
             .sidebar { width: 64px; }
@@ -450,6 +674,14 @@
             .split { grid-template-columns: 1fr; }
             .pane:not(.primary) { display: none; }
             .search { display: none; }
+            .xiaohui-float {
+                right: 10px;
+                bottom: 46px;
+                width: min(330px, calc(100vw - 60px));
+            }
+            .xiaohui-float.is-collapsed {
+                transform: translateX(calc(100% + 10px));
+            }
         }
     </style>
 </head>
@@ -485,12 +717,38 @@
         </footer>
     </main>
 
+    <aside class="xiaohui-float is-collapsed" id="xiaohuiFloat" aria-label="AI小洄悬浮记事本">
+        <button class="xiaohui-tab" id="xiaohuiToggle" type="button" aria-label="展开 AI小洄">
+            <i data-lucide="notebook-pen"></i>
+            <span>AI小洄</span>
+        </button>
+        <div class="xiaohui-head">
+            <i data-lucide="sparkles"></i>
+            <strong>AI小洄记事本</strong>
+            <span id="xiaohuiModeLabel">随手记录</span>
+        </div>
+        <div class="xiaohui-body">
+            <div class="xiaohui-tools">
+                <button class="xiaohui-chip" type="button" data-note-insert="【当前页】已回看当前应用分支，记录可继续核对。">摘当前页</button>
+                <button class="xiaohui-chip" type="button" data-note-insert="【时间】需要对照消息、待办、访客、设备台账的更新时间。">时间线</button>
+                <button class="xiaohui-chip" type="button" data-note-insert="【字段】同一词语在不同应用里出现，需确认来源。">字段对照</button>
+                <button class="xiaohui-chip" type="button" data-note-insert="【待核对】此处暂不下结论，保留原始记录位置。">待核对</button>
+            </div>
+            <textarea class="xiaohui-textarea" id="xiaohuiNotes" placeholder="把复核过程、可疑字段、回看位置记在这里。AI小洄会自动保存。"></textarea>
+            <div class="xiaohui-foot">
+                <a class="xiaohui-open" href="module-shell.html?module=aiXiaohui" target="_blank" rel="noopener noreferrer">打开完整笔记</a>
+                <span class="save-state" id="xiaohuiSaveState">已同步</span>
+            </div>
+        </div>
+    </aside>
+
     <script>
         const APPS = [
             ['messages', '消息', 'message-circle'],
             ['documents', '文档', 'file-text'],
             ['aiTable', 'AI 表格', 'table-properties'],
             ['aiNote', 'AI 听记', 'mic-vocal'],
+            ['aiXiaohui', 'AI小洄', 'notebook-pen'],
             ['contacts', '通讯录', 'users'],
             ['meeting', '会议', 'video'],
             ['calendar', '日历', 'calendar-days'],
@@ -519,9 +777,9 @@
             document.getElementById('pageIcon').setAttribute('data-lucide', current[2]);
             document.getElementById('nav').innerHTML = `
                 <div class="nav-label">常用</div>
-                ${APPS.slice(0, 9).map(([key, name, ic]) => `<a class="nav-item ${key === moduleKey ? 'active' : ''}" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer">${icon(ic)}<span>${name}</span></a>`).join('')}
+                ${APPS.slice(0, 10).map(([key, name, ic]) => `<a class="nav-item ${key === moduleKey ? 'active' : ''}" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer">${icon(ic)}<span>${name}</span></a>`).join('')}
                 <div class="nav-label">管理</div>
-                ${APPS.slice(9).map(([key, name, ic]) => `<a class="nav-item ${key === moduleKey ? 'active' : ''}" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer">${icon(ic)}<span>${name}</span></a>`).join('')}
+                ${APPS.slice(10).map(([key, name, ic]) => `<a class="nav-item ${key === moduleKey ? 'active' : ''}" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer">${icon(ic)}<span>${name}</span></a>`).join('')}
             `;
         }
 
@@ -644,6 +902,80 @@
                             <tr><td>10:31</td><td>顾路</td><td>收到，我按模板整理并归档。</td></tr>
                         </tbody></table>
                     </section>
+                </div>`;
+        }
+
+        function renderXiaohui() {
+            setTabs(['智能记事', '摘录', '待整理', '同步记录']);
+            document.getElementById('statusText').textContent = 'AI小洄自动保存中';
+            const notes = [
+                ['复核工作草稿', '普通工作台检查记录', '今天 09:42', '#2f75ff', '洄'],
+                ['交接材料核对', '文档、设备、审批三项一致', '昨天', '#16a34a', '交'],
+                ['访谈摘要', '家属口述与公开报道摘录', '06-07', '#f97316', '访'],
+                ['系统提示词', '自动摘要规则与敏感词过滤', '06-05', '#7357d8', '提'],
+                ['未归类片段', '3 条待确认来源', '06-05', '#64748b', '未']
+            ];
+            app.innerHTML = `
+                <div class="note-workspace">
+                    <aside class="pane">
+                        <div class="section-head">
+                            <h2>AI小洄</h2>
+                            <button class="btn primary">${icon('plus')}新建</button>
+                        </div>
+                        <div class="list">
+                            ${notes.map((n, i) => `<div class="list-row ${i === 0 ? 'active' : ''}">
+                                <div class="row-icon" style="background:${n[3]}">${n[4]}</div>
+                                <div class="row-main"><strong>${n[0]}</strong><span>${n[1]}</span></div>
+                                <div class="row-meta">${n[2]}</div>
+                            </div>`).join('')}
+                        </div>
+                    </aside>
+                    <section class="note-editor primary">
+                        <input class="note-title-input" value="复核工作草稿" aria-label="笔记标题">
+                        <div class="note-meta">
+                            <span>顾路工作台 / 自动保存</span>
+                            <span>·</span>
+                            <span>最后同步：今天 09:42</span>
+                            <span class="tag">普通视图</span>
+                        </div>
+                        <article class="note-body">
+                            <p>今天进入顾路工作台后，首页状态与企业常规工作台一致。消息、待办、文档、审批、日历均显示为普通流程记录，未见明显异常提醒。</p>
+                            <h3>已核对项目</h3>
+                            <ul>
+                                <li>消息：行政通知、技术一组、人事服务台均为正常办公沟通。</li>
+                                <li>文档：离职交接模板、设备台账、园区网络认证月报均可打开。</li>
+                                <li>待办：资料归档、设备台账、会议摘要、个人资料同步均显示已完成。</li>
+                                <li>访客记录：事由字段显示为 <mark>补交设备</mark>，与公开报道一致。</li>
+                            </ul>
+                            <h3>AI小洄整理</h3>
+                            <p>当前材料更像一份“已经被整理好的复核包”。建议继续核对应用分支的原始记录来源，尤其是自动摘要、回执、归档时间和账号恢复状态之间的对应关系。</p>
+                        </article>
+                    </section>
+                    <aside class="xiaohui-panel">
+                        <div class="section-head"><h2>小洄摘要</h2><span class="muted">v0.6</span></div>
+                        <div class="xiaohui-card">
+                            <h3>${icon('sparkles')} 自动提取</h3>
+                            <p>系统从当前工作台中提取到 4 类复核材料。所有材料在普通视图下显示为已闭环。</p>
+                            <div class="note-chip-row">
+                                <span class="note-chip">消息</span>
+                                <span class="note-chip">文档</span>
+                                <span class="note-chip">待办</span>
+                                <span class="note-chip">访客</span>
+                            </div>
+                        </div>
+                        <div class="xiaohui-card">
+                            <h3>${icon('list-checks')} 待核对片段</h3>
+                            <div class="quote-list">
+                                <div class="quote">“普通流程归档即可”出现于 06-05 消息记录。</div>
+                                <div class="quote">“补交设备”同时出现在访客记录与设备台账。</div>
+                                <div class="quote">AI 听记摘要与文档归档时间相隔 12 分钟。</div>
+                            </div>
+                        </div>
+                        <div class="xiaohui-card">
+                            <h3>${icon('shield-check')} 当前建议</h3>
+                            <p>表层材料可形成普通复核意见，但仍建议保留原始凭证入口。小洄不会主动替玩家下结论，只保存可回看摘录。</p>
+                        </div>
+                    </aside>
                 </div>`;
         }
 
@@ -780,6 +1112,7 @@
             documents: renderDocuments,
             aiTable: renderTable,
             aiNote: renderNote,
+            aiXiaohui: renderXiaohui,
             contacts: renderContacts,
             meeting: renderMeeting,
             calendar: renderCalendar,
@@ -791,8 +1124,47 @@
             add: renderAdd
         };
 
+        function initXiaohuiFloat() {
+            const float = document.getElementById('xiaohuiFloat');
+            const toggle = document.getElementById('xiaohuiToggle');
+            const notes = document.getElementById('xiaohuiNotes');
+            const saveState = document.getElementById('xiaohuiSaveState');
+            const storageKey = 'nh_xiaohui_notes';
+            const openKey = 'nh_xiaohui_open';
+
+            notes.value = localStorage.getItem(storageKey) || '复核记录：\n- 首页表层状态正常，暂无红点。\n- 下一步回看文档、消息、访客记录的来源时间。\n';
+            if (localStorage.getItem(openKey) === 'true') {
+                float.classList.remove('is-collapsed');
+            }
+
+            toggle.addEventListener('click', (event) => {
+                event.stopPropagation();
+                float.classList.toggle('is-collapsed');
+                localStorage.setItem(openKey, String(!float.classList.contains('is-collapsed')));
+            });
+
+            notes.addEventListener('input', () => {
+                localStorage.setItem(storageKey, notes.value);
+                saveState.textContent = '正在保存...';
+                window.clearTimeout(notes._saveTimer);
+                notes._saveTimer = window.setTimeout(() => {
+                    saveState.textContent = '已同步';
+                }, 360);
+            });
+
+            document.querySelectorAll('[data-note-insert]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const insert = button.getAttribute('data-note-insert');
+                    notes.value = `${notes.value.trim()}\n- ${insert}\n`;
+                    notes.dispatchEvent(new Event('input'));
+                    notes.focus();
+                });
+            });
+        }
+
         setShell();
         (renderers[moduleKey] || renderMessages)();
+        initXiaohuiFloat();
         lucide.createIcons();
     </script>
 </body>

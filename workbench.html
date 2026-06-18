@@ -1032,6 +1032,141 @@
             background: var(--green);
         }
 
+        .xiaohui-float {
+            position: fixed;
+            right: 16px;
+            bottom: 42px;
+            z-index: 40;
+            width: 340px;
+            border: 1px solid rgba(229, 230, 235, 0.96);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 18px 46px rgba(15, 23, 42, 0.16);
+            backdrop-filter: blur(16px);
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .xiaohui-float.is-collapsed {
+            transform: translateX(362px);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+        }
+
+        .xiaohui-tab {
+            position: absolute;
+            left: -46px;
+            top: 14px;
+            width: 42px;
+            min-height: 122px;
+            border: 0;
+            border-radius: 8px 0 0 8px;
+            background: linear-gradient(180deg, #5d56d6, #2f75ff);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 12px 24px rgba(47, 117, 255, 0.22);
+        }
+
+        .xiaohui-tab svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .xiaohui-tab span {
+            writing-mode: vertical-rl;
+            letter-spacing: 1px;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .xiaohui-head {
+            height: 48px;
+            padding: 0 12px 0 14px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .xiaohui-head strong {
+            font-size: 13.5px;
+        }
+
+        .xiaohui-head span {
+            margin-left: auto;
+            color: var(--text-3);
+            font-size: 11.5px;
+        }
+
+        .xiaohui-body {
+            padding: 12px;
+        }
+
+        .xiaohui-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .xiaohui-chip {
+            border: 0;
+            border-radius: 999px;
+            background: var(--bg);
+            color: var(--text-2);
+            padding: 5px 9px;
+            font-size: 11.5px;
+            cursor: pointer;
+        }
+
+        .xiaohui-chip:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .xiaohui-textarea {
+            width: 100%;
+            min-height: 150px;
+            max-height: 240px;
+            resize: vertical;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: 0;
+            padding: 10px 11px;
+            color: var(--text-1);
+            background: #fbfcff;
+            font: inherit;
+            font-size: 12.5px;
+            line-height: 1.7;
+        }
+
+        .xiaohui-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+            background: #fff;
+        }
+
+        .xiaohui-foot {
+            margin-top: 9px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-3);
+            font-size: 11.5px;
+        }
+
+        .xiaohui-foot .save-state {
+            margin-left: auto;
+        }
+
+        .xiaohui-open {
+            color: var(--accent);
+            font-size: 11.5px;
+        }
+
         body.recovery-mode {
             --bg: #171215;
             --sidebar-bg: #171114;
@@ -1383,6 +1518,16 @@
                 padding: 8px 12px;
                 gap: 8px;
             }
+
+            .xiaohui-float {
+                right: 10px;
+                bottom: 46px;
+                width: min(330px, calc(100vw - 60px));
+            }
+
+            .xiaohui-float.is-collapsed {
+                transform: translateX(calc(100% + 10px));
+            }
         }
     </style>
 </head>
@@ -1441,6 +1586,10 @@
             <a class="nav-item" href="module-shell.html?module=aiNote" target="_blank" rel="noopener noreferrer">
                 <i data-lucide="mic-vocal"></i>
                 <span>AI 听记</span>
+            </a>
+            <a class="nav-item" href="module-shell.html?module=aiXiaohui" target="_blank" rel="noopener noreferrer">
+                <i data-lucide="notebook-pen"></i>
+                <span>AI小洄</span>
             </a>
             <a class="nav-item" href="module-shell.html?module=ding" target="_blank" rel="noopener noreferrer">
                 <i data-lucide="zap"></i>
@@ -1566,6 +1715,10 @@
                     <span class="quick-card-icon" style="background: linear-gradient(135deg,#dc2626,#f87171);"><i data-lucide="zap"></i></span>
                     <span class="quick-card-name">DING</span>
                 </a>
+                <a class="quick-card" href="module-shell.html?module=aiXiaohui" target="_blank" rel="noopener noreferrer">
+                    <span class="quick-card-icon" style="background: linear-gradient(135deg,#5d56d6,#2f75ff);"><i data-lucide="notebook-pen"></i></span>
+                    <span class="quick-card-name">AI小洄</span>
+                </a>
             </div>
 
             <div class="main-grid">
@@ -1593,6 +1746,10 @@
                             <a class="app-item" href="module-shell.html?module=aiNote" target="_blank" rel="noopener noreferrer">
                                 <span class="app-icon" style="background:#ede7f6;"><i data-lucide="mic-vocal" style="color:#5e35b1;"></i></span>
                                 <span class="app-name">AI 听记</span>
+                            </a>
+                            <a class="app-item" href="module-shell.html?module=aiXiaohui" target="_blank" rel="noopener noreferrer">
+                                <span class="app-icon" style="background:#eef2ff;"><i data-lucide="notebook-pen" style="color:#4f46e5;"></i></span>
+                                <span class="app-name">AI小洄</span>
                             </a>
                             <a class="app-item" href="module-shell.html?module=contacts" target="_blank" rel="noopener noreferrer">
                                 <span class="app-icon" style="background:#f1f8e9;"><i data-lucide="users" style="color:#558b2f;"></i></span>
@@ -1780,6 +1937,31 @@
             </div>
         </section>
 
+        <aside class="xiaohui-float is-collapsed" id="xiaohuiFloat" aria-label="AI小洄悬浮记事本">
+            <button class="xiaohui-tab" id="xiaohuiToggle" type="button" aria-label="展开 AI小洄">
+                <i data-lucide="notebook-pen"></i>
+                <span>AI小洄</span>
+            </button>
+            <div class="xiaohui-head">
+                <i data-lucide="sparkles"></i>
+                <strong>AI小洄记事本</strong>
+                <span id="xiaohuiModeLabel">普通视图</span>
+            </div>
+            <div class="xiaohui-body">
+                <div class="xiaohui-tools">
+                    <button class="xiaohui-chip" type="button" data-note-insert="【消息】行政通知、技术一组、人事服务台均为普通沟通。">摘消息</button>
+                    <button class="xiaohui-chip" type="button" data-note-insert="【文档】交接模板、设备台账、月报文件均显示可打开。">摘文档</button>
+                    <button class="xiaohui-chip" type="button" data-note-insert="【待办】资料归档、设备台账、会议摘要均显示已完成。">摘待办</button>
+                    <button class="xiaohui-chip" type="button" data-note-insert="【待核对】访客事由与设备台账字段需要回看原始来源。">待核对</button>
+                </div>
+                <textarea class="xiaohui-textarea" id="xiaohuiNotes" placeholder="把复核过程、可疑字段、回看位置记在这里。AI小洄会自动保存。"></textarea>
+                <div class="xiaohui-foot">
+                    <a class="xiaohui-open" href="module-shell.html?module=aiXiaohui" target="_blank" rel="noopener noreferrer">打开完整笔记</a>
+                    <span class="save-state" id="xiaohuiSaveState">已同步</span>
+                </div>
+            </div>
+        </aside>
+
         <footer class="status-bar">
             <span class="dot"></span>
             <span id="statusMode">南洄工作台 / 顾路账号</span>
@@ -1921,6 +2103,44 @@
             renderCal();
         }
 
+        function initXiaohuiFloat() {
+            const float = document.getElementById('xiaohuiFloat');
+            const toggle = document.getElementById('xiaohuiToggle');
+            const notes = document.getElementById('xiaohuiNotes');
+            const saveState = document.getElementById('xiaohuiSaveState');
+            const storageKey = 'nh_xiaohui_notes';
+            const openKey = 'nh_xiaohui_open';
+
+            notes.value = localStorage.getItem(storageKey) || '复核记录：\n- 首页表层状态正常，暂无红点。\n- 下一步回看文档、消息、访客记录的来源时间。\n';
+            if (localStorage.getItem(openKey) === 'true') {
+                float.classList.remove('is-collapsed');
+            }
+
+            toggle.addEventListener('click', (event) => {
+                event.stopPropagation();
+                float.classList.toggle('is-collapsed');
+                localStorage.setItem(openKey, String(!float.classList.contains('is-collapsed')));
+            });
+
+            notes.addEventListener('input', () => {
+                localStorage.setItem(storageKey, notes.value);
+                saveState.textContent = '正在保存...';
+                window.clearTimeout(notes._saveTimer);
+                notes._saveTimer = window.setTimeout(() => {
+                    saveState.textContent = '已同步';
+                }, 360);
+            });
+
+            document.querySelectorAll('[data-note-insert]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const insert = button.getAttribute('data-note-insert');
+                    notes.value = `${notes.value.trim()}\n- ${insert}\n`;
+                    notes.dispatchEvent(new Event('input'));
+                    notes.focus();
+                });
+            });
+        }
+
         document.querySelectorAll('.header-tab').forEach((tab) => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.header-tab').forEach((item) => item.classList.remove('active'));
@@ -1946,6 +2166,7 @@
 
         applyWorkbenchMode();
         renderCal();
+        initXiaohuiFloat();
         lucide.createIcons();
     </script>
 </body>
