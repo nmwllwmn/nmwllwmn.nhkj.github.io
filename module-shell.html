@@ -1804,7 +1804,8 @@
                 const rect = JSON.parse(localStorage.getItem(rectKey) || 'null') || savedRect || defaultRect;
                 const width = Math.min(Math.max(rect.width, 260), Math.min(640, window.innerWidth - 80));
                 const height = Math.min(Math.max(rect.height, 230), window.innerHeight - 86);
-                const left = Math.min(window.innerWidth - width - 8, Math.max(8, rect.left));
+                const dockLeft = rect.left + width / 2 < window.innerWidth / 2;
+                const left = dockLeft ? 8 : window.innerWidth - width - 8;
                 const top = Math.min(window.innerHeight - height - 8, Math.max(8, rect.top));
                 float.style.left = `${left}px`;
                 float.style.top = `${top}px`;
@@ -1816,7 +1817,8 @@
 
             function applyCollapsedRect() {
                 const rect = JSON.parse(localStorage.getItem(rectKey) || 'null') || savedRect || defaultRect;
-                const left = Math.min(window.innerWidth - 42 - 8, Math.max(8, rect.left));
+                const dockLeft = rect.left + 21 < window.innerWidth / 2;
+                const left = dockLeft ? 8 : window.innerWidth - 42 - 8;
                 const top = Math.min(window.innerHeight - 132 - 8, Math.max(8, rect.top));
                 float.style.left = `${left}px`;
                 float.style.top = `${top}px`;
@@ -1878,6 +1880,7 @@
                     head.removeEventListener('pointermove', onMove);
                     head.removeEventListener('pointerup', onUp);
                     head.removeEventListener('pointercancel', onUp);
+                    applyExpandedRect();
                     saveFloatRect();
                 }
 
@@ -1937,6 +1940,7 @@
                         handle.removeEventListener('pointermove', onResize);
                         handle.removeEventListener('pointerup', onResizeEnd);
                         handle.removeEventListener('pointercancel', onResizeEnd);
+                        applyExpandedRect();
                         saveFloatRect();
                     }
 
