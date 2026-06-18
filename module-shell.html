@@ -1615,7 +1615,7 @@
             position: fixed;
             right: 16px;
             bottom: 42px;
-            z-index: 40;
+            z-index: 90;
             width: 340px;
             min-width: 260px;
             max-width: min(640px, calc(100vw - 80px));
@@ -3167,6 +3167,19 @@
                 openDetail(detailTrigger.getAttribute('data-detail'));
                 return;
             }
+            const branchTrigger = event.target.closest('[data-branch]');
+            if (branchTrigger && !branchTrigger.hasAttribute('data-doc-folder')) {
+                event.preventDefault();
+                const branchKey = branchTrigger.getAttribute('data-branch');
+                document.querySelectorAll('[data-branch]').forEach((node) => node.classList.toggle('active', node.getAttribute('data-branch') === branchKey));
+                if (renderers[branchKey]) {
+                    renderers[branchKey]();
+                } else {
+                    renderModuleBranch(branchKey);
+                }
+                refreshIcons();
+                return;
+            }
         });
 
         document.getElementById('detailClose').addEventListener('click', closeDetail);
@@ -3236,11 +3249,158 @@
         }
 
         function setTabs(items) {
-            document.getElementById('tabs').innerHTML = items.map((item, index) => `<span class="tab ${index === 0 ? 'active' : ''}">${item}</span>`).join('');
+            document.getElementById('tabs').innerHTML = items.map((item, index) => {
+                const label = Array.isArray(item) ? item[0] : item;
+                const branch = Array.isArray(item) ? item[1] : '';
+                return `<span class="tab ${index === 0 ? 'active' : ''}" ${branch ? `data-branch="${branch}"` : ''}>${label}</span>`;
+            }).join('');
+        }
+
+        function renderModuleBranch(branchKey) {
+            const branchMap = {
+                'table-view': {
+                    title: 'AI 表格 / 视图',
+                    rows: [['默认视图', '6月复核表', '冻结表头、完成项优先', '已保存'], ['台账汇总', '资产管理', '按资产编号排序', '已保存'], ['流程明细', '文档中心', '按更新时间排序', '已保存'], ['权限审计', '系统助手', '只读字段', '已保存']]
+                },
+                'table-automation': {
+                    title: 'AI 表格 / 自动化',
+                    rows: [['归档同步', '文档中心', '每天 18:20 生成预览', '启用'], ['设备回执', '资产管理', '回执生成后同步状态', '启用'], ['会议摘要', 'AI 听记', '摘要生成后写入行动项', '启用']]
+                },
+                'table-permission': {
+                    title: 'AI 表格 / 权限',
+                    rows: [['顾路', '查看本人资料', '只读', '有效'], ['方案设计组', '查看团队交付表', '只读', '有效'], ['人事服务台', '查看交接字段', '只读', '有效'], ['资产管理组', '维护设备状态', '编辑', '有效']]
+                },
+                'note-recording': {
+                    title: 'AI 听记 / 录音',
+                    rows: [['方案晨会 10:00', '线上会议', '10分42秒', '摘要已生成'], ['资料归档同步会', '会议室 B', '18分06秒', '摘要已生成'], ['设备台账复核', '线上会议', '08分31秒', '摘要已生成']]
+                },
+                'note-summary': {
+                    title: 'AI 听记 / 摘要',
+                    rows: [['资料归档', '方案交付按普通评审版处理', '郑明', '已提取'], ['设备台账', '设备和工牌分开登记', '资产管理', '已提取'], ['服务台沟通', '材料缺项走工单补充', '林知遥', '已提取']]
+                },
+                'note-actions': {
+                    title: 'AI 听记 / 行动项',
+                    rows: [['顾路', '核对方案包文件名', '06-05 18:30', '已完成'], ['宋瑜', '补版本对照表', '06-05 18:49', '已完成'], ['资产管理', '同步设备回执', '06-05 17:42', '已完成']]
+                },
+                'xiaohui-excerpts': {
+                    title: 'AI小洄 / 摘录',
+                    rows: [['消息摘录', '郑明提醒别弄太晚', '06-05 21:16', '已保存'], ['文档摘录', 'R-03 普通评审页不展开后台点位', '06-05 16:20', '已保存'], ['待办摘录', '设备和方案目录分开提交', '06-05 18:22', '已保存']]
+                },
+                'xiaohui-pending': {
+                    title: 'AI小洄 / 待整理',
+                    rows: [['访客登记字段', '补交设备', '行政前台', '待归类'], ['普通回执字段', '工牌待复核', '资产管理', '待归类'], ['归档时间', '06-05 18:20', '文档中心', '待归类']]
+                },
+                'xiaohui-sync': {
+                    title: 'AI小洄 / 同步记录',
+                    rows: [['今天 09:42', '复核工作草稿', '本机浏览器', '已同步'], ['今天 09:30', '方案包索引', '本机浏览器', '已同步'], ['昨天', '交接材料核对', '本机浏览器', '已同步']]
+                },
+                'contacts-frequent': {
+                    title: '通讯录 / 常用联系人',
+                    rows: [['郑明', '方案中心 / 直属负责人', '最近沟通 06-05 21:18', '在线'], ['林知遥', '人事服务台', '最近沟通 06-05 18:22', '在线'], ['周闻', '资产管理', '设备回执经办人', '离线']]
+                },
+                'contacts-external': {
+                    title: '通讯录 / 外部联系人',
+                    rows: [['园区接口组', '企业服务接口', '同步状态正常', '可联系'], ['行政前台', 'C座登记台', '工作时间在线', '可联系'], ['韩沛', '外部媒体联系人', '未添加到企业通讯录', '不可直呼']]
+                },
+                'meeting-list': {
+                    title: '会议 / 会议列表',
+                    rows: [['方案晨会', '会议室 A', '06-05 10:00', '已结束'], ['方案资料整理', '会议室 B', '06-05 14:00', '已结束'], ['方案评审同步', '线上会议', '06-05 16:00', '已结束']]
+                },
+                'meeting-booking': {
+                    title: '会议 / 预约记录',
+                    rows: [['会议室 A', '郑明', '06-05 10:00-11:00', '已使用'], ['会议室 B', '方案设计组', '06-05 14:00-15:00', '已使用'], ['线上会议', '系统助手', '06-05 16:00-16:30', '已结束']]
+                },
+                'calendar-month': {
+                    title: '日历 / 月视图',
+                    rows: [['06-03', '需求纪要会议', '方案中心', '已结束'], ['06-04', '方案模板更新', '文档中心', '已结束'], ['06-05', '方案评审与交接资料', '方案中心', '已结束'], ['06-06', '请假 1 天', '人事服务台', '已归档']]
+                },
+                'calendar-list': {
+                    title: '日历 / 日程列表',
+                    rows: [['10:00', '方案晨会', '线上会议', '已结束'], ['14:00', '方案资料整理', '会议室 B', '已结束'], ['16:00', '方案评审同步', '线上会议', '已结束']]
+                },
+                'todo-done': {
+                    title: '待办 / 已完成',
+                    rows: [['个人资料同步确认', '工作台', '06-06 10:05', '已完成'], ['设备台账确认', '资产管理', '06-05 15:40', '已完成'], ['方案交付包归档', '文档中心', '06-05 17:12', '已完成'], ['会议摘要确认', 'AI 听记', '06-05 10:45', '已完成']]
+                },
+                'todo-created': {
+                    title: '待办 / 我发起的',
+                    rows: [['核对方案包文件名', '顾路', '06-05 18:46', '已完成'], ['补交设备登记', '顾路', '06-06 09:12', '已完成'], ['资料补充目录', '顾路', '06-05 17:08', '已完成']]
+                },
+                'ding-sent': {
+                    title: 'DING / 已发送',
+                    rows: [['方案模板更新', '文档中心', '06-04 18:00', '已签收 8/8'], ['资料归档提醒', '系统', '06-05 09:00', '已签收 5/5'], ['设备台账同步', '资产管理', '06-05 15:00', '已签收 4/4']]
+                },
+                'ding-sign': {
+                    title: 'DING / 签收记录',
+                    rows: [['顾路', '资料归档提醒', '06-05 09:08', '已签收'], ['郑明', '方案模板更新', '06-04 18:06', '已签收'], ['林知遥', '设备台账同步', '06-05 15:12', '已签收']]
+                },
+                'attendance-year': {
+                    title: '打卡 / 年度汇总',
+                    rows: [['2025年', '基本全年无休', '仅 06-06 请假 1 天', '普通视图'], ['6月', '标准 8 小时', '08:50-08:58 / 18:00-18:10', '已归档']]
+                },
+                'attendance-detail': {
+                    title: '打卡 / 记录明细',
+                    rows: [['2025-06-01', '08:53', '18:04', '正常'], ['2025-06-02', '08:55', '18:07', '正常'], ['2025-06-06', '-', '-', '请假']]
+                },
+                'attendance-leave-tab': {
+                    title: '打卡 / 请假',
+                    rows: [['2025-06-06 请假单_顾路.docx', '人事服务台', '1 天', '已归档'], ['审批流', '林知遥', '06-05 18:20', '已通过']]
+                },
+                'visitor-booking': {
+                    title: '访客记录 / 预约',
+                    rows: [['顾路', '06-06 09:12', '补交设备', '已登记'], ['供应商接口', '06-05 16:20', '设备维护', '已离场'], ['行政快递', '06-05 11:30', '文件送达', '已完成']]
+                },
+                'visitor-access': {
+                    title: '访客记录 / 门禁联动',
+                    rows: [['前台登记', 'C座', '普通字段', '已同步'], ['回执同步', '工作台', '06-06 09:20', '已同步'], ['后台通行记录', '园区系统', '普通视图不展示', '保留']]
+                },
+                'equipment-ledger': {
+                    title: '设备归还 / 资产台账',
+                    rows: [['NH-LT-2206', '办公笔记本', '已归还', '已生成'], ['NH-CARD-0606', '门禁工牌', '待复核', '普通回执'], ['NH-KEY-0412', '办公柜钥匙', '已归还', '已生成']]
+                },
+                'equipment-receipt': {
+                    title: '设备归还 / 回执',
+                    rows: [['设备补交回执', '资产管理', '06-05 17:42', '已生成'], ['工牌普通回执', '资产管理', '06-05 17:42', '待复核'], ['办公柜钥匙回执', '资产管理', '06-05 17:40', '已生成']]
+                },
+                'archive-approval': {
+                    title: '归档 / 审批',
+                    rows: [['AR-0605-118', '办公用品领用确认', '行政', '已完成'], ['AR-0605-120', 'C座方案交付包', '方案中心', '已完成'], ['AR-0606-061', '设备回执归档', '资产管理', '已完成']]
+                },
+                'archive-flow': {
+                    title: '归档 / 流转记录',
+                    rows: [['17:00', '文档中心', '生成归档包 DOC-GL-0605', '完成'], ['17:08', '顾路', '确认交付版文件名', '完成'], ['17:18', '服务台', '标记已闭环', '完成']]
+                },
+                'add-common': {
+                    title: '应用中心 / 常用',
+                    rows: [['消息', '沟通记录', '已接入', '打开'], ['文档', '文档中心', '已接入', '打开'], ['AI小洄', '悬浮记事本', '已接入', '打开'], ['打卡', '考勤记录', '已接入', '打开']]
+                },
+                'add-manage': {
+                    title: '应用中心 / 管理',
+                    rows: [['访客记录', '行政前台', '已接入', '打开'], ['设备归还', '资产管理', '已接入', '打开'], ['归档', '流程中心', '已接入', '打开'], ['凭证复核', '本地接入', '可打开', '打开']]
+                },
+                'message-org': {
+                    title: '消息 / 组织',
+                    rows: [['方案设计组', '8 人', 'C座访客动线方案沟通', '正常'], ['人事服务台', '服务台', '材料核对与工单补充', '正常'], ['资产管理组', '4 人', '设备台账与回执同步', '正常'], ['行政前台', '3 人', '访客登记与模板通知', '正常']]
+                },
+                'message-mentions': {
+                    title: '消息 / @我',
+                    rows: [['陈嘉', '@顾路 需要模板我这边有上周版本', '09:20', '已读'], ['宋瑜', '@顾路 版本对照表已放同一目录', '18:49', '已读'], ['林知遥', '@顾路 缺项我会在工单里标出来', '17:10', '已读']]
+                }
+            };
+            const item = branchMap[branchKey];
+            if (!item) return;
+            document.getElementById('statusText').textContent = `${item.title} 已打开`;
+            app.innerHTML = `<section class="pane primary pad">
+                <div class="section-head" style="padding:0 0 16px;border:0"><h2>${item.title}</h2><span class="muted">${item.rows.length} 条记录</span></div>
+                <table class="table">
+                    <thead><tr><th>名称</th><th>来源</th><th>说明</th><th>状态</th></tr></thead>
+                    <tbody>${item.rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td></tr>`).join('')}</tbody>
+                </table>
+            </section>`;
         }
 
         function renderMessages() {
-            setTabs(['消息', '组织', '@我']);
+            setTabs([['消息', 'messages'], ['组织', 'message-org'], ['@我', 'message-mentions']]);
             document.getElementById('statusText').textContent = '消息同步完成，无未读异常';
             const chatFlags = { admin: 'msgAdmin', tech: 'msgTech', hr: 'msgHr', zheng: 'msgZheng', system: 'msgSystem' };
             const conversations = [
@@ -3490,7 +3650,7 @@
         }
 
         function renderTable() {
-            setTabs(['数据表', '视图', '自动化', '权限']);
+            setTabs([['数据表', 'aiTable'], ['视图', 'table-view'], ['自动化', 'table-automation'], ['权限', 'table-permission']]);
             document.getElementById('statusText').textContent = 'AI 表格服务正常';
             const rows = [
                 ['WB-0605-01', '设备归还', '资产管理', '完成', '06-05 15:40', 'table-device'],
@@ -3509,7 +3669,7 @@
                     <aside class="module-side">
                         <div class="section-head"><h2>数据表</h2><button class="btn" data-detail="action-table-view">${icon('sliders-horizontal')}视图</button></div>
                         <div class="list">
-                            ${['6月复核表', '台账汇总', '流程明细', '权限审计', '导出记录'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '实时更新' : '普通视图'}</span></div></div>`).join('')}
+                            ${[['6月复核表', 'aiTable'], ['台账汇总', 'table-view'], ['流程明细', 'table-automation'], ['权限审计', 'table-permission'], ['导出记录', 'table-view']].map(([name, branch], i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-branch="${branch}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '实时更新' : '普通视图'}</span></div></div>`).join('')}
                         </div>
                     </aside>
                     <section class="module-stage">
@@ -3537,7 +3697,7 @@
         }
 
         function renderNote() {
-            setTabs(['会议纪要', '录音', '摘要', '行动项']);
+            setTabs([['会议纪要', 'aiNote'], ['录音', 'note-recording'], ['摘要', 'note-summary'], ['行动项', 'note-actions']]);
             document.getElementById('statusText').textContent = 'AI 听记摘要已生成';
             app.innerHTML = `
                 <div class="module-board three">
@@ -3597,7 +3757,7 @@
         }
 
         function renderXiaohui() {
-            setTabs(['智能记事', '摘录', '待整理', '同步记录']);
+            setTabs([['智能记事', 'aiXiaohui'], ['摘录', 'xiaohui-excerpts'], ['待整理', 'xiaohui-pending'], ['同步记录', 'xiaohui-sync']]);
             document.getElementById('statusText').textContent = 'AI小洄自动保存中';
             const notes = [
                 ['复核工作草稿', '普通工作台检查记录', '今天 09:42', '#2f75ff', '洄'],
@@ -3674,7 +3834,7 @@
         }
 
         function renderContacts() {
-            setTabs(['组织架构', '常用联系人', '外部联系人']);
+            setTabs([['组织架构', 'contacts'], ['常用联系人', 'contacts-frequent'], ['外部联系人', 'contacts-external']]);
             document.getElementById('statusText').textContent = '通讯录同步正常';
             const people = [
                 ['郑明', '方案中心 / 直属负责人', '在线', '#7357d8', 'contact-zheng'],
@@ -3688,7 +3848,7 @@
                     <aside class="module-side">
                         <div class="section-head"><h2>组织</h2><button class="btn" data-detail="action-upload">${icon('download')}导出</button></div>
                         <div class="list">
-                            ${['南洄科技有限公司', '总经办', '方案中心', '人事行政部', '资产管理组', '园区接口组'].map((name, i) => `<div class="list-row ${i === 2 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '56 人' : '部门通讯录'}</span></div></div>`).join('')}
+                            ${[['南洄科技有限公司', 'contacts'], ['总经办', 'contacts-frequent'], ['方案中心', 'contacts'], ['人事行政部', 'contacts-frequent'], ['资产管理组', 'contacts-frequent'], ['园区接口组', 'contacts-external']].map(([name, branch], i) => `<div class="list-row clickable ${i === 2 ? 'active' : ''}" data-branch="${branch}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '56 人' : '部门通讯录'}</span></div></div>`).join('')}
                         </div>
                     </aside>
                     <section class="module-stage">
@@ -3712,7 +3872,7 @@
         }
 
         function renderMeeting() {
-            setTabs(['会议室', '会议列表', '预约记录']);
+            setTabs([['会议室', 'meeting'], ['会议列表', 'meeting-list'], ['预约记录', 'meeting-booking']]);
             document.getElementById('statusText').textContent = '会议服务可用';
             const rooms = [
                 ['会议室 A', '8人 / 屏幕 / 白板', '10:00-11:00 方案晨会', '可预约', 'meeting-a', ['used', 'busy', '', '', '', '', '', '']],
@@ -3725,7 +3885,7 @@
                     <aside class="module-side">
                         <div class="section-head"><h2>会议</h2><button class="btn primary" data-detail="action-new">${icon('plus')}预约</button></div>
                         <div class="list">
-                            ${['今日会议', '可预约会议室', '我发起的', '会议纪要', '设备状态'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '3 个日程' : '同步正常'}</span></div></div>`).join('')}
+                            ${[['今日会议', 'meeting'], ['可预约会议室', 'meeting-booking'], ['我发起的', 'meeting-list'], ['会议纪要', 'note-summary'], ['设备状态', 'equipment-ledger']].map(([name, branch], i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-branch="${branch}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '3 个日程' : '同步正常'}</span></div></div>`).join('')}
                         </div>
                     </aside>
                     <section class="module-stage">
@@ -3756,7 +3916,7 @@
         }
 
         function renderCalendar() {
-            setTabs(['周', '月', '日程列表']);
+            setTabs([['周', 'calendar'], ['月', 'calendar-month'], ['日程列表', 'calendar-list']]);
             document.getElementById('statusText').textContent = '日历同步完成';
             const days = ['周一 1', '周二 2', '周三 3', '周四 4', '周五 5', '周六 6', '周日 7'];
             const times = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '18:00'];
@@ -3778,7 +3938,7 @@
         }
 
         function renderTodo() {
-            setTabs(['我的待办', '已完成', '我发起的']);
+            setTabs([['我的待办', 'todo'], ['已完成', 'todo-done'], ['我发起的', 'todo-created']]);
             document.getElementById('statusText').textContent = '待办均已处理';
             const todoCards = {
                 planned: [
@@ -3835,7 +3995,7 @@
         }
 
         function renderDing() {
-            setTabs(['DING', '已发送', '签收记录']);
+            setTabs([['DING', 'ding'], ['已发送', 'ding-sent'], ['签收记录', 'ding-sign']]);
             document.getElementById('statusText').textContent = 'DING 通知 0 条待签收';
             const dings = [
                 ['资料归档提醒', '系统', '06-05 09:00', '已签收 5/5', 'ding-archive'],
@@ -3848,7 +4008,7 @@
                     <aside class="module-side">
                         <div class="section-head"><h2>DING</h2><button class="btn primary" data-detail="action-new">${icon('send')}发DING</button></div>
                         <div class="list">
-                            ${['全部', '我收到的', '我发出的', '签收记录', '草稿箱'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '3 条记录' : '无待处理'}</span></div></div>`).join('')}
+                            ${[['全部', 'ding'], ['我收到的', 'ding'], ['我发出的', 'ding-sent'], ['签收记录', 'ding-sign'], ['草稿箱', 'ding-sent']].map(([name, branch], i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-branch="${branch}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '3 条记录' : '无待处理'}</span></div></div>`).join('')}
                         </div>
                     </aside>
                     <section class="pane primary">
@@ -3912,7 +4072,7 @@
 
         function renderAttendance() {
             const recovery = isRecoveryMode;
-            setTabs(['月视图', '年度汇总', '记录明细', '请假']);
+            setTabs([['月视图', 'attendance'], ['年度汇总', 'attendance-year'], ['记录明细', 'attendance-detail'], ['请假', 'attendance-leave-tab']]);
             document.getElementById('statusText').textContent = recovery ? '打卡记录显示凭证复核字段' : '打卡记录同步正常';
             const rows = recovery ? recoveryAttendanceRows() : normalAttendanceRows();
             const visibleRows = rows.slice(0, 15);
@@ -3965,7 +4125,7 @@
         }
 
         function renderVisitor() {
-            setTabs(['访客记录', '预约', '门禁联动']);
+            setTabs([['访客记录', 'visitor'], ['预约', 'visitor-booking'], ['门禁联动', 'visitor-access']]);
             document.getElementById('statusText').textContent = '访客记录显示普通字段';
             const rows = [
                 ['06-06 09:12', '顾路', '补交设备', 'C 座', '已登记', 'visitor-gu'],
@@ -4007,7 +4167,7 @@
         }
 
         function renderEquipment() {
-            setTabs(['设备归还', '资产台账', '回执']);
+            setTabs([['设备归还', 'equipment'], ['资产台账', 'equipment-ledger'], ['回执', 'equipment-receipt']]);
             document.getElementById('statusText').textContent = '设备台账同步完成';
             const assets = [
                 ['NH-LT-2206', '办公笔记本', '顾路', '已归还', '已生成', 'equipment-laptop', 'laptop'],
@@ -4042,7 +4202,7 @@
         }
 
         function renderArchive() {
-            setTabs(['归档', '审批', '流转记录']);
+            setTabs([['归档', 'archive'], ['审批', 'archive-approval'], ['流转记录', 'archive-flow']]);
             document.getElementById('statusText').textContent = '归档与审批记录正常';
             const flows = [
                 ['AR-0605-118', '办公用品领用确认', '行政', '已完成', 'archive-office'],
@@ -4056,7 +4216,7 @@
                     <aside class="module-side">
                         <div class="section-head"><h2>审批</h2><button class="btn" data-detail="archive-signoff">${icon('archive')}归档</button></div>
                         <div class="list">
-                            ${['全部单据', '我审批的', '我发起的', '抄送我的', '归档报告'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '4 条已完成' : '无待办'}</span></div></div>`).join('')}
+                            ${[['全部单据', 'archive'], ['我审批的', 'archive-approval'], ['我发起的', 'archive-flow'], ['抄送我的', 'archive-approval'], ['归档报告', 'archive-flow']].map(([name, branch], i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-branch="${branch}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '4 条已完成' : '无待办'}</span></div></div>`).join('')}
                         </div>
                     </aside>
                     <section class="module-stage">
@@ -4087,7 +4247,7 @@
         }
 
         function renderAdd() {
-            setTabs(['全部应用', '常用', '管理']);
+            setTabs([['全部应用', 'add'], ['常用', 'add-common'], ['管理', 'add-manage']]);
             document.getElementById('statusText').textContent = '应用中心可用';
             app.innerHTML = `<section class="pane primary pad"><div class="app-grid">
                 ${APPS.filter(([key]) => key !== 'add').map(([key, name, ic]) => `<a class="app-tile" href="${appUrl(key)}" target="_blank" rel="noopener noreferrer"><div class="title-icon">${icon(ic)}</div><strong>${name}</strong><span class="muted">已接入</span></a>`).join('')}
