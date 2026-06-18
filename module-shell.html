@@ -2020,6 +2020,38 @@
             'archiveViewed',
             'archiveEquipment'
         ];
+        const SURFACE_CLUE_LINKS = [
+            { from: 'homeReport', to: 'loginOldPassword', label: '报道里的生日口径指向旧口令' },
+            { from: 'loginOldPassword', to: 'workbenchViewed', label: '旧口令进入顾路普通工作台' },
+            { from: 'workbenchViewed', to: 'todoViewed', label: '工作台首页把顾路待办放在第一层' },
+            { from: 'todoViewed', to: 'todoDocs', label: '顾路待办先指向方案包' },
+            { from: 'todoDocs', to: 'documentsViewed', label: '方案包待办指向文档中心' },
+            { from: 'documentsViewed', to: 'docOffboarding', label: '文档中心先给出交接清单' },
+            { from: 'docOffboarding', to: 'docEquipmentGuide', label: '交接清单指向设备补交说明' },
+            { from: 'docEquipmentGuide', to: 'docEquipment', label: '设备说明指向普通回执' },
+            { from: 'docEquipment', to: 'docAppeal', label: '普通回执旁边出现绩效申诉处理记录' },
+            { from: 'docAppeal', to: 'docVisitor', label: '申诉结论指向访客登记说明' },
+            { from: 'docVisitor', to: 'docWeekly', label: '访客动线材料被收进周报归档' },
+            { from: 'todoNote', to: 'messagesViewed', label: '核对评审口径指向消息记录' },
+            { from: 'messagesViewed', to: 'msgTech', label: '消息列表先露出技术处口径' },
+            { from: 'msgTech', to: 'msgHr', label: '技术处口径指向人事服务台' },
+            { from: 'msgHr', to: 'msgZheng', label: '人事沟通再指向郑明催方案' },
+            { from: 'msgZheng', to: 'aiNoteViewed', label: '消息里的会议语境指向 AI 听记' },
+            { from: 'aiNoteViewed', to: 'noteWeekly', label: 'AI 摘要指向周报交付口径' },
+            { from: 'noteWeekly', to: 'tableViewed', label: '周报口径指向汇总表' },
+            { from: 'tableViewed', to: 'tableArchive', label: '汇总表指向归档汇总页' },
+            { from: 'tableArchive', to: 'tableVisitor', label: '归档汇总页指向访客同步字段' },
+            { from: 'todoProfile', to: 'visitorViewed', label: '核对访客登记指向前台记录' },
+            { from: 'visitorViewed', to: 'visitorGu', label: '访客记录里出现顾路补交设备' },
+            { from: 'todoEquipment', to: 'equipmentViewed', label: '补交设备待办指向资产台账' },
+            { from: 'equipmentViewed', to: 'equipmentBadge', label: '资产台账里工牌保留待复核字段' },
+            { from: 'tableVisitor', to: 'calendarViewed', label: '访客同步时间指向日历节点' },
+            { from: 'calendarViewed', to: 'calendar1400', label: '日历中的资料整理卡住关键时间' },
+            { from: 'calendar1400', to: 'dingViewed', label: '日程提醒继续指向 DING 通知' },
+            { from: 'dingViewed', to: 'dingArchive', label: 'DING 签收指向归档签收链' },
+            { from: 'dingArchive', to: 'archiveViewed', label: '签收链最终进入归档中心' },
+            { from: 'archiveViewed', to: 'archiveEquipment', label: '归档中心先显示设备回执归档' }
+        ];
 
         function readSurfaceChain() {
             try {
@@ -2036,15 +2068,38 @@
         function setSurfaceFlag(flag) {
             if (!flag) return;
             const state = readSurfaceChain();
-            if (state[flag]) return;
-            state[flag] = true;
+            const changed = !state[flag];
+            if (changed) {
+                state[flag] = true;
+                state.seenOrder = Array.isArray(state.seenOrder) ? state.seenOrder : [];
+                state.seenOrder.push({
+                    flag,
+                    module: moduleKey,
+                    at: new Date().toISOString()
+                });
+            }
             state.updatedAt = new Date().toISOString();
+            updateSurfaceClueLinks(state);
             writeSurfaceChain(state);
+        }
+
+        function updateSurfaceClueLinks(state) {
+            const linked = SURFACE_CLUE_LINKS.filter((link) => state[link.from] && state[link.to]);
+            state.surfaceLinks = linked.map((link) => link.label);
+            state.surfaceLinkedCount = linked.length;
+        }
+
+        function surfaceClueLinksComplete(state) {
+            updateSurfaceClueLinks(state);
+            return SURFACE_CLUE_LINKS.every((link) => state[link.from] && state[link.to]);
         }
 
         function surfaceChainComplete() {
             const state = readSurfaceChain();
-            return SURFACE_REQUIRED_FLAGS.every((flag) => state[flag]);
+            updateSurfaceClueLinks(state);
+            writeSurfaceChain(state);
+            return surfaceClueLinksComplete(state)
+                && SURFACE_REQUIRED_FLAGS.every((flag) => state[flag]);
         }
 
         function markCurrentModule() {
@@ -3093,6 +3148,7 @@
             localStorage.setItem('nh_surface_bad_ending', 'true');
             const state = readSurfaceChain();
             const checkedCount = SURFACE_REQUIRED_FLAGS.filter((flag) => state[flag]).length;
+            const linkText = (state.surfaceLinks || []).slice(0, 6).join('；');
             return `<div class="office-frame surface-report">
                 <div class="office-toolbar"><span class="office-tool">${icon('file-check-2')}</span><span>复核报告预览</span><span class="muted">普通工作台视图</span></div>
                 <section class="report-cover">
@@ -3108,6 +3164,7 @@
                 </div>
                 <section class="detail-section">
                     <h3>复核摘要</h3>
+                    <p>本意见由多处互相指向的可见记录自动汇总：${linkText || '尚未形成完整线索链'}。</p>
                     <p>顾路账号在普通工作台中保留的记录呈现为完整闭环：人事交接显示已沟通，设备台账显示已生成普通回执，访客登记显示事由为补交设备，消息与 DING 均为常规工作提醒。</p>
                     <p>AI 听记与方案交付清单将C座访客动线方案归入本周交付包，归档中心据此生成“未发现系统异常”的预览意见。该意见仅覆盖当前可见字段，并未展开凭证恢复态、门禁刷卡明细与原始撤回记录。</p>
                 </section>
