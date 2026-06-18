@@ -1791,25 +1791,25 @@
                 kind: 'checklist',
                 title: '本周工作资料归档',
                 meta: [['来源', '文档中心'], ['截止', '06-05'], ['状态', '已完成']],
-                checklist: [['资料归档', '已完成'], ['版本确认', '已完成'], ['系统回执', '已完成']]
+                checklist: [['离职交接清单', '已完成'], ['设备补交登记说明', '已完成'], ['版本确认', '已完成']]
             },
             'todo-equipment': {
                 kind: 'checklist',
                 title: '设备台账确认',
                 meta: [['来源', '资产管理'], ['截止', '06-05'], ['状态', '已完成']],
-                checklist: [['笔记本', '已完成'], ['工牌', '已完成'], ['钥匙', '已完成']]
+                checklist: [['笔记本', '已完成'], ['工牌', '已完成'], ['钥匙', '已完成'], ['回执', '已完成']]
             },
             'todo-note': {
                 kind: 'checklist',
                 title: '会议摘要确认',
                 meta: [['来源', 'AI听记'], ['截止', '06-05'], ['状态', '已完成']],
-                checklist: [['摘要校对', '已完成'], ['行动项归档', '已完成'], ['参会人核对', '已完成']]
+                checklist: [['摘要校对', '已完成'], ['行动项归档', '已完成'], ['参会人核对', '已完成'], ['郑明消息复看', '已完成']]
             },
             'todo-profile': {
                 kind: 'checklist',
                 title: '个人资料同步确认',
                 meta: [['来源', '工作台'], ['截止', '06-06'], ['状态', '已完成']],
-                checklist: [['账号信息', '已完成'], ['头像资料', '已完成'], ['权限映射', '已完成']]
+                checklist: [['账号信息', '已完成'], ['头像资料', '已完成'], ['权限映射', '已完成'], ['访客登记回看', '已完成']]
             },
             'ding-archive': {
                 kind: 'chat',
@@ -2537,31 +2537,54 @@
         function renderTodo() {
             setTabs(['我的待办', '已完成', '我发起的']);
             document.getElementById('statusText').textContent = '待办均已处理';
-            const done = [
-                ['本周工作资料归档', '文档中心', '06-05 17:12', 'todo-docs'],
-                ['设备台账确认', '资产管理', '06-05 15:40', 'todo-equipment'],
-                ['会议摘要确认', 'AI 听记', '06-05 10:45', 'todo-note'],
-                ['个人资料同步确认', '工作台', '06-06 10:05', 'todo-profile']
-            ];
+            const todoCards = {
+                planned: [
+                    ['回收个人文档', '先去文档中心核对离职交接清单，再确认设备与回执是否同步。', 'todo-docs'],
+                    ['核对消息时间线', '把郑明、人事、资产管理的消息按时间顺序重新过一遍。', 'todo-note'],
+                    ['补交设备', '工牌、笔记本、钥匙会分开登记，避免台账混在一起。', 'todo-equipment']
+                ],
+                doing: [
+                    ['复核访客登记', '前台登记里只保留了补交设备，门禁路线没写完整。', 'todo-profile'],
+                    ['比对会议摘要', 'AI 听记已经生成，正在确认谁说过“按普通流程归档”。', 'todo-note']
+                ],
+                done: [
+                    ['个人资料同步确认', '工作台', '06-06 10:05', 'todo-profile'],
+                    ['设备台账确认', '资产管理', '06-05 15:40', 'todo-equipment'],
+                    ['本周工作资料归档', '文档中心', '06-05 17:12', 'todo-docs'],
+                    ['会议摘要确认', 'AI 听记', '06-05 10:45', 'todo-note']
+                ]
+            };
             app.innerHTML = `
                 <section class="pane primary pad">
                     <div class="section-head" style="padding:0 0 16px;border:0">
-                        <h2>待办看板</h2>
+                        <h2>顾路待办</h2>
                         <div><button class="btn">${icon('filter')}筛选</button> <button class="btn primary" data-detail="action-new">${icon('plus')}新建待办</button></div>
                     </div>
                     <div class="todo-board">
                         <div class="todo-column">
-                            <div class="todo-column-head"><strong>待处理</strong><span class="muted">0</span></div>
-                            <div class="todo-card-real"><strong>暂无待处理事项</strong><p>普通工作台显示所有流程均已闭环。</p></div>
+                            <div class="todo-column-head"><strong>准备做</strong><span class="muted">${todoCards.planned.length}</span></div>
+                            ${todoCards.planned.map((item) => `<div class="todo-card-real clickable" data-detail="${item[2]}"><strong>${item[0]}</strong><p>${item[1]}</p><span class="status wait">待处理</span></div>`).join('')}
                         </div>
                         <div class="todo-column">
-                            <div class="todo-column-head"><strong>处理中</strong><span class="muted">0</span></div>
-                            <div class="todo-card-real"><strong>暂无进行中事项</strong><p>服务台、资产、人事流程均未返回待办。</p></div>
+                            <div class="todo-column-head"><strong>做过的</strong><span class="muted">${todoCards.doing.length}</span></div>
+                            ${todoCards.doing.map((item) => `<div class="todo-card-real clickable" data-detail="${item[2]}"><strong>${item[0]}</strong><p>${item[1]}</p><span class="status">进行中</span></div>`).join('')}
                         </div>
                         <div class="todo-column">
-                            <div class="todo-column-head"><strong>已完成</strong><span class="muted">${done.length}</span></div>
-                            ${done.map((r) => `<div class="todo-card-real clickable" data-detail="${r[3]}"><strong>${r[0]}</strong><p>${r[1]} · 完成于 ${r[2]}</p><span class="status">已完成</span></div>`).join('')}
+                            <div class="todo-column-head"><strong>已确认</strong><span class="muted">${todoCards.done.length}</span></div>
+                            ${todoCards.done.map((r) => `<div class="todo-card-real clickable" data-detail="${r[3]}"><strong>${r[0]}</strong><p>${r[1]} · 完成于 ${r[2]}</p><span class="status">已完成</span></div>`).join('')}
                         </div>
+                    </div>
+                    <div class="module-card" style="margin-top:14px">
+                        <div class="module-card-head"><h3>顾路的路线痕迹</h3><span class="muted">仅供复核</span></div>
+                        <table class="table" style="margin:0">
+                            <thead><tr><th>顺序</th><th>动作</th><th>来源</th><th>状态</th></tr></thead>
+                            <tbody>
+                                <tr class="clickable" data-detail="todo-docs"><td>01</td><td>先看文档</td><td>文档中心</td><td><span class="status">已确认</span></td></tr>
+                                <tr class="clickable" data-detail="todo-note"><td>02</td><td>再看消息与听记</td><td>消息 / AI 听记</td><td><span class="status">已确认</span></td></tr>
+                                <tr class="clickable" data-detail="todo-profile"><td>03</td><td>核对访客与个人资料</td><td>前台 / 工作台</td><td><span class="status">已确认</span></td></tr>
+                                <tr class="clickable" data-detail="todo-equipment"><td>04</td><td>设备与工牌分开交</td><td>资产管理</td><td><span class="status">已确认</span></td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </section>`;
         }
@@ -2774,30 +2797,42 @@
             const shouldOpen = localStorage.getItem(openKey) === 'true';
             float.classList.toggle('is-collapsed', !shouldOpen);
 
-            function applyExpandedRect() {
-                const rect = JSON.parse(localStorage.getItem(rectKey) || 'null') || savedRect || defaultRect;
-                const width = Math.min(Math.max(rect.width, 260), Math.min(640, window.innerWidth - 80));
-                const height = Math.min(Math.max(rect.height, 230), window.innerHeight - 86);
+            function getStoredRect() {
+                return JSON.parse(localStorage.getItem(rectKey) || 'null') || savedRect || defaultRect;
+            }
+
+            function dockToNearestSide(rect, width, height, collapsed = false) {
                 const dockLeft = rect.left + width / 2 < window.innerWidth / 2;
-                const left = dockLeft ? 8 : window.innerWidth - width - 8;
-                const top = Math.min(window.innerHeight - height - 8, Math.max(8, rect.top));
-                float.style.left = `${left}px`;
-                float.style.top = `${top}px`;
+                return {
+                    left: dockLeft ? 8 : window.innerWidth - width - 8,
+                    top: Math.min(window.innerHeight - height - 8, Math.max(8, rect.top)),
+                    width,
+                    height,
+                    collapsed
+                };
+            }
+
+            function writeRect(rect) {
+                float.style.left = `${rect.left}px`;
+                float.style.top = `${rect.top}px`;
                 float.style.right = 'auto';
                 float.style.bottom = 'auto';
-                float.style.width = `${width}px`;
-                float.style.height = `${height}px`;
+                if (!rect.collapsed) {
+                    float.style.width = `${rect.width}px`;
+                    float.style.height = `${rect.height}px`;
+                }
+            }
+
+            function applyExpandedRect() {
+                const rect = getStoredRect();
+                const width = Math.min(Math.max(rect.width, 260), Math.min(640, window.innerWidth - 80));
+                const height = Math.min(Math.max(rect.height, 230), window.innerHeight - 86);
+                writeRect(dockToNearestSide(rect, width, height));
             }
 
             function applyCollapsedRect() {
-                const rect = JSON.parse(localStorage.getItem(rectKey) || 'null') || savedRect || defaultRect;
-                const dockLeft = rect.left + 21 < window.innerWidth / 2;
-                const left = dockLeft ? 8 : window.innerWidth - 42 - 8;
-                const top = Math.min(window.innerHeight - 132 - 8, Math.max(8, rect.top));
-                float.style.left = `${left}px`;
-                float.style.top = `${top}px`;
-                float.style.right = 'auto';
-                float.style.bottom = 'auto';
+                const rect = getStoredRect();
+                writeRect(dockToNearestSide(rect, 42, 132, true));
             }
 
             if (shouldOpen) applyExpandedRect();
@@ -2831,6 +2866,50 @@
                 if (!float.classList.contains('is-collapsed')) saveFloatRect();
             });
             resizeObserver.observe(float);
+
+            let tabPointerMoved = false;
+            toggle.addEventListener('pointerdown', (event) => {
+                if (!float.classList.contains('is-collapsed')) return;
+                event.preventDefault();
+                toggle.setPointerCapture(event.pointerId);
+                tabPointerMoved = false;
+                const startRect = float.getBoundingClientRect();
+                const startX = event.clientX;
+                const startY = event.clientY;
+
+                function onTabMove(moveEvent) {
+                    const dx = moveEvent.clientX - startX;
+                    const dy = moveEvent.clientY - startY;
+                    if (Math.abs(dx) + Math.abs(dy) > 4) tabPointerMoved = true;
+                    const nextLeft = Math.min(window.innerWidth - 42 - 8, Math.max(8, startRect.left + dx));
+                    const nextTop = Math.min(window.innerHeight - 132 - 8, Math.max(8, startRect.top + dy));
+                    float.style.left = `${nextLeft}px`;
+                    float.style.top = `${nextTop}px`;
+                    float.style.right = 'auto';
+                    float.style.bottom = 'auto';
+                }
+
+                function onTabUp() {
+                    toggle.removeEventListener('pointermove', onTabMove);
+                    toggle.removeEventListener('pointerup', onTabUp);
+                    toggle.removeEventListener('pointercancel', onTabUp);
+                    if (tabPointerMoved) {
+                        applyCollapsedRect();
+                        const rect = float.getBoundingClientRect();
+                        const stored = getStoredRect();
+                        localStorage.setItem(rectKey, JSON.stringify({
+                            left: Math.round(rect.left),
+                            top: Math.round(rect.top),
+                            width: stored.width || 340,
+                            height: stored.height || 230
+                        }));
+                    }
+                }
+
+                toggle.addEventListener('pointermove', onTabMove);
+                toggle.addEventListener('pointerup', onTabUp);
+                toggle.addEventListener('pointercancel', onTabUp);
+            });
 
             const head = float.querySelector('.xiaohui-head');
             head.addEventListener('pointerdown', (event) => {

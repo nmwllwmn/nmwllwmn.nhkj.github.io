@@ -2376,30 +2376,42 @@
             const shouldOpen = localStorage.getItem(openKey) === 'true';
             float.classList.toggle('is-collapsed', !shouldOpen);
 
-            function applyExpandedRect() {
-                const rect = JSON.parse(localStorage.getItem(rectKey) || 'null') || savedRect || defaultRect;
-                const width = Math.min(Math.max(rect.width, 260), Math.min(640, window.innerWidth - 80));
-                const height = Math.min(Math.max(rect.height, 230), window.innerHeight - 86);
+            function getStoredRect() {
+                return JSON.parse(localStorage.getItem(rectKey) || 'null') || savedRect || defaultRect;
+            }
+
+            function dockToNearestSide(rect, width, height, collapsed = false) {
                 const dockLeft = rect.left + width / 2 < window.innerWidth / 2;
-                const left = dockLeft ? 8 : window.innerWidth - width - 8;
-                const top = Math.min(window.innerHeight - height - 8, Math.max(8, rect.top));
-                float.style.left = `${left}px`;
-                float.style.top = `${top}px`;
+                return {
+                    left: dockLeft ? 8 : window.innerWidth - width - 8,
+                    top: Math.min(window.innerHeight - height - 8, Math.max(8, rect.top)),
+                    width,
+                    height,
+                    collapsed
+                };
+            }
+
+            function writeRect(rect) {
+                float.style.left = `${rect.left}px`;
+                float.style.top = `${rect.top}px`;
                 float.style.right = 'auto';
                 float.style.bottom = 'auto';
-                float.style.width = `${width}px`;
-                float.style.height = `${height}px`;
+                if (!rect.collapsed) {
+                    float.style.width = `${rect.width}px`;
+                    float.style.height = `${rect.height}px`;
+                }
+            }
+
+            function applyExpandedRect() {
+                const rect = getStoredRect();
+                const width = Math.min(Math.max(rect.width, 260), Math.min(640, window.innerWidth - 80));
+                const height = Math.min(Math.max(rect.height, 230), window.innerHeight - 86);
+                writeRect(dockToNearestSide(rect, width, height));
             }
 
             function applyCollapsedRect() {
-                const rect = JSON.parse(localStorage.getItem(rectKey) || 'null') || savedRect || defaultRect;
-                const dockLeft = rect.left + 21 < window.innerWidth / 2;
-                const left = dockLeft ? 8 : window.innerWidth - 42 - 8;
-                const top = Math.min(window.innerHeight - 132 - 8, Math.max(8, rect.top));
-                float.style.left = `${left}px`;
-                float.style.top = `${top}px`;
-                float.style.right = 'auto';
-                float.style.bottom = 'auto';
+                const rect = getStoredRect();
+                writeRect(dockToNearestSide(rect, 42, 132, true));
             }
 
             if (shouldOpen) applyExpandedRect();
@@ -2433,6 +2445,50 @@
                 if (!float.classList.contains('is-collapsed')) saveFloatRect();
             });
             resizeObserver.observe(float);
+
+            let tabPointerMoved = false;
+            toggle.addEventListener('pointerdown', (event) => {
+                if (!float.classList.contains('is-collapsed')) return;
+                event.preventDefault();
+                toggle.setPointerCapture(event.pointerId);
+                tabPointerMoved = false;
+                const startRect = float.getBoundingClientRect();
+                const startX = event.clientX;
+                const startY = event.clientY;
+
+                function onTabMove(moveEvent) {
+                    const dx = moveEvent.clientX - startX;
+                    const dy = moveEvent.clientY - startY;
+                    if (Math.abs(dx) + Math.abs(dy) > 4) tabPointerMoved = true;
+                    const nextLeft = Math.min(window.innerWidth - 42 - 8, Math.max(8, startRect.left + dx));
+                    const nextTop = Math.min(window.innerHeight - 132 - 8, Math.max(8, startRect.top + dy));
+                    float.style.left = `${nextLeft}px`;
+                    float.style.top = `${nextTop}px`;
+                    float.style.right = 'auto';
+                    float.style.bottom = 'auto';
+                }
+
+                function onTabUp() {
+                    toggle.removeEventListener('pointermove', onTabMove);
+                    toggle.removeEventListener('pointerup', onTabUp);
+                    toggle.removeEventListener('pointercancel', onTabUp);
+                    if (tabPointerMoved) {
+                        applyCollapsedRect();
+                        const rect = float.getBoundingClientRect();
+                        const stored = getStoredRect();
+                        localStorage.setItem(rectKey, JSON.stringify({
+                            left: Math.round(rect.left),
+                            top: Math.round(rect.top),
+                            width: stored.width || 340,
+                            height: stored.height || 230
+                        }));
+                    }
+                }
+
+                toggle.addEventListener('pointermove', onTabMove);
+                toggle.addEventListener('pointerup', onTabUp);
+                toggle.addEventListener('pointercancel', onTabUp);
+            });
 
             const head = float.querySelector('.xiaohui-head');
             head.addEventListener('pointerdown', (event) => {
