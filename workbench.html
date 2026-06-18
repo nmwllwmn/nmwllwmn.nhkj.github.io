@@ -270,6 +270,90 @@
             color: var(--text-1);
         }
 
+        .home-detail-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            background: rgba(15, 23, 42, 0.24);
+            backdrop-filter: blur(6px);
+        }
+
+        .home-detail-backdrop.is-open { display: flex; }
+
+        .home-detail-dialog {
+            width: min(680px, 100%);
+            max-height: min(720px, calc(100vh - 56px));
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            box-shadow: 0 28px 70px rgba(15, 23, 42, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .home-detail-head {
+            min-height: 56px;
+            padding: 0 18px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .home-detail-head h2 { font-size: 16px; }
+
+        .home-detail-close {
+            margin-left: auto;
+            width: 32px;
+            height: 32px;
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-3);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+
+        .home-detail-close:hover {
+            background: var(--bg);
+            color: var(--text-1);
+        }
+
+        .home-detail-body {
+            overflow: auto;
+            padding: 18px;
+            display: grid;
+            gap: 12px;
+            color: var(--text-2);
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        .home-detail-body section {
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 13px 14px;
+            background: #fff;
+        }
+
+        .home-detail-body h3 {
+            margin-bottom: 8px;
+            color: var(--text-1);
+            font-size: 13.5px;
+        }
+
+        .home-detail-body ul {
+            padding-left: 18px;
+            display: grid;
+            gap: 5px;
+        }
+
         .main {
             min-width: 0;
             flex: 1;
@@ -1713,20 +1797,20 @@
         <header class="header">
             <div class="header-tabs">
                 <button class="header-tab active" type="button">工作台</button>
-                <button class="header-tab" type="button">消息</button>
-                <button class="header-tab" type="button">文档</button>
-                <button class="header-tab" type="button">通讯录</button>
+                <button class="header-tab" type="button" data-open-module="messages">消息</button>
+                <button class="header-tab" type="button" data-open-module="documents">文档</button>
+                <button class="header-tab" type="button" data-open-module="contacts">通讯录</button>
             </div>
             <label class="header-search">
                 <i data-lucide="search"></i>
                 <input type="search" placeholder="搜索消息、工单、人员、记录编号">
             </label>
             <div class="header-right">
-                <button class="header-icon-btn" type="button" aria-label="通知">
+                <button class="header-icon-btn" type="button" aria-label="通知" data-home-detail="notifications">
                     <i data-lucide="bell"></i>
                     <span class="red-dot"></span>
                 </button>
-                <button class="header-icon-btn" type="button" aria-label="设置">
+                <button class="header-icon-btn" type="button" aria-label="设置" data-home-detail="settings">
                     <i data-lucide="settings"></i>
                 </button>
                 <button class="header-user" type="button" id="headerUser" aria-label="账号菜单">顾</button>
@@ -1880,7 +1964,7 @@
                             </a>
                         </div>
                         <div class="todo-list">
-                            <div class="todo-item">
+                            <div class="todo-item" data-open-module="todo">
                                 <div class="todo-check"><i data-lucide="check"></i></div>
                                 <div class="todo-body">
                                     <div class="todo-title" id="todoTitleA">本周工作资料归档</div>
@@ -1888,7 +1972,7 @@
                                 </div>
                                 <div class="todo-priority high"></div>
                             </div>
-                            <div class="todo-item">
+                            <div class="todo-item" data-open-module="todo">
                                 <div class="todo-check"><i data-lucide="check"></i></div>
                                 <div class="todo-body">
                                     <div class="todo-title" id="todoTitleB">设备台账确认</div>
@@ -1896,7 +1980,7 @@
                                 </div>
                                 <div class="todo-priority high"></div>
                             </div>
-                            <div class="todo-item">
+                            <div class="todo-item" data-open-module="aiNote">
                                 <div class="todo-check"><i data-lucide="check"></i></div>
                                 <div class="todo-body">
                                     <div class="todo-title" id="todoTitleC">会议摘要确认</div>
@@ -1904,7 +1988,7 @@
                                 </div>
                                 <div class="todo-priority mid"></div>
                             </div>
-                            <div class="todo-item done">
+                            <div class="todo-item done" data-open-module="todo">
                                 <div class="todo-check"><i data-lucide="check"></i></div>
                                 <div class="todo-body">
                                     <div class="todo-title" id="identityTodoTitle">个人资料同步确认</div>
@@ -1923,7 +2007,7 @@
                             </a>
                         </div>
                         <div class="approval-list">
-                            <div class="approval-item">
+                            <div class="approval-item" data-open-module="archive">
                                 <div class="approval-avatar" style="background: linear-gradient(135deg,#f97316,#fbbf24);">访</div>
                                 <div class="approval-body">
                                     <div class="approval-title" id="approvalTitleA">办公用品领用确认</div>
@@ -1931,7 +2015,7 @@
                                 </div>
                                 <span class="approval-status done" id="approvalStatusA">已完成</span>
                             </div>
-                            <div class="approval-item">
+                            <div class="approval-item" data-open-module="archive">
                                 <div class="approval-avatar" style="background: linear-gradient(135deg,#8b5cf6,#c084fc);">表</div>
                                 <div class="approval-body">
                                     <div class="approval-title" id="approvalTitleB">周报模板更新</div>
@@ -1939,7 +2023,7 @@
                                 </div>
                                 <span class="approval-status done" id="approvalStatusB">已完成</span>
                             </div>
-                            <div class="approval-item">
+                            <div class="approval-item" data-open-module="calendar">
                                 <div class="approval-avatar" style="background: linear-gradient(135deg,#14b8a6,#5eead4);">档</div>
                                 <div class="approval-body">
                                     <div class="approval-title" id="approvalTitleC">会议室预约确认</div>
@@ -2006,15 +2090,15 @@
                                 更多 <i data-lucide="chevron-right"></i>
                             </a>
                         </div>
-                        <div class="notice-item">
+                        <div class="notice-item" data-home-detail="notice-workbench">
                             <div class="notice-title" id="noticeTitleA">南洄工作台本周更新完成</div>
                             <div class="notice-meta" id="noticeMetaA"><span>系统</span><span>/</span><span>已发布</span></div>
                         </div>
-                        <div class="notice-item orange">
+                        <div class="notice-item orange" data-home-detail="notice-note">
                             <div class="notice-title" id="noticeTitleB">AI 听记模块服务正常</div>
                             <div class="notice-meta" id="noticeMetaB"><span>技术处</span><span>/</span><span>运行中</span></div>
                         </div>
-                        <div class="notice-item green">
+                        <div class="notice-item green" data-home-detail="notice-contact">
                             <div class="notice-title" id="noticeTitleC">通讯录数据已同步</div>
                             <div class="notice-meta" id="noticeMetaC"><span>工作台</span><span>/</span><span>今日 09:12</span></div>
                         </div>
@@ -2057,6 +2141,16 @@
         </footer>
     </main>
 
+    <div class="home-detail-backdrop" id="homeDetailBackdrop" aria-hidden="true">
+        <section class="home-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="homeDetailTitle">
+            <header class="home-detail-head">
+                <h2 id="homeDetailTitle">详情</h2>
+                <button class="home-detail-close" id="homeDetailClose" type="button" aria-label="关闭"><i data-lucide="x"></i></button>
+            </header>
+            <div class="home-detail-body" id="homeDetailBody"></div>
+        </section>
+    </div>
+
     <script>
         const params = new URLSearchParams(window.location.search);
         const isRecoveryMode = params.get('mode') === 'recovery' || localStorage.getItem('nh_workbench_mode') === 'recovery';
@@ -2071,6 +2165,70 @@
         function setStyle(id, prop, value) {
             const el = document.getElementById(id);
             if (el) el.style[prop] = value;
+        }
+
+        const HOME_DETAILS = {
+            notifications: {
+                title: '通知中心',
+                sections: [
+                    ['今日通知', ['暂无未读通知。工作台、文档、AI 听记、通讯录均显示同步完成。']],
+                    ['系统口径', ['普通工作台仅推送已归档流程提醒。']]
+                ]
+            },
+            settings: {
+                title: '工作台设置',
+                sections: [
+                    ['账号', ['顾路 / GL-0606 / 普通工作台视图。']],
+                    ['权限', ['当前仅可查看消息、文档、待办、日历、归档预览。']]
+                ]
+            },
+            'notice-workbench': {
+                title: '南洄工作台本周更新完成',
+                sections: [
+                    ['更新内容', ['消息同步、文档预览、AI 听记摘要、待办归档显示规则已更新。']],
+                    ['影响范围', ['普通工作台只展示归档后的流程字段。']]
+                ]
+            },
+            'notice-note': {
+                title: 'AI 听记模块服务正常',
+                sections: [
+                    ['服务状态', ['会议摘要、行动项、参会人列表均可生成。']],
+                    ['保留范围', ['原音频只保留系统允许的摘要片段。']]
+                ]
+            },
+            'notice-contact': {
+                title: '通讯录数据已同步',
+                sections: [
+                    ['同步范围', ['技术部、人事服务台、资产管理、行政前台联系人已同步。']],
+                    ['账号状态', ['顾路账号显示在线，普通工作台可查看只读归档资料。']]
+                ]
+            }
+        };
+
+        function openModule(module) {
+            window.open(`module-shell.html?module=${module}`, '_blank', 'noopener,noreferrer');
+        }
+
+        function openHomeDetail(key) {
+            const detail = HOME_DETAILS[key];
+            if (!detail) return;
+            document.getElementById('homeDetailTitle').textContent = detail.title;
+            document.getElementById('homeDetailBody').innerHTML = detail.sections.map(([title, lines]) => `
+                <section>
+                    <h3>${title}</h3>
+                    <ul>${lines.map((line) => `<li>${line}</li>`).join('')}</ul>
+                </section>
+            `).join('');
+            const backdrop = document.getElementById('homeDetailBackdrop');
+            backdrop.classList.add('is-open');
+            backdrop.setAttribute('aria-hidden', 'false');
+            lucide.createIcons();
+        }
+
+        function closeHomeDetail() {
+            const backdrop = document.getElementById('homeDetailBackdrop');
+            backdrop.classList.remove('is-open');
+            backdrop.setAttribute('aria-hidden', 'true');
         }
 
         function applyWorkbenchMode() {
@@ -2379,11 +2537,25 @@
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.header-tab').forEach((item) => item.classList.remove('active'));
                 tab.classList.add('active');
+                const module = tab.getAttribute('data-open-module');
+                if (module) openModule(module);
             });
         });
 
-        document.querySelectorAll('.todo-item').forEach((item) => {
-            item.addEventListener('click', () => item.classList.toggle('done'));
+        document.querySelectorAll('[data-open-module]').forEach((item) => {
+            item.addEventListener('click', (event) => {
+                if (item.classList.contains('header-tab')) return;
+                event.preventDefault();
+                const module = item.getAttribute('data-open-module');
+                if (module) openModule(module);
+            });
+        });
+
+        document.querySelectorAll('[data-home-detail]').forEach((item) => {
+            item.addEventListener('click', (event) => {
+                event.preventDefault();
+                openHomeDetail(item.getAttribute('data-home-detail'));
+            });
         });
 
         document.getElementById('sidebarUser').addEventListener('click', (event) => toggleAccountMenu('sidebarAccountMenu', event));
@@ -2395,6 +2567,13 @@
         document.getElementById('headerLogoutBtn').addEventListener('click', (event) => {
             event.stopPropagation();
             logoutToCredentialLogin();
+        });
+        document.getElementById('homeDetailClose').addEventListener('click', closeHomeDetail);
+        document.getElementById('homeDetailBackdrop').addEventListener('click', (event) => {
+            if (event.target.id === 'homeDetailBackdrop') closeHomeDetail();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeHomeDetail();
         });
         document.addEventListener('click', closeAccountMenus);
 
