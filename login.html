@@ -436,7 +436,7 @@
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
 
-            // 解谜答案：顾某生日数字
+            // 旧系统仅保留四位数字口令校验。
             if (password === '0606') {
                 // 登录成功
                 localStorage.setItem('dingtalk_logged_in', 'true');

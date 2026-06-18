@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -1482,7 +1482,7 @@
             <div class="mark">洄</div><span>南洄工作台</span>
         </a>
         <nav class="nav" id="nav"></nav>
-        <div class="user">
+        <div class="user" id="sidebarUser">
             <div class="avatar">顾</div>
             <div><strong>顾路</strong><span>在线</span></div>
             <div class="account-menu" id="sidebarAccountMenu">
@@ -1578,9 +1578,16 @@
 
         const moduleKey = new URLSearchParams(location.search).get('module') || 'messages';
         const current = APPS.find(([key]) => key === moduleKey) || APPS[0];
+        const app = document.getElementById('app');
 
         function icon(name) {
             return `<i data-lucide="${name}"></i>`;
+        }
+
+        function refreshIcons() {
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
         }
 
         function appUrl(key) {
@@ -1741,7 +1748,10 @@
                 '06-06 09:12',
                 '06-05 21:06'
             ];
-            return terms.reduce((next, term) => next.split(term).join(clueText(term)), html);
+            return html.split(/(<[^>]+>)/g).map((part) => {
+                if (part.startsWith('<')) return part;
+                return terms.reduce((next, term) => next.split(term).join(clueText(term)), part);
+            }).join('');
         }
 
         function closeAccountMenus() {
@@ -1780,6 +1790,57 @@
                 paragraphs: [
                     '支持 docx、xlsx、pptx、pdf。上传后由系统自动生成只读预览与操作日志。',
                     '顾路账号处于普通工作台视图，上传入口仅显示常规资料目录。'
+                ]
+            },
+            'action-table-view': {
+                kind: 'word',
+                title: 'AI 表格视图设置',
+                meta: [['视图', '6月复核表'], ['权限', '普通视图'], ['状态', '已保存']],
+                paragraphs: [
+                    '当前表格采用冻结表头、记录 ID、来源、状态与更新时间五列展示，适合快速核对流程是否闭环。',
+                    '普通视图不展开隐藏列，不显示原始网关日志、门禁刷卡明细和撤回记录，仅保留归档后字段。',
+                    '视图配置已同步到顾路工作台，后续打开仍默认显示“完成项优先”。'
+                ]
+            },
+            'action-recording': {
+                kind: 'word',
+                title: 'AI 听记录音设置',
+                meta: [['设备', '线上会议音频'], ['摘要', '自动生成'], ['状态', '可用']],
+                paragraphs: [
+                    'AI 听记会在会议结束后生成摘要、行动项和参会人列表。',
+                    '普通工作台仅保留系统允许的摘要片段，原音频和尾段异常片段不在当前视图内展示。',
+                    '今日录音设置正常，会议纪要会自动进入资料归档同步流程。'
+                ]
+            },
+            'action-note-new': {
+                kind: 'note',
+                title: 'AI小洄新建摘录',
+                meta: [['位置', '智能记事'], ['保存', '自动保存'], ['状态', '草稿']],
+                paragraphs: [
+                    '新建摘录会保存到 AI小洄侧边栏，便于复核人员临时记录文档、消息和待办之间的对应关系。',
+                    '当前草稿默认关联顾路普通工作台，不主动生成结论，只保存可回看的文字片段。',
+                    '最近一次自动保存时间为今天 09:42。'
+                ]
+            },
+            'action-date-switch': {
+                kind: 'agenda',
+                title: '会议日期切换',
+                meta: [['日历', '2026年6月'], ['视图', '工作日'], ['状态', '同步正常']],
+                agenda: [
+                    ['06-04', '周报模板更新', '文档中心'],
+                    ['06-05', '资料整理与设备台账', '会议室 / AI 听记'],
+                    ['06-06', '补交设备登记', '前台记录']
+                ]
+            },
+            'action-filter': {
+                kind: 'checklist',
+                title: '待办筛选条件',
+                meta: [['范围', '顾路待办'], ['状态', '全部显示'], ['排序', '更新时间倒序']],
+                checklist: [
+                    ['准备做', '显示'],
+                    ['做过的', '显示'],
+                    ['已确认', '显示'],
+                    ['只看未完成', '未启用']
                 ]
             },
             'msg-admin': {
@@ -2378,7 +2439,7 @@
             dialog.style.height = 'min(760px, calc(100vh - 56px))';
             backdrop.classList.add('is-open');
             backdrop.setAttribute('aria-hidden', 'false');
-            lucide.createIcons();
+            refreshIcons();
         }
 
         function closeDetail() {
@@ -2402,7 +2463,7 @@
             const dialog = document.querySelector('.detail-dialog');
             const isMax = dialog.classList.toggle('is-maximized');
             event.currentTarget.innerHTML = icon(isMax ? 'minimize-2' : 'maximize-2');
-            lucide.createIcons();
+            refreshIcons();
         });
         document.getElementById('detailBackdrop').addEventListener('click', (event) => {
             if (event.target.id === 'detailBackdrop') closeDetail();
@@ -2607,7 +2668,7 @@
                 renderChat(activeId);
             });
             renderChat(conversations[0].id);
-            lucide.createIcons();
+            refreshIcons();
         }
 
         function renderDocuments() {
@@ -2663,7 +2724,7 @@
             app.innerHTML = `
                 <div class="module-board three">
                     <aside class="module-side">
-                        <div class="section-head"><h2>数据表</h2><button class="btn">${icon('sliders-horizontal')}视图</button></div>
+                        <div class="section-head"><h2>数据表</h2><button class="btn" data-detail="action-table-view">${icon('sliders-horizontal')}视图</button></div>
                         <div class="list">
                             ${['6月复核表', '台账汇总', '流程明细', '权限审计', '导出记录'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '实时更新' : '普通视图'}</span></div></div>`).join('')}
                         </div>
@@ -2698,7 +2759,7 @@
             app.innerHTML = `
                 <div class="module-board three">
                     <aside class="module-side">
-                        <div class="section-head"><h2>听记</h2><button class="btn primary">${icon('mic')}录音</button></div>
+                        <div class="section-head"><h2>听记</h2><button class="btn primary" data-detail="action-recording">${icon('mic')}录音</button></div>
                         <div class="list">
                             ${[
                                 ['部门例会 10:00', 'note-weekly'],
@@ -2767,7 +2828,7 @@
                     <aside class="pane">
                         <div class="section-head">
                             <h2>AI小洄</h2>
-                            <button class="btn primary">${icon('plus')}新建</button>
+                            <button class="btn primary" data-detail="action-note-new">${icon('plus')}新建</button>
                         </div>
                         <div class="list">
                             ${notes.map((n, i) => `<div class="list-row ${i === 0 ? 'active' : ''}">
@@ -2882,7 +2943,7 @@
                         </div>
                     </aside>
                     <section class="module-stage">
-                        <div class="mini-toolbar"><strong>6月5日 星期五</strong><span class="muted">09:00-18:30</span><button class="btn" style="margin-left:auto">${icon('calendar')}切换日期</button></div>
+                        <div class="mini-toolbar"><strong>6月5日 星期五</strong><span class="muted">09:00-18:30</span><button class="btn" data-detail="action-date-switch" style="margin-left:auto">${icon('calendar')}切换日期</button></div>
                         <div class="module-card" style="margin-top:14px">
                             ${rooms.map((m) => `<div class="meeting-room clickable" data-detail="${m[4]}">
                                 <div class="room-visual">${m[0].replace('会议室 ', '')}</div>
@@ -2954,7 +3015,7 @@
                 <section class="pane primary pad">
                     <div class="section-head" style="padding:0 0 16px;border:0">
                         <h2>顾路待办</h2>
-                        <div><button class="btn">${icon('filter')}筛选</button> <button class="btn primary" data-detail="action-new">${icon('plus')}新建待办</button></div>
+                        <div><button class="btn" data-detail="action-filter">${icon('filter')}筛选</button> <button class="btn primary" data-detail="action-new">${icon('plus')}新建待办</button></div>
                     </div>
                     <div class="todo-board">
                         <div class="todo-column">
@@ -3415,7 +3476,7 @@
         markCurrentModule();
         (renderers[moduleKey] || renderMessages)();
         initXiaohuiFloat();
-        lucide.createIcons();
+        refreshIcons();
     </script>
 </body>
 </html>
