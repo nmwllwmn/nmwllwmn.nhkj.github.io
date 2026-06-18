@@ -95,6 +95,8 @@
             align-items: center;
             gap: 10px;
             color: #fff;
+            position: relative;
+            cursor: pointer;
         }
         .avatar {
             width: 32px;
@@ -109,6 +111,56 @@
         }
         .user strong { display: block; font-size: 12.5px; }
         .user span { color: var(--green); font-size: 11px; }
+        .account-menu {
+            position: absolute;
+            left: 14px;
+            bottom: 56px;
+            width: 172px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface);
+            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+            padding: 8px;
+            z-index: 20;
+            display: none;
+            color: var(--text);
+        }
+        .account-menu.is-open { display: block; }
+        .account-card {
+            padding: 9px 10px 10px;
+            border-bottom: 1px solid var(--soft-line);
+            margin-bottom: 6px;
+        }
+        .account-card strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+        .account-card span {
+            display: block;
+            color: var(--subtle);
+            font-size: 11.5px;
+            line-height: 1.6;
+        }
+        .account-action {
+            width: 100%;
+            min-height: 34px;
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            font: inherit;
+            font-size: 12.5px;
+            cursor: pointer;
+        }
+        .account-action:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
 
         .main {
             flex: 1;
@@ -1383,6 +1435,17 @@
         <div class="user">
             <div class="avatar">顾</div>
             <div><strong>顾路</strong><span>在线</span></div>
+            <div class="account-menu" id="sidebarAccountMenu">
+                <div class="account-card">
+                    <strong id="sidebarAccountName">顾路</strong>
+                    <span id="sidebarAccountId">GL-0606 / 工作台</span>
+                    <span id="sidebarAccountHint">账号状态正常</span>
+                </div>
+                <button class="account-action" type="button" id="sidebarLogoutBtn">
+                    <span>退出登录</span>
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
         </div>
     </aside>
 
@@ -1472,6 +1535,24 @@
 
         function appUrl(key) {
             return `module-shell.html?module=${key}`;
+        }
+
+        function closeAccountMenus() {
+            document.querySelectorAll('.account-menu').forEach((menu) => menu.classList.remove('is-open'));
+        }
+
+        function toggleAccountMenu(menuId, event) {
+            event.stopPropagation();
+            const menu = document.getElementById(menuId);
+            const willOpen = !menu.classList.contains('is-open');
+            closeAccountMenus();
+            if (willOpen) menu.classList.add('is-open');
+        }
+
+        function logoutToCredentialLogin() {
+            const confirmed = window.confirm('确认退出当前工作台并返回工牌登录吗？');
+            if (!confirmed) return;
+            window.open('credential-login.html', '_blank', 'noopener,noreferrer');
         }
 
         const DETAIL_DATA = {
@@ -2088,6 +2169,12 @@
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') closeDetail();
         });
+        document.getElementById('sidebarUser').addEventListener('click', (event) => toggleAccountMenu('sidebarAccountMenu', event));
+        document.getElementById('sidebarLogoutBtn').addEventListener('click', (event) => {
+            event.stopPropagation();
+            logoutToCredentialLogin();
+        });
+        document.addEventListener('click', closeAccountMenus);
 
         const detailDialog = document.querySelector('.detail-dialog');
         const detailHead = document.querySelector('.detail-head');
@@ -2605,7 +2692,7 @@
             document.getElementById('statusText').textContent = '待办均已处理';
             const todoCards = {
                 planned: [
-                    ['回收个人文档', '先去文档中心核对离职交接清单，再确认设备与回执是否同步。', 'todo-docs'],
+                    ['回收个人文档', '先把离职交接清单和补交说明单独拎出来，别和其他文档混在一起。', 'todo-docs'],
                     ['核对消息时间线', '把郑明、人事、资产管理的消息按时间顺序重新过一遍。', 'todo-note'],
                     ['补交设备', '工牌、笔记本、钥匙会分开登记，避免台账混在一起。', 'todo-equipment']
                 ],
