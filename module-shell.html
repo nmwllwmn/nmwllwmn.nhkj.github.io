@@ -661,6 +661,8 @@
         .detail-close:hover,
         .detail-max:hover { background: var(--bg); color: var(--text); }
         .detail-body {
+            flex: 1;
+            min-height: 0;
             overflow: auto;
             padding: 18px;
             display: grid;
@@ -709,6 +711,9 @@
             background: #f8fafc;
             overflow: hidden;
         }
+        .office-frame.document-viewer {
+            overflow: visible;
+        }
         .office-toolbar {
             min-height: 38px;
             padding: 0 12px;
@@ -746,6 +751,13 @@
             text-align: center;
             font-size: 18px;
         }
+        .page-count {
+            display: block;
+            margin: -4px 0 16px;
+            color: var(--subtle);
+            font-size: 11px;
+            text-align: center;
+        }
         .word-ruler {
             height: 22px;
             border-bottom: 1px solid var(--soft-line);
@@ -770,6 +782,7 @@
             text-indent: 0;
         }
         .excel-wrap {
+            max-height: calc(100vh - 260px);
             overflow: auto;
             background: #fff;
         }
@@ -837,7 +850,7 @@
         .pdf-reader {
             border: 1px solid var(--soft-line);
             border-radius: 8px;
-            overflow: hidden;
+            overflow: visible;
             background: #e8ebef;
         }
         .pdf-toolbar {
@@ -881,6 +894,11 @@
             display: grid;
             grid-template-columns: 92px 1fr;
             gap: 16px;
+        }
+        .ppt-deck {
+            display: grid;
+            gap: 22px;
+            align-content: start;
         }
         .ppt-thumbs {
             display: grid;
@@ -926,7 +944,8 @@
         }
         .mindmap-canvas {
             position: relative;
-            min-height: 560px;
+            min-width: 980px;
+            min-height: 860px;
             border: 1px solid var(--soft-line);
             border-radius: 8px;
             background:
@@ -2551,19 +2570,26 @@
         }
 
         function renderWordLike(detail) {
-            const paragraphs = (detail.paragraphs || []).map((text) => `<p>${text}</p>`).join('');
-            const notes = (detail.notes || []).map((text) => `<p class="doc-note">${text}</p>`).join('');
-            return `<div class="office-frame">
-                <div class="office-toolbar"><span class="office-tool">B</span><span class="office-tool">I</span><span class="office-tool">¶</span><span>${detail.kind === 'note' ? 'AI 听记摘要' : 'Word 文档预览'}</span><span class="muted">页面 1 / 自动分页</span></div>
+            const parts = chunkItems(detail.paragraphs || [], 2);
+            if (parts.length < 2) parts.push(['文档中心生成只读预览时，会保留版本记录、同步时间和普通视图边界。当前账号无法编辑正文，只能查看已归档页面。']);
+            const pages = (parts.length ? parts : [[]]).map((items, index) => {
+                const paragraphs = items.map((text) => `<p>${text}</p>`).join('');
+                const notes = index === parts.length - 1 ? (detail.notes || []).map((text) => `<p class="doc-note">${text}</p>`).join('') : '';
+                return `<article class="word-page"><h3>${index === 0 ? detail.title.replace(/\.(docx|pdf)$/i, '') : '续页'}</h3><span class="page-count">第 ${index + 1} 页 / 共 ${Math.max(parts.length, 1)} 页</span><p class="word-doc-meta">南洄科技有限公司 · 文档中心 · 普通工作台只读预览</p>${paragraphs}${notes}</article>`;
+            }).join('');
+            return `<div class="office-frame document-viewer">
+                <div class="office-toolbar"><span class="office-tool">B</span><span class="office-tool">I</span><span class="office-tool">¶</span><span>${detail.kind === 'note' ? 'AI 听记摘要' : 'Word 文档预览'}</span><span class="muted">${Math.max(parts.length, 1)} 页 / 自动分页</span></div>
                 <div class="word-ruler"></div>
-                <article class="word-page"><h3>${detail.title.replace(/\.(docx|pdf)$/i, '')}</h3><p class="word-doc-meta">南洄科技有限公司 · 文档中心 · 普通工作台只读预览</p>${paragraphs}${notes}</article>
+                ${pages}
             </div>`;
         }
 
         function renderExcelLike(detail) {
             const header = `<tr><th class="row-head"></th>${(detail.columns || []).map((col, index) => `<th>${String.fromCharCode(65 + index)} · ${col}</th>`).join('')}</tr>`;
-            const rows = (detail.rows || []).map((row, index) => `<tr><td class="row-head">${index + 1}</td>${row.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('');
-            return `<div class="office-frame">
+            const bodyRows = [...(detail.rows || [])];
+            while (bodyRows.length < 24) bodyRows.push((detail.columns || ['']).map(() => ''));
+            const rows = bodyRows.map((row, index) => `<tr><td class="row-head">${index + 1}</td>${row.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('');
+            return `<div class="office-frame document-viewer">
                 <div class="office-toolbar"><span class="office-tool">Σ</span><span class="office-tool">fx</span><span>Excel 工作簿</span><span class="muted">${detail.title}</span></div>
                 <div class="excel-tabs"><span class="excel-tab">${detail.sheetName || 'Sheet1'}</span><span class="note-chip">隐藏列未展开</span><span class="note-chip">只读</span></div>
                 <div class="excel-formula"><span>fx</span><strong>${detail.summary || detail.title}</strong></div>
@@ -2573,23 +2599,34 @@
 
         function renderPptLike(detail) {
             const slides = detail.slides || [];
-            const active = slides[0] || { title: detail.title, bullets: [] };
-            return `<div class="office-frame">
+            const deck = (slides.length ? slides : [{ title: detail.title, bullets: [] }]).map((slide, index) => `<section class="ppt-slide"><span class="page-count">幻灯片 ${index + 1} / ${Math.max(slides.length, 1)}</span><h3>${slide.title}</h3><ul>${(slide.bullets || []).map((item) => `<li>${item}</li>`).join('')}</ul></section>`).join('');
+            return `<div class="office-frame document-viewer">
                 <div class="office-toolbar"><span class="office-tool">${icon('play')}</span><span class="office-tool">${icon('layout-template')}</span><span>PowerPoint 幻灯片预览</span><span class="muted">${slides.length || 1} 张幻灯片 / 只读</span></div>
                 <div class="ppt-stage">
                     <div class="ppt-thumbs">${slides.map((slide, index) => `<div class="ppt-thumb ${index === 0 ? 'active' : ''}"><span></span>${index + 1}</div>`).join('')}</div>
-                    <section class="ppt-slide"><h3>${active.title}</h3><ul>${(active.bullets || []).map((item) => `<li>${item}</li>`).join('')}</ul></section>
+                    <div class="ppt-deck">${deck}</div>
                 </div>
             </div>`;
         }
 
         function renderPdfLike(detail) {
-            const paragraphs = (detail.paragraphs || []).map((text) => `<p>${text}</p>`).join('');
-            const notes = (detail.notes || []).map((text) => `<p class="doc-note">${text}</p>`).join('');
+            const parts = chunkItems(detail.paragraphs || [], 2);
+            if (parts.length < 2) parts.push(['PDF 预览副本保留页面结构和附件说明，不包含原始图层、隐藏批注和可编辑对象。当前页面由文档中心按普通权限生成。']);
+            const pages = (parts.length ? parts : [[]]).map((items, index) => {
+                const paragraphs = items.map((text) => `<p>${text}</p>`).join('');
+                const notes = index === parts.length - 1 ? (detail.notes || []).map((text) => `<p class="doc-note">${text}</p>`).join('') : '';
+                return `<article class="pdf-page"><h3>${index === 0 ? detail.title.replace(/\.pdf$/i, '') : '附件续页'}</h3><span class="page-count">第 ${index + 1} / ${Math.max(parts.length, 1)} 页</span>${paragraphs}${notes}<div class="pdf-stamp">南洄科技有限公司文档中心 · PDF 预览副本 · 原始图层未随普通工作台同步</div></article>`;
+            }).join('');
             return `<div class="pdf-reader">
-                <div class="pdf-toolbar"><span>${icon('file-text')}</span><strong>PDF 阅读器</strong><span class="muted" style="color:#cbd5e1">第 1 / 1 页 · 100% · 只读</span></div>
-                <article class="pdf-page"><h3>${detail.title.replace(/\.pdf$/i, '')}</h3>${paragraphs}${notes}<div class="pdf-stamp">南洄科技有限公司文档中心 · PDF 预览副本 · 原始图层未随普通工作台同步</div></article>
+                <div class="pdf-toolbar"><span>${icon('file-text')}</span><strong>PDF 阅读器</strong><span class="muted" style="color:#cbd5e1">共 ${Math.max(parts.length, 1)} 页 · 100% · 只读</span></div>
+                ${pages}
             </div>`;
+        }
+
+        function chunkItems(items, size) {
+            const out = [];
+            for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+            return out;
         }
 
         function renderMindmapLike(detail) {
@@ -2606,7 +2643,7 @@
                 return `<span class="mind-line" style="left:${x1}px;top:${y1}px;width:${length}px;transform:rotate(${angle}deg)"></span>`;
             }).join('');
             const boxes = nodes.map((node) => `<div class="mind-node ${node.root ? 'root' : ''}" style="left:${node.x}px;top:${node.y}px;width:${node.w}px;min-height:${node.h}px"><strong>${node.title}</strong>${node.text || ''}</div>`).join('');
-            return `<div class="office-frame"><div class="office-toolbar"><span class="office-tool">${icon('network')}</span><span>思维导图预览</span><span class="muted">节点 ${nodes.length} / 只读</span></div><div class="mindmap-canvas">${lines}${boxes}</div></div>`;
+            return `<div class="office-frame document-viewer"><div class="office-toolbar"><span class="office-tool">${icon('network')}</span><span>思维导图预览</span><span class="muted">节点 ${nodes.length} / 只读</span></div><div class="mindmap-canvas">${lines}${boxes}</div></div>`;
         }
 
         function renderChatLike(detail) {
@@ -2678,7 +2715,8 @@
             document.getElementById('detailBody').innerHTML = detailHtml(detail);
             const backdrop = document.getElementById('detailBackdrop');
             const dialog = backdrop.querySelector('.detail-dialog');
-            dialog.classList.remove('is-maximized');
+            const fullScreenKinds = new Set(['word', 'note', 'excel', 'ppt', 'pdf', 'mindmap']);
+            dialog.classList.toggle('is-maximized', fullScreenKinds.has(detail.kind));
             dialog.style.left = '50%';
             dialog.style.top = '50%';
             dialog.style.transform = 'translate(-50%, -50%)';
