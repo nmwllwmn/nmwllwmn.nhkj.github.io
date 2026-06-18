@@ -1048,6 +1048,72 @@
         .timeline-row:last-child { border-bottom: 0; }
         .timeline-time { color: var(--accent); font-weight: 650; }
         .timeline-source { color: var(--subtle); }
+        .attendance-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 320px;
+            gap: 14px;
+        }
+        .attendance-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(70px, 1fr));
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .attendance-day {
+            min-height: 82px;
+            padding: 9px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+        .attendance-day.leave {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+        .attendance-day.late {
+            background: #fff1f2;
+            border-color: #fecdd3;
+        }
+        .attendance-day strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+        .attendance-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .attendance-metric {
+            padding: 14px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background: #fff;
+        }
+        .attendance-metric span {
+            display: block;
+            color: var(--subtle);
+            font-size: 12px;
+        }
+        .attendance-metric strong {
+            display: block;
+            margin-top: 6px;
+            color: var(--text);
+            font-size: 22px;
+        }
+        .attendance-note {
+            padding: 12px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background: #fbfcff;
+            color: var(--muted);
+            font-size: 12.5px;
+            line-height: 1.8;
+        }
         .profile-card {
             display: grid;
             grid-template-columns: 64px 1fr;
@@ -1714,6 +1780,7 @@
             ['calendar', '日历', 'calendar-days'],
             ['todo', '待办', 'square-check-big'],
             ['ding', 'DING', 'zap'],
+            ['attendance', '打卡', 'clock-3'],
             ['visitor', '访客记录', 'door-open'],
             ['equipment', '设备归还', 'package-check'],
             ['archive', '归档', 'archive'],
@@ -1721,6 +1788,7 @@
         ];
 
         const moduleKey = new URLSearchParams(location.search).get('module') || 'messages';
+        const isRecoveryMode = new URLSearchParams(location.search).get('mode') === 'recovery' || localStorage.getItem('nh_workbench_mode') === 'recovery';
         const current = APPS.find(([key]) => key === moduleKey) || APPS[0];
         const app = document.getElementById('app');
 
@@ -1735,7 +1803,7 @@
         }
 
         function appUrl(key) {
-            return `module-shell.html?module=${key}`;
+            return `module-shell.html?module=${key}${isRecoveryMode ? '&mode=recovery' : ''}`;
         }
 
         const SURFACE_CHAIN_KEY = 'nh_surface_chain';
@@ -1749,6 +1817,7 @@
             calendar: 'calendarViewed',
             todo: 'todoViewed',
             ding: 'dingViewed',
+            attendance: 'attendanceViewed',
             visitor: 'visitorViewed',
             equipment: 'equipmentViewed',
             archive: 'archiveViewed'
@@ -2551,6 +2620,18 @@
                 title: '复核报告预览',
                 meta: [['结论', '未发现系统异常'], ['权限', '普通视图'], ['状态', '待确认归档']],
                 timeline: [['09:00', '系统', '汇总普通视图证据'], ['09:06', '复核人员', '可形成普通意见'], ['09:08', '归档按钮', '待确认']]
+            },
+            'attendance-leave': {
+                kind: 'word',
+                title: '2025-06-06 请假单_顾路.docx',
+                meta: [['申请人', '顾路'], ['日期', '2025-06-06'], ['状态', '已归档']],
+                paragraphs: [
+                    '申请编号：ATT-LEAVE-20250606-0606。申请人顾路，所属方案中心，申请日期为 2025-06-06，类型为事假，时长 1 天。',
+                    '请假单由考勤系统在普通视图中归档，审批链显示已完成。该日期普通打卡记录为空，不计入迟到、早退或缺卡。',
+                    '年度考勤摘要显示顾路 2025 年基本全年无休，仅 2025-06-06 保留 1 天请假记录。',
+                    '凭证复核视图下，该请假记录仍存在；但其他工作日离场时间与普通视图的标准 18:00-18:10 归档字段不一致。'
+                ],
+                notes: ['普通视图使用标准 8 小时口径。', '原始离场字段仅在凭证复核视图展示。']
             },
             'notice-workbench': {
                 title: '南洄工作台本周更新完成',
@@ -3410,6 +3491,102 @@
                 </div>`;
         }
 
+        function seededTime(day, startMinute, span) {
+            return startMinute + ((day * 7 + day.toString().charCodeAt(0)) % span);
+        }
+
+        function fmtTime(totalMinutes) {
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        }
+
+        function normalAttendanceRows() {
+            return Array.from({ length: 30 }, (_, index) => {
+                const day = index + 1;
+                const date = `2025-06-${String(day).padStart(2, '0')}`;
+                if (day === 6) return { date, inTime: '-', outTime: '-', hours: '0.0', status: '请假', note: '请假 1 天 / 审批已归档' };
+                const inTime = fmtTime(seededTime(day, 8 * 60 + 50, 9));
+                const outTime = fmtTime(seededTime(day, 18 * 60, 11));
+                return { date, inTime, outTime, hours: '8.0', status: '正常', note: '准时打卡' };
+            });
+        }
+
+        function recoveryAttendanceRows() {
+            const rows = normalAttendanceRows();
+            const lateMap = {
+                1: ['08:53', '22:41', '13.8', '方案评审后离场'],
+                2: ['08:55', '23:16', '14.4', '版本对照补录'],
+                3: ['08:51', '00:38', '15.8', '需求纪要重写'],
+                4: ['08:56', '01:12', '16.3', '草图说明导出'],
+                5: ['08:52', '23:58', '15.1', '评审问题清单关闭'],
+                7: ['08:57', '00:24', '15.5', '返岗前资料核对'],
+                8: ['08:54', '22:36', '13.7', '交付包目录整理'],
+                9: ['08:50', '01:06', '16.3', 'R-03 处理口径确认'],
+                10: ['08:58', '23:44', '14.8', '普通视图预览生成']
+            };
+            return rows.map((row) => {
+                const day = Number(row.date.slice(-2));
+                if (day === 6) return { ...row, status: '请假', note: '请假记录存在；无白天打卡' };
+                const late = lateMap[day] || [row.inTime, fmtTime(22 * 60 + ((day * 13) % 170)), '13.5', '晚间离场'];
+                return { ...row, inTime: late[0], outTime: late[1], hours: late[2], status: '异常工时', note: late[3] };
+            });
+        }
+
+        function renderAttendance() {
+            const recovery = isRecoveryMode;
+            setTabs(['月视图', '年度汇总', '记录明细', '请假']);
+            document.getElementById('statusText').textContent = recovery ? '打卡记录显示凭证复核字段' : '打卡记录同步正常';
+            const rows = recovery ? recoveryAttendanceRows() : normalAttendanceRows();
+            const visibleRows = rows.slice(0, 15);
+            const workDays = rows.filter((r) => r.status !== '请假').length;
+            const leaveDays = rows.filter((r) => r.status === '请假').length;
+            const abnormalDays = rows.filter((r) => r.status === '异常工时').length;
+            app.innerHTML = `
+                <div class="attendance-layout">
+                    <section class="pane primary pad">
+                        <div class="section-head" style="padding:0 0 14px;border:0">
+                            <h2>${recovery ? '打卡记录 / 凭证复核视图' : '打卡记录 / 普通视图'}</h2>
+                            <button class="btn" data-detail="attendance-leave">${icon('file-clock')}请假单</button>
+                        </div>
+                        <div class="attendance-metrics">
+                            <div class="attendance-metric"><span>2025 年出勤模式</span><strong>${recovery ? '晚归' : '满勤'}</strong></div>
+                            <div class="attendance-metric"><span>6 月工作日记录</span><strong>${workDays}</strong></div>
+                            <div class="attendance-metric"><span>请假记录</span><strong>${leaveDays}</strong></div>
+                        </div>
+                        <div class="attendance-note">
+                            ${recovery
+                                ? '凭证复核视图显示原始离场时间：顾路多数日期在夜间甚至凌晨离场。普通工作台只保留标准工时归档字段。'
+                                : '普通视图显示顾路全年基本无休，日常上班打卡集中在 08:50-08:58，下班打卡集中在 18:00-18:10；2025-06-06 请假 1 天。'}
+                        </div>
+                        <div class="attendance-calendar">
+                            ${rows.map((r) => `<div class="attendance-day ${r.status === '请假' ? 'leave' : r.status === '异常工时' ? 'late' : ''}">
+                                <strong>${r.date.slice(5)}</strong>
+                                <div>上班 ${r.inTime}</div>
+                                <div>下班 ${r.outTime}</div>
+                                <div>${r.status}</div>
+                            </div>`).join('')}
+                        </div>
+                    </section>
+                    <aside class="pane">
+                        <div class="section-head"><h2>记录明细</h2><span class="muted">${recovery ? '原始字段' : '归档字段'}</span></div>
+                        <table class="table">
+                            <thead><tr><th>日期</th><th>上班</th><th>下班</th><th>工时</th><th>状态</th></tr></thead>
+                            <tbody>${visibleRows.map((r) => `<tr><td>${r.date}</td><td>${r.inTime}</td><td>${r.outTime}</td><td>${r.hours}</td><td><span class="status ${r.status === '请假' ? 'wait' : ''}">${r.status}</span></td></tr>`).join('')}</tbody>
+                        </table>
+                        <div class="module-card" style="margin:14px">
+                            <div class="module-card-head"><h3>年度摘要</h3><span class="muted">2025</span></div>
+                            <table class="ledger-table">
+                                <tr><td>全年规则</td><td>${recovery ? '原始离场时间保留' : '基本全年无休'}</td></tr>
+                                <tr><td>唯一请假</td><td>2025-06-06 / 1 天</td></tr>
+                                <tr><td>异常工时</td><td>${recovery ? `${abnormalDays} 条可见，更多记录在导出表` : '普通视图未显示'}</td></tr>
+                                <tr><td>归档口径</td><td>${recovery ? '不可直接覆盖普通报告' : '标准 8 小时'}</td></tr>
+                            </table>
+                        </div>
+                    </aside>
+                </div>`;
+        }
+
         function renderVisitor() {
             setTabs(['访客记录', '预约', '门禁联动']);
             document.getElementById('statusText').textContent = '访客记录显示普通字段';
@@ -3553,6 +3730,7 @@
             calendar: renderCalendar,
             todo: renderTodo,
             ding: renderDing,
+            attendance: renderAttendance,
             visitor: renderVisitor,
             equipment: renderEquipment,
             archive: renderArchive,
