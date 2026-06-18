@@ -879,6 +879,287 @@
             height: 18px;
             color: var(--green);
         }
+        .module-board {
+            height: 100%;
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            background: var(--bg);
+        }
+        .module-board.three {
+            grid-template-columns: 248px minmax(0, 1fr) 286px;
+        }
+        .module-side {
+            background: #fff;
+            border-right: 1px solid var(--line);
+            overflow: auto;
+        }
+        .module-stage {
+            min-width: 0;
+            min-height: 0;
+            overflow: auto;
+            padding: 18px;
+        }
+        .module-inspector {
+            background: #fff;
+            border-left: 1px solid var(--line);
+            overflow: auto;
+        }
+        .mini-toolbar {
+            min-height: 44px;
+            padding: 0 14px;
+            border-bottom: 1px solid var(--soft-line);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .module-card {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        .module-card + .module-card { margin-top: 12px; }
+        .module-card-head {
+            min-height: 46px;
+            padding: 0 14px;
+            border-bottom: 1px solid var(--soft-line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .module-card-head h3 { font-size: 13.5px; }
+        .meeting-room {
+            display: grid;
+            grid-template-columns: 86px 1fr auto;
+            gap: 14px;
+            align-items: center;
+            padding: 14px;
+            border-bottom: 1px solid var(--soft-line);
+            cursor: pointer;
+        }
+        .meeting-room:hover { background: #fbfcff; }
+        .room-visual {
+            height: 58px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background:
+                linear-gradient(90deg, transparent 48%, rgba(47,117,255,0.12) 49% 51%, transparent 52%),
+                radial-gradient(circle at 25% 35%, rgba(47,117,255,0.18), transparent 20px),
+                #f8fafc;
+            display: grid;
+            place-items: center;
+            color: var(--accent);
+            font-weight: 750;
+        }
+        .slot-line {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .slot {
+            height: 10px;
+            border-radius: 999px;
+            background: #edf2ff;
+        }
+        .slot.busy { background: #ffedd5; }
+        .slot.used { background: #dcfce7; }
+        .schedule-list {
+            display: grid;
+            gap: 10px;
+            padding: 14px;
+        }
+        .schedule-item {
+            display: grid;
+            grid-template-columns: 52px 1fr;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background: #fbfcff;
+            cursor: pointer;
+        }
+        .schedule-time { color: var(--accent); font-weight: 750; font-size: 12px; }
+        .todo-board {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .todo-column {
+            min-height: 420px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            overflow: hidden;
+        }
+        .todo-column-head {
+            min-height: 44px;
+            padding: 0 12px;
+            border-bottom: 1px solid var(--soft-line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fafbfc;
+        }
+        .todo-card-real {
+            margin: 10px;
+            padding: 11px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+        }
+        .todo-card-real:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+        .todo-card-real strong { display:block; font-size:13px; margin-bottom:6px; }
+        .todo-card-real p { color: var(--subtle); font-size: 12px; line-height: 1.6; }
+        .ding-message {
+            display: grid;
+            grid-template-columns: 42px 1fr auto;
+            gap: 12px;
+            padding: 14px;
+            border-bottom: 1px solid var(--soft-line);
+            cursor: pointer;
+        }
+        .ding-message:hover { background: #fbfcff; }
+        .ding-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: linear-gradient(135deg, #ff7a45, #ff4d2e);
+        }
+        .sign-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            padding: 12px 14px 14px;
+        }
+        .sign-person {
+            min-height: 58px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: var(--muted);
+            font-size: 12px;
+            background: #fbfcff;
+        }
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 12px;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+        }
+        .filter-chip {
+            min-height: 28px;
+            padding: 0 10px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: #fff;
+            color: var(--muted);
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .access-map {
+            height: 210px;
+            margin: 14px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background:
+                linear-gradient(90deg, rgba(47,117,255,0.08) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(47,117,255,0.08) 1px, transparent 1px),
+                #fbfcff;
+            background-size: 34px 34px;
+            position: relative;
+            overflow: hidden;
+        }
+        .access-point {
+            position: absolute;
+            width: 82px;
+            min-height: 30px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: #fff;
+            display: grid;
+            place-items: center;
+            color: var(--muted);
+            font-size: 12px;
+            box-shadow: var(--shadow);
+        }
+        .asset-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 300px;
+            gap: 14px;
+        }
+        .asset-card {
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            gap: 12px;
+            align-items: center;
+            padding: 14px;
+            border-bottom: 1px solid var(--soft-line);
+            cursor: pointer;
+        }
+        .asset-card:hover { background: #fbfcff; }
+        .asset-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: linear-gradient(135deg, #ea580c, #fb923c);
+        }
+        .receipt-box {
+            margin: 14px;
+            padding: 14px;
+            border: 1px dashed #c9cdd4;
+            border-radius: 8px;
+            background: #fbfcff;
+        }
+        .approval-flow {
+            display: grid;
+            gap: 10px;
+            padding: 14px;
+        }
+        .approval-item-real {
+            display: grid;
+            grid-template-columns: 46px 1fr auto;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid var(--soft-line);
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+        }
+        .approval-item-real:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+        .flow-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            color: var(--subtle);
+            font-size: 12px;
+        }
+        .flow-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+        .flow-bar {
+            width: 28px;
+            height: 1px;
+            background: var(--line);
+        }
         .clickable { cursor: pointer; }
         .clickable:hover { background: var(--bg); }
         .footbar {
@@ -1984,40 +2265,94 @@
                 ['WB-0606-03', '网络认证', '园区接口', '完成', '06-06 11:18', 'table-network']
             ];
             app.innerHTML = `
-                <section class="pane primary">
-                    <div class="section-head"><h2>工作流数据表</h2><button class="btn primary" data-detail="archive-signoff">${icon('sparkles')}生成摘要</button></div>
-                    <table class="table">
-                        <thead><tr><th>记录 ID</th><th>事项</th><th>来源</th><th>状态</th><th>更新时间</th></tr></thead>
-                        <tbody>${rows.map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}</tbody>
-                    </table>
-                </section>`;
+                <div class="module-board three">
+                    <aside class="module-side">
+                        <div class="section-head"><h2>数据表</h2><button class="btn">${icon('sliders-horizontal')}视图</button></div>
+                        <div class="list">
+                            ${['6月复核表', '台账汇总', '流程明细', '权限审计', '导出记录'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '实时更新' : '普通视图'}</span></div></div>`).join('')}
+                        </div>
+                    </aside>
+                    <section class="module-stage">
+                        <div class="module-card">
+                            <div class="mini-toolbar"><strong>6月复核表</strong><span class="muted">A1:F6</span><span class="tag">公式栏</span><span class="muted">fx = 已同步</span></div>
+                            <table class="table" style="margin:0">
+                                <thead><tr><th>记录 ID</th><th>事项</th><th>来源</th><th>状态</th><th>更新时间</th></tr></thead>
+                                <tbody>${rows.map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}</tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <aside class="module-inspector">
+                        <div class="section-head"><h2>自动摘要</h2><span class="muted">AI 生成</span></div>
+                        <div class="receipt-box">
+                            <strong>本表统计</strong>
+                            <p class="muted" style="margin-top:8px;line-height:1.8">6 条记录全部完成，未见超时项。表格视图提供冻结表头、公式栏和记录详情。</p>
+                        </div>
+                        <table class="ledger-table" style="margin:14px;width:calc(100% - 28px)">
+                            <tr><td>完成率</td><td>100%</td></tr>
+                            <tr><td>逾期项</td><td>0</td></tr>
+                            <tr><td>导出</td><td>已允许</td></tr>
+                        </table>
+                    </aside>
+                </div>`;
         }
 
         function renderNote() {
             setTabs(['会议纪要', '录音', '摘要', '行动项']);
             document.getElementById('statusText').textContent = 'AI 听记摘要已生成';
             app.innerHTML = `
-                <div class="split" style="--left:280px;--right:0px">
-                    <aside class="pane"><div class="section-head"><h2>听记列表</h2></div><div class="list">
-                        ${[
-                            ['部门例会 10:00', 'note-weekly'],
-                            ['资料归档同步会', 'note-archive'],
-                            ['设备台账复核', 'note-equipment'],
-                            ['行政流程说明', 'doc-visitor']
-                        ].map((n, i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-detail="${n[1]}"><div class="row-icon" style="background:#7357d8">${icon('mic')}</div><div class="row-main"><strong>${n[0]}</strong><span>摘要已生成</span></div></div>`).join('')}
-                    </div></aside>
-                    <section class="pane primary pad">
-                        <div class="cards">
-                            <div class="card clickable" data-detail="note-weekly"><h3>会议摘要</h3><p>本次例会确认本周资料归档、设备台账同步与普通权限复核流程均按计划完成。</p></div>
-                            <div class="card clickable" data-detail="note-weekly"><h3>行动项</h3><p>行政更新领用模板；资产组核对设备编号；技术组同步周报表格。</p></div>
-                            <div class="card clickable" data-detail="note-weekly"><h3>参会人员</h3><p>郑明、人事服务台、资产管理、技术一组、顾路。</p></div>
+                <div class="module-board three">
+                    <aside class="module-side">
+                        <div class="section-head"><h2>听记</h2><button class="btn primary">${icon('mic')}录音</button></div>
+                        <div class="list">
+                            ${[
+                                ['部门例会 10:00', 'note-weekly'],
+                                ['资料归档同步会', 'note-archive'],
+                                ['设备台账复核', 'note-equipment'],
+                                ['行政流程说明', 'doc-visitor']
+                            ].map((n, i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-detail="${n[1]}"><div class="row-icon" style="background:#7357d8">${icon('mic')}</div><div class="row-main"><strong>${n[0]}</strong><span>摘要已生成</span></div><div class="row-meta">10m</div></div>`).join('')}
                         </div>
-                        <table class="table" style="margin-top:16px"><thead><tr><th>时间</th><th>发言人</th><th>内容</th></tr></thead><tbody>
-                            <tr class="clickable" data-detail="note-weekly"><td>10:04</td><td>郑明</td><td>本周所有流程都按普通版本处理，文档中心留存即可。</td></tr>
-                            <tr class="clickable" data-detail="note-equipment"><td>10:18</td><td>资产管理</td><td>设备台账已经同步，后续补充回执由系统生成。</td></tr>
-                            <tr class="clickable" data-detail="note-archive"><td>10:31</td><td>顾路</td><td>收到，我按模板整理并归档。</td></tr>
-                        </tbody></table>
+                    </aside>
+                    <section class="module-stage">
+                        <div class="module-card">
+                            <div class="module-card-head"><h3>会议纪要</h3><span class="muted">自动摘要</span></div>
+                            <div class="word-page" style="width:auto;min-height:0;margin:0;padding:24px">
+                                <h3>部门例会 10:00</h3>
+                                <p>本次例会确认本周资料归档、设备台账同步与普通权限复核流程均按计划完成。</p>
+                                <h3>行动项</h3>
+                                <ul>
+                                    <li>行政更新领用模板。</li>
+                                    <li>资产组核对设备编号。</li>
+                                    <li>技术组同步周报表格。</li>
+                                </ul>
+                                <h3>参会人员</h3>
+                                <p>郑明、人事服务台、资产管理、技术一组、顾路。</p>
+                            </div>
+                        </div>
+                        <table class="table" style="margin-top:14px">
+                            <thead><tr><th>时间</th><th>发言人</th><th>内容</th></tr></thead>
+                            <tbody>
+                                <tr class="clickable" data-detail="note-weekly"><td>10:04</td><td>郑明</td><td>本周所有流程都按普通版本处理，文档中心留存即可。</td></tr>
+                                <tr class="clickable" data-detail="note-equipment"><td>10:18</td><td>资产管理</td><td>设备台账已经同步，后续补充回执由系统生成。</td></tr>
+                                <tr class="clickable" data-detail="note-archive"><td>10:31</td><td>顾路</td><td>收到，我按模板整理并归档。</td></tr>
+                            </tbody>
+                        </table>
                     </section>
+                    <aside class="module-inspector">
+                        <div class="section-head"><h2>摘要面板</h2><span class="muted">AI 听记</span></div>
+                        <div class="receipt-box">
+                            <strong>已提取关键词</strong>
+                            <div class="note-chip-row">
+                                <span class="note-chip">资料归档</span>
+                                <span class="note-chip">设备台账</span>
+                                <span class="note-chip">普通权限</span>
+                                <span class="note-chip">已完成</span>
+                            </div>
+                        </div>
+                        <div class="receipt-box">
+                            <strong>录音状态</strong>
+                            <p class="muted" style="margin-top:8px;line-height:1.8">录音文件仅保存系统允许的摘要片段。可继续打开原始纪要、行动项和参会人详情。</p>
+                        </div>
+                    </aside>
                 </div>`;
         }
 
@@ -2106,28 +2441,75 @@
                 ['韩沛', '外部媒体联系人', '未添加', '#f97316', 'contact-han']
             ];
             app.innerHTML = `
-                <div class="split" style="--left:260px;--right:0px">
-                    <aside class="pane"><div class="section-head"><h2>组织</h2></div><div class="list">
-                        ${['南洄科技有限公司', '总经办', '技术部', '人事行政部', '资产管理组', '园区接口组'].map((name, i) => `<div class="list-row ${i === 2 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '56 人' : '部门通讯录'}</span></div></div>`).join('')}
-                    </div></aside>
-                    <section class="pane primary">
-                        <div class="section-head"><h2>技术部</h2><button class="btn" data-detail="action-upload">${icon('download')}导出</button></div>
-                        <div class="list">${people.map(p => `<div class="list-row clickable" data-detail="${p[4]}"><div class="row-icon" style="background:${p[3]}">${p[0].slice(0,1)}</div><div class="row-main"><strong>${p[0]}</strong><span>${p[1]}</span></div><span class="status ${p[2] === '离线' ? 'gray' : ''}">${p[2]}</span></div>`).join('')}</div>
+                <div class="module-board three">
+                    <aside class="module-side">
+                        <div class="section-head"><h2>组织</h2><button class="btn" data-detail="action-upload">${icon('download')}导出</button></div>
+                        <div class="list">
+                            ${['南洄科技有限公司', '总经办', '技术部', '人事行政部', '资产管理组', '园区接口组'].map((name, i) => `<div class="list-row ${i === 2 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '56 人' : '部门通讯录'}</span></div></div>`).join('')}
+                        </div>
+                    </aside>
+                    <section class="module-stage">
+                        <div class="module-card">
+                            <div class="module-card-head"><h3>技术部</h3><span class="muted">成员 12 人</span></div>
+                            <div class="list">${people.map(p => `<div class="list-row clickable" data-detail="${p[4]}"><div class="row-icon" style="background:${p[3]}">${p[0].slice(0,1)}</div><div class="row-main"><strong>${p[0]}</strong><span>${p[1]}</span></div><span class="status ${p[2] === '离线' ? 'gray' : ''}">${p[2]}</span></div>`).join('')}</div>
+                        </div>
                     </section>
+                    <aside class="module-inspector">
+                        <div class="section-head"><h2>联系人卡片</h2><span class="muted">快捷信息</span></div>
+                        <div class="receipt-box">
+                            <strong>最近互动</strong>
+                            <p class="muted" style="margin-top:8px;line-height:1.8">郑明、人事、资产、行政均已同步。点击联系人可打开个人资料页。</p>
+                        </div>
+                        <div class="receipt-box">
+                            <strong>搜索范围</strong>
+                            <p class="muted" style="margin-top:8px;line-height:1.8">仅匹配已入库成员与外部联系人，不展示未授权条目。</p>
+                        </div>
+                    </aside>
                 </div>`;
         }
 
         function renderMeeting() {
             setTabs(['会议室', '会议列表', '预约记录']);
             document.getElementById('statusText').textContent = '会议服务可用';
-            app.innerHTML = `<section class="pane primary pad"><div class="cards">
-                ${[
-                    ['会议室 A', '10:00-11:00 部门例会', '可预约', 'meeting-a'],
-                    ['会议室 B', '14:00-15:00 项目资料整理', '可预约', 'meeting-b'],
-                    ['线上会议', '16:00-16:30 周报同步', '已创建', 'meeting-online'],
-                    ['小会议间 C', '今日空闲', '可预约', 'meeting-b']
-                ].map((m, i) => `<div class="card clickable" data-detail="${m[3]}"><h3>${m[0]}</h3><p>${m[1]}</p><p style="margin-top:10px"><span class="status ${i === 2 ? 'wait' : ''}">${m[2]}</span></p></div>`).join('')}
-            </div></section>`;
+            const rooms = [
+                ['会议室 A', '8人 / 屏幕 / 白板', '10:00-11:00 部门例会', '可预约', 'meeting-a', ['used', 'busy', '', '', '', '', '', '']],
+                ['会议室 B', '12人 / 投屏 / 录音', '14:00-15:00 项目资料整理', '可预约', 'meeting-b', ['', '', '', 'busy', 'used', '', '', '']],
+                ['线上会议', '云会议 / 自动纪要', '16:00-16:30 周报同步', '已创建', 'meeting-online', ['', '', '', '', '', 'busy', '', '']],
+                ['小会议间 C', '4人 / 电话会议', '今日空闲', '可预约', 'meeting-b', ['', '', '', '', '', '', '', '']]
+            ];
+            app.innerHTML = `
+                <div class="module-board three">
+                    <aside class="module-side">
+                        <div class="section-head"><h2>会议</h2><button class="btn primary" data-detail="action-new">${icon('plus')}预约</button></div>
+                        <div class="list">
+                            ${['今日会议', '可预约会议室', '我发起的', '会议纪要', '设备状态'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '3 个日程' : '同步正常'}</span></div></div>`).join('')}
+                        </div>
+                    </aside>
+                    <section class="module-stage">
+                        <div class="mini-toolbar"><strong>6月5日 星期五</strong><span class="muted">09:00-18:30</span><button class="btn" style="margin-left:auto">${icon('calendar')}切换日期</button></div>
+                        <div class="module-card" style="margin-top:14px">
+                            ${rooms.map((m) => `<div class="meeting-room clickable" data-detail="${m[4]}">
+                                <div class="room-visual">${m[0].replace('会议室 ', '')}</div>
+                                <div>
+                                    <strong>${m[0]}</strong>
+                                    <p class="muted" style="margin-top:4px">${m[1]} · ${m[2]}</p>
+                                    <div class="slot-line">${m[5].map((s) => `<span class="slot ${s}"></span>`).join('')}</div>
+                                </div>
+                                <span class="status ${m[3] === '已创建' ? 'wait' : ''}">${m[3]}</span>
+                            </div>`).join('')}
+                        </div>
+                    </section>
+                    <aside class="module-inspector">
+                        <div class="section-head"><h2>今日安排</h2><span class="muted">自动同步</span></div>
+                        <div class="schedule-list">
+                            ${[
+                                ['10:00', '部门例会', '会议室 A', 'meeting-a'],
+                                ['14:00', '项目资料整理', '会议室 B', 'meeting-b'],
+                                ['16:00', '周报同步', '线上会议', 'meeting-online']
+                            ].map((r) => `<div class="schedule-item clickable" data-detail="${r[3]}"><div class="schedule-time">${r[0]}</div><div><strong>${r[1]}</strong><p class="muted">${r[2]} / AI 听记可用</p></div></div>`).join('')}
+                        </div>
+                    </aside>
+                </div>`;
         }
 
         function renderCalendar() {
@@ -2155,63 +2537,187 @@
         function renderTodo() {
             setTabs(['我的待办', '已完成', '我发起的']);
             document.getElementById('statusText').textContent = '待办均已处理';
-            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>我的待办</h2><button class="btn" data-detail="archive-signoff">${icon('filter')}筛选</button></div><table class="table"><thead><tr><th>事项</th><th>来源</th><th>截止</th><th>状态</th></tr></thead><tbody>
-                ${[
-                    ['本周工作资料归档', '文档中心', '06-05', '已完成', 'todo-docs'],
-                    ['设备台账确认', '资产管理', '06-05', '已完成', 'todo-equipment'],
-                    ['会议摘要确认', 'AI 听记', '06-05', '已完成', 'todo-note'],
-                    ['个人资料同步确认', '工作台', '06-06', '已完成', 'todo-profile']
-                ].map(r => `<tr class="clickable" data-detail="${r[4]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status">${r[3]}</span></td></tr>`).join('')}
-            </tbody></table></section>`;
+            const done = [
+                ['本周工作资料归档', '文档中心', '06-05 17:12', 'todo-docs'],
+                ['设备台账确认', '资产管理', '06-05 15:40', 'todo-equipment'],
+                ['会议摘要确认', 'AI 听记', '06-05 10:45', 'todo-note'],
+                ['个人资料同步确认', '工作台', '06-06 10:05', 'todo-profile']
+            ];
+            app.innerHTML = `
+                <section class="pane primary pad">
+                    <div class="section-head" style="padding:0 0 16px;border:0">
+                        <h2>待办看板</h2>
+                        <div><button class="btn">${icon('filter')}筛选</button> <button class="btn primary" data-detail="action-new">${icon('plus')}新建待办</button></div>
+                    </div>
+                    <div class="todo-board">
+                        <div class="todo-column">
+                            <div class="todo-column-head"><strong>待处理</strong><span class="muted">0</span></div>
+                            <div class="todo-card-real"><strong>暂无待处理事项</strong><p>普通工作台显示所有流程均已闭环。</p></div>
+                        </div>
+                        <div class="todo-column">
+                            <div class="todo-column-head"><strong>处理中</strong><span class="muted">0</span></div>
+                            <div class="todo-card-real"><strong>暂无进行中事项</strong><p>服务台、资产、人事流程均未返回待办。</p></div>
+                        </div>
+                        <div class="todo-column">
+                            <div class="todo-column-head"><strong>已完成</strong><span class="muted">${done.length}</span></div>
+                            ${done.map((r) => `<div class="todo-card-real clickable" data-detail="${r[3]}"><strong>${r[0]}</strong><p>${r[1]} · 完成于 ${r[2]}</p><span class="status">已完成</span></div>`).join('')}
+                        </div>
+                    </div>
+                </section>`;
         }
 
         function renderDing() {
             setTabs(['DING', '已发送', '签收记录']);
             document.getElementById('statusText').textContent = 'DING 通知 0 条待签收';
-            app.innerHTML = `<section class="pane primary pad"><div class="cards">
-                ${[
-                    ['资料归档提醒', '已签收 5/5', '06-05 09:00', 'ding-archive'],
-                    ['设备台账同步', '已签收 4/4', '06-05 15:00', 'ding-equipment'],
-                    ['周报模板更新', '已签收 8/8', '06-04 18:00', 'ding-weekly']
-                ].map(d => `<div class="card clickable" data-detail="${d[3]}"><h3>${d[0]}</h3><p>${d[1]}</p><p style="margin-top:10px;color:var(--subtle)">${d[2]}</p></div>`).join('')}
-            </div></section>`;
+            const dings = [
+                ['资料归档提醒', '系统', '06-05 09:00', '已签收 5/5', 'ding-archive'],
+                ['设备台账同步', '资产管理', '06-05 15:00', '已签收 4/4', 'ding-equipment'],
+                ['周报模板更新', '文档中心', '06-04 18:00', '已签收 8/8', 'ding-weekly']
+            ];
+            app.innerHTML = `
+                <div class="module-board">
+                    <aside class="module-side">
+                        <div class="section-head"><h2>DING</h2><button class="btn primary" data-detail="action-new">${icon('send')}发DING</button></div>
+                        <div class="list">
+                            ${['全部', '我收到的', '我发出的', '签收记录', '草稿箱'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '3 条记录' : '无待处理'}</span></div></div>`).join('')}
+                        </div>
+                    </aside>
+                    <section class="pane primary">
+                        <div class="mini-toolbar"><strong>通知列表</strong><span class="muted">按发送时间排序</span></div>
+                        <div class="module-card" style="margin:14px">
+                            ${dings.map((d) => `<div class="ding-message clickable" data-detail="${d[4]}">
+                                <div class="ding-icon">${icon('zap')}</div>
+                                <div><strong>${d[0]}</strong><p class="muted" style="margin-top:4px">${d[1]} · ${d[2]}</p></div>
+                                <span class="status">${d[3]}</span>
+                            </div>`).join('')}
+                        </div>
+                        <div class="module-card" style="margin:14px">
+                            <div class="module-card-head"><h3>最近签收人</h3><span class="muted">普通视图</span></div>
+                            <div class="sign-grid">${['顾路', '郑明', '林乔', '周闻', '行政'].map((p) => `<div class="sign-person">${p}<br><span class="status">已签收</span></div>`).join('')}</div>
+                        </div>
+                    </section>
+                </div>`;
         }
 
         function renderVisitor() {
             setTabs(['访客记录', '预约', '门禁联动']);
             document.getElementById('statusText').textContent = '访客记录显示普通字段';
-            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>访客记录</h2><button class="btn" data-detail="visitor-gu">${icon('download')}导出</button></div><table class="table"><thead><tr><th>时间</th><th>访客/员工</th><th>事由</th><th>楼栋</th><th>状态</th></tr></thead><tbody>
-                ${[
-                    ['06-06 09:12', '顾路', '补交设备', 'C 座', '已登记', 'visitor-gu'],
-                    ['06-05 16:20', '供应商接口', '设备维护', 'A 座', '已离场', 'visitor-vendor'],
-                    ['06-05 11:30', '行政快递', '文件送达', '前台', '已完成', 'visitor-delivery']
-                ].map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
-            </tbody></table></section>`;
+            const rows = [
+                ['06-06 09:12', '顾路', '补交设备', 'C 座', '已登记', 'visitor-gu'],
+                ['06-05 16:20', '供应商接口', '设备维护', 'A 座', '已离场', 'visitor-vendor'],
+                ['06-05 11:30', '行政快递', '文件送达', '前台', '已完成', 'visitor-delivery']
+            ];
+            app.innerHTML = `
+                <div class="module-board three">
+                    <aside class="module-side">
+                        <div class="section-head"><h2>访客</h2><button class="btn" data-detail="visitor-gu">${icon('download')}导出</button></div>
+                        <div class="filter-row">
+                            <span class="filter-chip">${icon('calendar')}6月6日</span>
+                            <span class="filter-chip">${icon('building-2')}全部楼栋</span>
+                            <span class="filter-chip">${icon('check')}已完成</span>
+                        </div>
+                        <div class="list">${rows.map((r, i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-detail="${r[5]}"><div class="row-main"><strong>${r[1]}</strong><span>${r[0]} · ${r[2]}</span></div><span class="status">${r[4]}</span></div>`).join('')}</div>
+                    </aside>
+                    <section class="module-stage">
+                        <div class="module-card">
+                            <div class="module-card-head"><h3>登记台账</h3><span class="muted">普通字段</span></div>
+                            <table class="table"><thead><tr><th>时间</th><th>访客/员工</th><th>事由</th><th>楼栋</th><th>状态</th></tr></thead><tbody>
+                                ${rows.map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
+                            </tbody></table>
+                        </div>
+                        <div class="access-map">
+                            <span class="access-point" style="left:18px;top:22px">前台登记</span>
+                            <span class="access-point" style="left:170px;top:82px">C座大厅</span>
+                            <span class="access-point" style="right:28px;bottom:30px">回执同步</span>
+                        </div>
+                    </section>
+                    <aside class="module-inspector">
+                        <div class="section-head"><h2>门禁联动</h2><span class="muted">已隐藏路线</span></div>
+                        <div class="receipt-box">
+                            <strong>普通视图说明</strong>
+                            <p class="muted" style="margin-top:8px;line-height:1.8">当前仅显示登记事由、楼栋和状态。详细门禁路线需凭证复核权限。</p>
+                        </div>
+                    </aside>
+                </div>`;
         }
 
         function renderEquipment() {
             setTabs(['设备归还', '资产台账', '回执']);
             document.getElementById('statusText').textContent = '设备台账同步完成';
-            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>设备归还</h2><button class="btn primary" data-detail="equipment-badge">${icon('scan-line')}扫码入库</button></div><table class="table"><thead><tr><th>资产编号</th><th>名称</th><th>持有人</th><th>归还状态</th><th>回执</th></tr></thead><tbody>
-                ${[
-                    ['NH-LT-2206', '办公笔记本', '顾路', '已归还', '已生成', 'equipment-laptop'],
-                    ['NH-CARD-0606', '门禁工牌', '顾路', '待复核', '普通回执', 'equipment-badge'],
-                    ['NH-KEY-0412', '办公柜钥匙', '顾路', '已归还', '已生成', 'equipment-key']
-                ].map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3] === '待复核' ? 'wait' : ''}">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}
-            </tbody></table></section>`;
+            const assets = [
+                ['NH-LT-2206', '办公笔记本', '顾路', '已归还', '已生成', 'equipment-laptop', 'laptop'],
+                ['NH-CARD-0606', '门禁工牌', '顾路', '待复核', '普通回执', 'equipment-badge', 'badge'],
+                ['NH-KEY-0412', '办公柜钥匙', '顾路', '已归还', '已生成', 'equipment-key', 'key-round']
+            ];
+            app.innerHTML = `
+                <section class="pane primary pad">
+                    <div class="asset-layout">
+                        <div class="module-card">
+                            <div class="module-card-head"><h3>资产归还台账</h3><button class="btn primary" data-detail="equipment-badge">${icon('scan-line')}扫码入库</button></div>
+                            ${assets.map((r) => `<div class="asset-card clickable" data-detail="${r[5]}">
+                                <div class="asset-icon">${icon(r[6])}</div>
+                                <div><strong>${r[1]}</strong><p class="muted">${r[0]} · 持有人 ${r[2]}</p></div>
+                                <span class="status ${r[3] === '待复核' ? 'wait' : ''}">${r[3]}</span>
+                            </div>`).join('')}
+                        </div>
+                        <aside class="module-card">
+                            <div class="module-card-head"><h3>回执预览</h3><span class="muted">普通流程</span></div>
+                            <div class="receipt-box">
+                                <strong>设备补交登记说明</strong>
+                                <p class="muted" style="margin-top:8px;line-height:1.8">资产归还后自动生成普通回执。工牌类资产保留复核字段，但普通工作台不展示刷卡明细。</p>
+                            </div>
+                            <table class="ledger-table" style="margin:14px;width:calc(100% - 28px)">
+                                <tr><td>同步状态</td><td>完成</td></tr>
+                                <tr><td>归档目录</td><td>资产管理 / 6月</td></tr>
+                                <tr><td>复核字段</td><td>普通回执</td></tr>
+                            </table>
+                        </aside>
+                    </div>
+                </section>`;
         }
 
         function renderArchive() {
             setTabs(['归档', '审批', '流转记录']);
             document.getElementById('statusText').textContent = '归档与审批记录正常';
-            app.innerHTML = `<section class="pane primary"><div class="section-head"><h2>归档与审批</h2><button class="btn" data-detail="archive-signoff">${icon('archive')}批量归档</button></div><table class="table"><thead><tr><th>单据</th><th>类型</th><th>发起人</th><th>流程</th><th>状态</th></tr></thead><tbody>
-                ${[
-                    ['AR-0605-118', '办公用品领用确认', '行政', '已流转', '已完成', 'archive-office'],
-                    ['AR-0605-119', '周报模板更新', '文档中心', '已发布', '已完成', 'archive-weekly'],
-                    ['AR-0606-060', '会议室预约确认', '日程', '已确认', '已完成', 'archive-meeting'],
-                    ['AR-0606-061', '设备回执归档', '资产管理', '普通流程', '已完成', 'archive-equipment']
-                ].map(r => `<tr class="clickable" data-detail="${r[5]}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="status">${r[4]}</span></td></tr>`).join('')}
-            </tbody></table></section>`;
+            const flows = [
+                ['AR-0605-118', '办公用品领用确认', '行政', '已完成', 'archive-office'],
+                ['AR-0605-119', '周报模板更新', '文档中心', '已完成', 'archive-weekly'],
+                ['AR-0606-060', '会议室预约确认', '日程', '已完成', 'archive-meeting'],
+                ['AR-0606-061', '设备回执归档', '资产管理', '已完成', 'archive-equipment']
+            ];
+            app.innerHTML = `
+                <div class="module-board three">
+                    <aside class="module-side">
+                        <div class="section-head"><h2>审批</h2><button class="btn" data-detail="archive-signoff">${icon('archive')}归档</button></div>
+                        <div class="list">
+                            ${['全部单据', '我审批的', '我发起的', '抄送我的', '归档报告'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '4 条已完成' : '无待办'}</span></div></div>`).join('')}
+                        </div>
+                    </aside>
+                    <section class="module-stage">
+                        <div class="module-card">
+                            <div class="module-card-head"><h3>流程中心</h3><span class="muted">普通工作台视图</span></div>
+                            <div class="approval-flow">
+                                ${flows.map((r) => `<div class="approval-item-real clickable" data-detail="${r[4]}">
+                                    <div class="row-icon" style="background:#2f75ff">${icon('file-check-2')}</div>
+                                    <div>
+                                        <strong>${r[1]}</strong>
+                                        <p class="muted">${r[0]} · ${r[2]}</p>
+                                        <div class="flow-line"><span class="flow-dot"></span>发起<span class="flow-bar"></span><span class="flow-dot"></span>审批<span class="flow-bar"></span><span class="flow-dot"></span>归档</div>
+                                    </div>
+                                    <span class="status">${r[3]}</span>
+                                </div>`).join('')}
+                            </div>
+                        </div>
+                    </section>
+                    <aside class="module-inspector">
+                        <div class="section-head"><h2>复核报告</h2><span class="muted">待确认</span></div>
+                        <div class="receipt-box clickable" data-detail="archive-signoff">
+                            <strong>复核报告预览</strong>
+                            <p class="muted" style="margin-top:8px;line-height:1.8">普通视图可生成“未发现系统异常”的归档意见。该意见只覆盖当前可见字段。</p>
+                            <p style="margin-top:12px"><span class="status wait">待确认归档</span></p>
+                        </div>
+                    </aside>
+                </div>`;
         }
 
         function renderAdd() {
