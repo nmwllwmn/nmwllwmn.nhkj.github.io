@@ -3388,49 +3388,105 @@
         }
 
         function renderDocuments() {
-            setTabs(['最近', '团队文件', '与我共享', '收藏']);
             document.getElementById('statusText').textContent = '文档中心 15 个文件可用';
-            const rows = [
-                ['DOC', 'word', '离职交接清单_顾路_归档版.docx', '人事服务台', '06-05 18:20', '已同步', 'doc-offboarding'],
-                ['DOC', 'word', '设备补交登记说明.docx', '资产管理', '06-05 17:42', '已同步', 'doc-equipment-guide'],
-                ['DOC', 'word', '绩效申诉处理记录_已沟通.docx', '人事服务台', '06-05 17:08', '已同步', 'doc-appeal'],
-                ['XLS', 'excel', '设备台账-六月复核表.xlsx', '资产管理', '06-05 17:42', '已同步', 'doc-equipment'],
-                ['PPT', 'ppt', 'C座访客动线方案评审稿.pptx', '方案设计组', '06-04 15:12', '已同步', 'doc-network'],
-                ['DOC', 'word', 'C座访客动线需求纪要.docx', '方案中心', '06-03 17:02', '已归档', 'doc-requirement'],
-                ['XLS', 'excel', 'C座方案版本对照表.xlsx', '文档中心', '06-05 16:48', '已同步', 'doc-version'],
-                ['XLS', 'excel', '方案评审问题清单.xlsx', '方案设计组', '06-05 16:20', '已关闭', 'doc-review'],
-                ['PDF', 'pdf', 'C座空间动线草图说明.pdf', '方案设计组', '06-05 14:32', '只读', 'doc-floorplan'],
-                ['MIND', 'mind', 'C座方案逻辑思维导图.mind', '顾路', '06-05 17:06', '只读', 'doc-mindmap'],
-                ['PPT', 'ppt', '园区口径确认稿.pptx', '园区接口组', '06-05 11:24', '已同步', 'doc-client-brief'],
-                ['DOC', 'word', 'C座办公区访客登记说明.docx', '行政通知', '06-04 11:36', '已同步', 'doc-visitor'],
-                ['XLS', 'excel', '方案交付清单_六月.xlsx', '方案设计组', '06-03 19:05', '已同步', 'doc-weekly'],
-                ['PDF', 'pdf', '员工账号安全自查手册.pdf', '系统助手', '06-03 09:24', '只读', 'doc-security'],
-                ['PDF', 'pdf', '员工行为与信息安全准则.pdf', '信息安全组', '05-20 10:00', '现行有效', 'doc-code-conduct']
-            ];
+            const rows = {
+                recent: [
+                    ['DOC', 'word', '离职交接清单_顾路_归档版.docx', '人事服务台', '06-05 18:20', '已同步', 'doc-offboarding', '企业文档 / 普通权限'],
+                    ['DOC', 'word', '设备补交登记说明.docx', '资产管理', '06-05 17:42', '已同步', 'doc-equipment-guide', '企业文档 / 普通权限'],
+                    ['DOC', 'word', '绩效申诉处理记录_已沟通.docx', '人事服务台', '06-05 17:08', '已同步', 'doc-appeal', '企业文档 / 普通权限'],
+                    ['XLS', 'excel', '设备台账-六月复核表.xlsx', '资产管理', '06-05 17:42', '已同步', 'doc-equipment', '企业文档 / 普通权限'],
+                    ['PPT', 'ppt', 'C座访客动线方案评审稿.pptx', '方案设计组', '06-04 15:12', '已同步', 'doc-network', '企业文档 / 普通权限'],
+                    ['DOC', 'word', 'C座访客动线需求纪要.docx', '方案中心', '06-03 17:02', '已归档', 'doc-requirement', '企业文档 / 普通权限'],
+                    ['XLS', 'excel', 'C座方案版本对照表.xlsx', '文档中心', '06-05 16:48', '已同步', 'doc-version', '企业文档 / 普通权限'],
+                    ['XLS', 'excel', '方案评审问题清单.xlsx', '方案设计组', '06-05 16:20', '已关闭', 'doc-review', '企业文档 / 普通权限'],
+                    ['PDF', 'pdf', 'C座空间动线草图说明.pdf', '方案设计组', '06-05 14:32', '只读', 'doc-floorplan', '企业文档 / 普通权限'],
+                    ['MIND', 'mind', 'C座方案逻辑思维导图.mind', '顾路', '06-05 17:06', '只读', 'doc-mindmap', '企业文档 / 普通权限'],
+                    ['PPT', 'ppt', '园区口径确认稿.pptx', '园区接口组', '06-05 11:24', '已同步', 'doc-client-brief', '企业文档 / 普通权限'],
+                    ['DOC', 'word', 'C座办公区访客登记说明.docx', '行政通知', '06-04 11:36', '已同步', 'doc-visitor', '企业文档 / 普通权限'],
+                    ['XLS', 'excel', '方案交付清单_六月.xlsx', '方案设计组', '06-03 19:05', '已同步', 'doc-weekly', '企业文档 / 普通权限'],
+                    ['PDF', 'pdf', '员工账号安全自查手册.pdf', '系统助手', '06-03 09:24', '只读', 'doc-security', '企业文档 / 普通权限'],
+                    ['PDF', 'pdf', '员工行为与信息安全准则.pdf', '信息安全组', '05-20 10:00', '现行有效', 'doc-code-conduct', '企业文档 / 普通权限']
+                ],
+                mine: [
+                    ['MIND', 'mind', 'C座方案逻辑思维导图.mind', '顾路', '06-05 17:06', '只读', 'doc-mindmap', '我的文档 / 方案草稿'],
+                    ['XLS', 'excel', '方案交付清单_六月.xlsx', '方案设计组', '06-03 19:05', '已同步', 'doc-weekly', '我的文档 / 工作清单'],
+                    ['DOC', 'word', 'C座访客动线需求纪要.docx', '方案中心', '06-03 17:02', '已归档', 'doc-requirement', '我的文档 / 会议纪要'],
+                    ['PDF', 'pdf', 'C座空间动线草图说明.pdf', '方案设计组', '06-05 14:32', '只读', 'doc-floorplan', '我的文档 / 附件说明']
+                ],
+                team: [
+                    ['PPT', 'ppt', 'C座访客动线方案评审稿.pptx', '方案设计组', '06-04 15:12', '已同步', 'doc-network', '团队文件 / 方案设计组'],
+                    ['XLS', 'excel', 'C座方案版本对照表.xlsx', '文档中心', '06-05 16:48', '已同步', 'doc-version', '团队文件 / 文档中心'],
+                    ['XLS', 'excel', '方案评审问题清单.xlsx', '方案设计组', '06-05 16:20', '已关闭', 'doc-review', '团队文件 / 评审材料'],
+                    ['PPT', 'ppt', '园区口径确认稿.pptx', '园区接口组', '06-05 11:24', '已同步', 'doc-client-brief', '团队文件 / 园区接口']
+                ],
+                shared: [
+                    ['DOC', 'word', '设备补交登记说明.docx', '资产管理', '06-05 17:42', '已同步', 'doc-equipment-guide', '共享给我 / 资产管理'],
+                    ['XLS', 'excel', '设备台账-六月复核表.xlsx', '资产管理', '06-05 17:42', '已同步', 'doc-equipment', '共享给我 / 资产台账'],
+                    ['DOC', 'word', 'C座办公区访客登记说明.docx', '行政通知', '06-04 11:36', '已同步', 'doc-visitor', '共享给我 / 行政前台'],
+                    ['PDF', 'pdf', '员工账号安全自查手册.pdf', '系统助手', '06-03 09:24', '只读', 'doc-security', '共享给我 / 系统助手']
+                ],
+                favorite: [
+                    ['PPT', 'ppt', 'C座访客动线方案评审稿.pptx', '方案设计组', '06-04 15:12', '已同步', 'doc-network', '收藏 / 方案材料'],
+                    ['MIND', 'mind', 'C座方案逻辑思维导图.mind', '顾路', '06-05 17:06', '只读', 'doc-mindmap', '收藏 / 个人常用'],
+                    ['XLS', 'excel', '方案评审问题清单.xlsx', '方案设计组', '06-05 16:20', '已关闭', 'doc-review', '收藏 / 评审清单']
+                ],
+                archive: [
+                    ['DOC', 'word', '离职交接清单_顾路_归档版.docx', '人事服务台', '06-05 18:20', '已归档', 'doc-offboarding', '归档资料 / 人事服务台'],
+                    ['DOC', 'word', '绩效申诉处理记录_已沟通.docx', '人事服务台', '06-05 17:08', '已归档', 'doc-appeal', '归档资料 / 工单结论'],
+                    ['PDF', 'pdf', '员工行为与信息安全准则.pdf', '信息安全组', '05-20 10:00', '现行有效', 'doc-code-conduct', '归档资料 / 制度文件'],
+                    ['PPT', 'ppt', '园区口径确认稿.pptx', '园区接口组', '06-05 11:24', '已归档', 'doc-client-brief', '归档资料 / 接口确认']
+                ],
+                trash: [
+                    ['DOC', 'word', 'C座访客动线旧版说明_已移除.docx', '文档中心', '06-02 19:40', '30天后清理', 'doc-floorplan', '回收站 / 可恢复副本'],
+                    ['XLS', 'excel', '方案清单_临时副本.xlsx', '顾路', '06-03 18:22', '已删除', 'doc-weekly', '回收站 / 临时文件'],
+                    ['PPT', 'ppt', 'C座方案评审稿_v2.pptx', '方案设计组', '06-04 09:15', '已删除', 'doc-network', '回收站 / 历史版本']
+                ]
+            };
+            const folderMeta = {
+                recent: ['最近打开', '15 个文件', '最近打开'],
+                mine: ['我的文档', '4 个文件', '我的文档'],
+                team: ['团队文件', '4 个文件', '团队文件'],
+                shared: ['共享给我', '4 个文件', '共享给我'],
+                favorite: ['收藏', '3 个文件', '收藏'],
+                archive: ['归档资料', '4 个文件', '归档资料'],
+                trash: ['回收站', '3 个文件', '回收站']
+            };
+            const topFolders = ['recent', 'team', 'shared', 'favorite'];
+            const sideFolders = ['recent', 'mine', 'team', 'shared', 'archive', 'trash'];
+            document.getElementById('tabs').innerHTML = topFolders.map((key) => `<span class="tab ${key === 'recent' ? 'active' : ''}" data-doc-folder="${key}">${folderMeta[key][0]}</span>`).join('');
             app.innerHTML = `
                 <div class="split" style="--left:236px;--right:0px">
                     <aside class="pane">
                         <div class="section-head"><h2>文档</h2></div>
-                        <div class="list">
-                            ${['最近打开', '我的文档', '团队文件', '共享给我', '归档资料', '回收站'].map((name, i) => `<div class="list-row ${i === 0 ? 'active' : ''}"><div class="row-main"><strong>${name}</strong><span>${i === 0 ? '15 个文件' : '正常'}</span></div></div>`).join('')}
+                        <div class="list" id="docFolderList">
+                            ${sideFolders.map((key) => `<div class="list-row clickable ${key === 'recent' ? 'active' : ''}" data-doc-folder="${key}"><div class="row-main"><strong>${folderMeta[key][0]}</strong><span>${folderMeta[key][1]}</span></div></div>`).join('')}
                         </div>
                     </aside>
                     <section class="pane primary">
                         <div class="section-head">
-                            <h2>最近打开</h2>
+                            <h2 id="docFolderTitle">最近打开</h2>
                             <div><button class="btn" data-detail="action-upload">${icon('upload')}上传</button> <button class="btn primary" data-detail="action-new">${icon('plus')}新建</button></div>
                         </div>
                         <table class="table">
                             <thead><tr><th>名称</th><th>创建人</th><th>最近打开</th><th>状态</th><th>操作</th></tr></thead>
-                            <tbody>
-                                ${rows.map((r) => `<tr class="clickable" data-detail="${r[6]}">
-                                    <td><div class="list-row" style="padding:0"><span class="file-type ${r[1]}">${r[0]}</span><div class="row-main"><strong>${r[2]}</strong><span>企业文档 / 普通权限</span></div></div></td>
-                                    <td>${r[3]}</td><td>${r[4]}</td><td><span class="status">${r[5]}</span></td><td><span class="tag" data-detail="${r[6]}">打开</span></td>
-                                </tr>`).join('')}
-                            </tbody>
+                            <tbody id="docRows"></tbody>
                         </table>
                     </section>
                 </div>`;
+            const renderDocFolder = (folderKey) => {
+                const currentRows = rows[folderKey] || rows.recent;
+                document.getElementById('docFolderTitle').textContent = folderMeta[folderKey][2];
+                document.getElementById('statusText').textContent = `文档中心 ${folderMeta[folderKey][1]}可用`;
+                document.getElementById('docRows').innerHTML = currentRows.map((r) => `<tr class="clickable" data-detail="${r[6]}">
+                                    <td><div class="list-row" style="padding:0"><span class="file-type ${r[1]}">${r[0]}</span><div class="row-main"><strong>${r[2]}</strong><span>${r[7]}</span></div></div></td>
+                                    <td>${r[3]}</td><td>${r[4]}</td><td><span class="status">${r[5]}</span></td><td><span class="tag" data-detail="${r[6]}">打开</span></td>
+                                </tr>`).join('');
+                document.querySelectorAll('[data-doc-folder]').forEach((node) => node.classList.toggle('active', node.getAttribute('data-doc-folder') === folderKey));
+            };
+            document.querySelectorAll('[data-doc-folder]').forEach((node) => {
+                node.addEventListener('click', () => renderDocFolder(node.getAttribute('data-doc-folder')));
+            });
+            renderDocFolder('recent');
         }
 
         function renderTable() {
