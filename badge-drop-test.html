@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工牌校验测试 | 南洄科技</title>
+    <title>凭证复核接入 | 南洄科技</title>
     <style>
         * {
             box-sizing: border-box;
@@ -279,10 +279,10 @@
 <body>
     <main>
         <section class="console" aria-live="polite">
-            <div class="eyebrow"><span class="pulse"></span> Credential Intake Test</div>
-            <h1>工牌投递校验</h1>
+            <div class="eyebrow"><span class="pulse"></span> Credential Intake</div>
+            <h1>凭证复核接入</h1>
             <p class="lead">
-                这是一个保留功能的测试界面。把导出的「顾路工牌」HTML 文件或 Base64 加密文本拖进右侧窗口，系统会先尝试解密，再核对工牌里的 ID、姓名和公司字段。
+                将导出的「顾路工牌」HTML 文件或 Base64 加密文本拖入右侧窗口。系统会在本地解析凭证内容，并核对 ID、姓名、公司与工牌类型字段。
             </p>
 
             <div class="terminal" id="terminal">[待机] 等待工牌文件...
@@ -298,10 +298,10 @@
             </div>
 
             <div class="actions">
-                <a href="badge-template.html" target="_blank" rel="noopener noreferrer">打开工牌样本</a>
+                <a href="badge-template.html" target="_blank" rel="noopener noreferrer">打开顾路工牌</a>
                 <a href="index.html" target="_blank" rel="noopener noreferrer">返回首页</a>
-                <button type="button" id="downloadEncoded">下载加密样本</button>
-                <button type="button" id="resetFlag">清除测试进度</button>
+                <button type="button" id="downloadEncoded">导出加密凭证</button>
+                <button type="button" id="resetFlag">清除本地记录</button>
             </div>
         </section>
 
@@ -309,7 +309,7 @@
             <label class="drop-zone" id="dropZone" for="fileInput">
                 <span>
                     <span class="drop-icon" aria-hidden="true"></span>
-                    <span class="drop-title">投递工牌文件</span>
+                    <span class="drop-title">接入工牌凭证</span>
                     <span class="drop-copy">拖入 `01_顾路工牌.html`，或 Python Base64 加密后的文本文件。</span>
                     <span class="file-button">选择文件</span>
                 </span>
@@ -507,9 +507,9 @@
                     link.remove();
                     URL.revokeObjectURL(url);
                     log([
-                        "<span class=\"ok\">[导出] Base64 加密样本已生成。</span>",
+                        "<span class=\"ok\">[导出] Base64 加密凭证已生成。</span>",
                         "[流程] UTF-8 编码 -> Base64",
-                        "可将下载的 txt 文件拖回投递窗口测试。"
+                        "可将下载的 txt 文件拖回接入窗口复核。"
                     ]);
                 } catch (error) {
                     log([
