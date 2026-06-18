@@ -1794,39 +1794,143 @@
         function renderMessages() {
             setTabs(['消息', '组织', '@我']);
             document.getElementById('statusText').textContent = '消息同步完成，无未读异常';
+            const conversations = [
+                {
+                    id: 'admin',
+                    name: '行政通知',
+                    preview: '本周办公用品领用流程已更新',
+                    time: '09:18',
+                    color: '#2f75ff',
+                    avatar: '行',
+                    members: '5 名成员',
+                    messages: [
+                        ['09:18', '行政通知', '各位，本周资料归档、办公用品领用、设备台账同步均已完成。后续请按文档中心模板提交。'],
+                        ['09:22', '顾路', '收到，我这边按普通流程整理。', true],
+                        ['09:24', '行政通知', '好的。归档记录会自动同步，不需要重复提交。'],
+                        ['09:30', '行政通知', 'C 座办公区访客登记说明已更新至 v2.1，离职人员返回补交设备按普通登记处理。']
+                    ]
+                },
+                {
+                    id: 'tech',
+                    name: '技术一组',
+                    preview: '周报模板已同步到文档中心',
+                    time: '昨天',
+                    color: '#16a34a',
+                    avatar: '技',
+                    members: '8 名成员',
+                    messages: [
+                        ['18:40', '技术一组', '周报模板 v3.2 已同步到文档中心。'],
+                        ['18:42', '郑明', 'C 座路线复核方案按普通版本归档即可。'],
+                        ['18:46', '顾路', '明天交接前我再核一次文件名。', true],
+                        ['18:49', '技术一组', '收到。归档包会按资料整理分类保存。'],
+                        ['19:05', '顾路', '周报里我把路线复核项归到资料整理了。', true]
+                    ]
+                },
+                {
+                    id: 'hr',
+                    name: '人事服务台',
+                    preview: '离职交接模板归档完成',
+                    time: '06-05',
+                    color: '#f97316',
+                    avatar: '人',
+                    members: '服务台',
+                    messages: [
+                        ['17:08', '林知遥', '绩效申诉处理记录已更新为“已沟通”状态。'],
+                        ['17:10', '林知遥', '材料我这边先帮你核，别急。'],
+                        ['17:16', '顾路', '谢谢，我怕遗漏，设备和文档我会分开核。', true],
+                        ['18:20', '林知遥', '离职交接清单_顾路_归档版 已同步到文档中心。'],
+                        ['18:22', '林知遥', '后续有问题走工单补充，不需要在群里重复发。']
+                    ]
+                },
+                {
+                    id: 'zheng',
+                    name: '郑明',
+                    preview: 'C座路线复核方案按普通流程归档...',
+                    time: '06-05',
+                    color: '#7357d8',
+                    avatar: '郑',
+                    members: '单聊',
+                    messages: [
+                        ['21:06', '郑明', '顾路，方案有空同步一下，明天交接辛苦。'],
+                        ['21:08', '郑明', 'C座路线复核方案按普通流程归档即可。'],
+                        ['21:11', '顾路', '收到，我按归档版提交。', true],
+                        ['21:13', '郑明', '设备和方案目录一起补齐，明早服务台好核。'],
+                        ['21:18', '顾路', '明白。我会把设备台账、访客登记和文档目录对一下。', true]
+                    ]
+                },
+                {
+                    id: 'system',
+                    name: '南洄系统助手',
+                    preview: '您的账号安全状态正常',
+                    time: '06-04',
+                    color: '#64748b',
+                    avatar: '系',
+                    members: '系统通知',
+                    messages: [
+                        ['08:02', '南洄系统助手', '账号最近一次登录来自企业内网环境。'],
+                        ['08:02', '南洄系统助手', '普通工作台权限可访问消息、文档、待办和归档预览。'],
+                        ['08:05', '南洄系统助手', '员工账号安全检查手册.pdf 已更新。'],
+                        ['08:07', '顾路', '收到。', true]
+                    ]
+                }
+            ];
             app.innerHTML = `
                 <div class="split" style="--left:320px;--right:0px">
                     <aside class="pane">
                         <div class="section-head"><h2>会话</h2><button class="btn" data-detail="action-new">${icon('plus')}新建</button></div>
                         <div class="list">
-                            ${[
-                                ['行政通知', '本周办公用品领用流程已更新', '09:18', '#2f75ff', '行', 'msg-admin'],
-                                ['技术一组', '周报模板已同步到文档中心', '昨天', '#16a34a', '技', 'msg-tech'],
-                                ['人事服务台', '离职交接模板归档完成', '06-05', '#f97316', '人', 'msg-hr'],
-                                ['郑明', 'C座路线复核方案按普通流程归档即可', '06-05', '#7357d8', '郑', 'msg-zheng'],
-                                ['南洄系统助手', '您的账号安全状态正常', '06-04', '#64748b', '系', 'msg-system']
-                            ].map((row, i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-detail="${row[5]}">
-                                <div class="row-icon" style="background:${row[3]}">${row[4]}</div>
-                                <div class="row-main"><strong>${row[0]}</strong><span>${row[1]}</span></div>
-                                <div class="row-meta">${row[2]}</div>
+                            ${conversations.map((row, i) => `<div class="list-row clickable ${i === 0 ? 'active' : ''}" data-chat-id="${row.id}">
+                                <div class="row-icon" style="background:${row.color}">${row.avatar}</div>
+                                <div class="row-main"><strong>${row.name}</strong><span>${row.preview}</span></div>
+                                <div class="row-meta">${row.time}</div>
                             </div>`).join('')}
                         </div>
                     </aside>
                     <section class="pane primary">
                         <div class="chat-view">
-                            <div class="section-head"><h2>行政通知</h2><div class="muted">5 名成员</div></div>
-                            <div class="chat-body">
-                                <div class="msg"><div class="row-icon" style="background:#2f75ff">行</div><div class="bubble">各位，本周资料归档、办公用品领用、设备台账同步均已完成。后续请按文档中心模板提交。</div></div>
-                                <div class="msg self"><div class="row-icon" style="background:#7357d8">顾</div><div class="bubble">收到，我这边按普通流程整理。</div></div>
-                                <div class="msg"><div class="row-icon" style="background:#2f75ff">行</div><div class="bubble">好的。归档记录会自动同步，不需要重复提交。</div></div>
-                            </div>
+                            <div class="section-head"><h2 id="chatTitle"></h2><div class="muted" id="chatMeta"></div></div>
+                            <div class="chat-body" id="chatBody"></div>
                             <div class="chat-input">
                                 <div class="tools">${icon('smile')}${icon('paperclip')}${icon('image')}${icon('calendar-plus')}${icon('send')}</div>
-                                <textarea placeholder="输入消息"></textarea>
+                                <textarea id="chatDraft" placeholder="输入消息"></textarea>
                             </div>
                         </div>
                     </section>
                 </div>`;
+            const renderChat = (chatId) => {
+                const chat = conversations.find((item) => item.id === chatId) || conversations[0];
+                document.getElementById('chatTitle').textContent = chat.name;
+                document.getElementById('chatMeta').textContent = chat.members;
+                document.getElementById('chatBody').innerHTML = chat.messages.map(([time, author, text, self]) => `
+                    <div class="msg ${self ? 'self' : ''}">
+                        <div class="row-icon" style="background:${self ? '#7357d8' : chat.color}">${self ? '顾' : chat.avatar}</div>
+                        <div>
+                            <div class="muted" style="margin-bottom:4px">${time} · ${author}</div>
+                            <div class="bubble">${text}</div>
+                        </div>
+                    </div>
+                `).join('');
+                document.querySelectorAll('[data-chat-id]').forEach((row) => row.classList.toggle('active', row.getAttribute('data-chat-id') === chat.id));
+                const body = document.getElementById('chatBody');
+                body.scrollTop = body.scrollHeight;
+            };
+            document.querySelectorAll('[data-chat-id]').forEach((row) => {
+                row.addEventListener('click', () => renderChat(row.getAttribute('data-chat-id')));
+            });
+            document.getElementById('chatDraft').addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' || event.shiftKey) return;
+                event.preventDefault();
+                const draft = event.currentTarget.value.trim();
+                if (!draft) return;
+                const activeId = document.querySelector('[data-chat-id].active')?.getAttribute('data-chat-id') || conversations[0].id;
+                const chat = conversations.find((item) => item.id === activeId) || conversations[0];
+                const stamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                chat.messages.push([stamp, '顾路', draft, true]);
+                event.currentTarget.value = '';
+                renderChat(activeId);
+            });
+            renderChat(conversations[0].id);
+            lucide.createIcons();
         }
 
         function renderDocuments() {
